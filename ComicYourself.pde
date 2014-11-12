@@ -18,6 +18,6 @@ PImage [] Panels;
 
 void setup()
 {
-
+	noLoop();
 	
 }
