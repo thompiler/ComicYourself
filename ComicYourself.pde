@@ -18,7 +18,7 @@ Capture webcam;
 PImage [] Photos;
 PImage [] Panels;
 int mode = 0;
-int phase = 0;
+int phase = 1;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -46,41 +46,26 @@ void draw()
 	if(mode == 0)
 	{
 		// START SCREEN mode
-		PImage startLogo = loadImage("logo.png");
-
-		float x = (width - startLogo.width)/2;
-		float y = (height - startLogo.height)/2;
-		image(startLogo, x, y);
+		drawStartScreen();
 	}
 	else if(mode == 1)
 	{
 		// OVERVIEW mode
-		background(#012E4B);
-		fill(#EAA3A3);
-		font = loadFont("ArialMT-40.vlw");
-
-		textFont(font);
-		text("OVERVIEW", 20, 40);
-
-		fill(#817575);
-		text("photos", 60, 100);
-		text("panels", 60, height/2);
-
-		displayAddButtons();
+		drawOverview();
 	}
 	else if(mode == 2)
 	{
 		// TAKE A PHOTO mode
-		if(phase == 0)
+		if(phase == 1)
 		{
 			// show live feed
 			image(webcam, 0, 0);
 		}
-		else if(phase == 1)
+		else if(phase == 2)
 		{
 			// show picture taken as freeze frame
 		}
-		else if(phase == 2)
+		else if(phase == 3)
 		{
 			// save pitcure to photo array
 		}
@@ -88,24 +73,57 @@ void draw()
 	else if(mode == 3)
 	{
 		// MAKE A PANEL mode
-		if(phase == 0)
+		if(phase == 1)
 		{
 			// show list of taken photos
 			//displayPhotos();
 		}
-		else if(phase == 1)
+		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
 			//displayPhoto(photoIndex);
 		}
-		else if(phase == 2)
+		else if(phase == 3)
 		{
 			// save photo in panel array
 		}
 	}
 }
 
+
+//__________________________________________________________________________________________________________________________
+void drawStartScreen()
+{
+	PImage startLogo = loadImage("logo.png");
+
+	float x = (width - startLogo.width)/2;
+	float y = (height - startLogo.height)/2;
+	image(startLogo, x, y);	
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void drawOverview()
+{
+	background(#012E4B);
+	fill(#EAA3A3);
+	font = loadFont("ArialMT-40.vlw");
+
+	textFont(font);
+	text("OVERVIEW", 20, 40);
+
+	fill(#817575);
+	text("photos", 60, 100);
+	text("panels", 60, height/2);
+
+	displayAddButtons();
+}
+
+
+
+//__________________________________________________________________________________________________________________________
 void displayStartButton()
 {
 	cp5 = new ControlP5(this);
@@ -120,6 +138,7 @@ void displayStartButton()
 
 
 
+//__________________________________________________________________________________________________________________________
 void displayAddButtons()
 {
 	if(displayButtons)
@@ -139,6 +158,7 @@ void displayAddButtons()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void Start()
 {
 	println("Start button pressed ");
