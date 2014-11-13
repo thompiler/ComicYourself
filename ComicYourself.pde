@@ -127,10 +127,10 @@ void drawOverview()
 	displayAddButtons();
 
 	for(int i = 0; i < numPhotos; i++)
-		image(Photos[i], 80, 140, 80, 60);
+		image(Photos[i], 80, 140 + i*70, 80, 60);
 
 	for(int i = 0; i < numPanels; i++)
-		image(Panels[i], 80, height/2 + 40, 80, 60);
+		image(Panels[i], 80, (height/2 + 40) + i*70, 80, 60);
 }
 
 
@@ -234,4 +234,6 @@ void captureEvent(Capture video)
 {
   video.read();
 }
+
+
 
