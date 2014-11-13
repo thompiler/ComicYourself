@@ -143,15 +143,20 @@ void displayAddButtons()
 {
 	if(displayButtons)
 	{
+		cp5 = new ControlP5(this);
+
 		println("  Add Buttons");
+
 		cp5.addButton("Add Photo")
-			.setPosition(200, 100)
-			.setSize(200, height/2)
+			.setPosition(200, 100 - 32)
+			.setSize(60, 40)
 			;
+
 		cp5.addButton("Add Panel")
-			.setPosition((width - 80)/2, 650)
-			.setSize(80, 40)
+			.setPosition(200, height/2 - 32)
+			.setSize(60, 40)
 			;
+
 		displayButtons = false;
 	}
 }
