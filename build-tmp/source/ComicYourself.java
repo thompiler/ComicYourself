@@ -26,6 +26,7 @@ public class ComicYourself extends PApplet {
 // date:    11/13/2014
 // file:	ComicYourself.pde
 
+
 //__________________________________________________________________________________________________________________________
 
 
@@ -38,11 +39,13 @@ public class ComicYourself extends PApplet {
 Capture webcam;
 PImage [] Photos;
 PImage [] Panels;
+PImage frame;
 int mode = 0;
 int phase = 1;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
+PFont buttonFont;
 
 
 
@@ -50,9 +53,10 @@ boolean displayButtons = true;
 public void setup()
 {
 	size(1080, 720);
-	font = loadFont("CordiaNew-Bold-30.vlw");
-  	textFont(font);
+	buttonFont = loadFont("CordiaNew-Bold-30.vlw");
+  	textFont(buttonFont);
 	webcam = new Capture(this, 640, 480);
+	webcam.start();
 
 	displayStartButton();
 }
@@ -80,7 +84,7 @@ public void draw()
 		if(phase == 1)
 		{
 			// show live feed
-			image(webcam, 0, 0);
+			drawCam();
 		}
 		else if(phase == 2)
 		{
@@ -149,10 +153,11 @@ public void displayStartButton()
 {
 	cp5 = new ControlP5(this);
 
-	cp5.setControlFont(font);
+	cp5.setControlFont(buttonFont);
 
 	cp5.addButton("Start")
 		.setPosition((width - 80)/2, 650)
+		.align(CENTER,CENTER,CENTER,CENTER)
 		.setSize(80, 40)
 		;
 }
@@ -166,20 +171,39 @@ public void displayAddButtons()
 	{
 		cp5 = new ControlP5(this);
 
+		cp5.setControlFont(buttonFont);
+
 		println("  Add Buttons");
 
-		cp5.addButton("Add Photo")
+		cp5.addButton("addPhoto")
 			.setPosition(200, 100 - 32)
-			.setSize(60, 40)
+			.setCaptionLabel("+")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
 			;
 
-		cp5.addButton("Add Panel")
+		cp5.addButton("addPanel")
 			.setPosition(200, height/2 - 32)
-			.setSize(60, 40)
+			.setCaptionLabel("+")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
 			;
 
 		displayButtons = false;
 	}
+}
+
+
+
+public void drawCam()
+{
+	frame = webcam;
+    pushMatrix();
+
+    //flip across x axis
+    scale(-1,1);
+    image(frame, -width, 0, width, height);
+    popMatrix();
 }
 
 
@@ -189,6 +213,26 @@ public void Start()
 {
 	println("Start button pressed ");
 	mode = 1;
+	cp5.hide();
+}
+
+
+
+public void addPhoto()
+{
+	println("+photo button pressed");
+	mode = 2;
+	phase = 1;
+	cp5.hide();
+}
+
+
+
+public void addPanel()
+{
+	println("+panel button pressed");
+	mode = 3;
+	phase = 1;
 	cp5.hide();
 }
 
