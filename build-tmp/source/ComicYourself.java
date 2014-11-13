@@ -39,6 +39,8 @@ public class ComicYourself extends PApplet {
 Capture webcam;
 PImage [] Photos;
 PImage [] Panels;
+int numPhotos = 0;
+int numPanels = 0;
 PImage frame;
 int mode = 0;
 int phase = 1;
@@ -144,6 +146,12 @@ public void drawOverview()
 	text("panels", 60, height/2);
 
 	displayAddButtons();
+
+	for(int i = 0; i < numPhotos; i++)
+		image(Photos[i], 80, 140, 80, 60);
+
+	for(int i = 0; i < numPanels; i++)
+		image(Panels[i], 80, height/2 + 40, 80, 60);
 }
 
 
@@ -155,8 +163,9 @@ public void displayStartButton()
 
 	cp5.setControlFont(buttonFont);
 
-	cp5.addButton("Start")
+	cp5.addButton("startButton")
 		.setPosition((width - 80)/2, 650)
+		.setCaptionLabel("Start")
 		.align(CENTER,CENTER,CENTER,CENTER)
 		.setSize(80, 40)
 		;
@@ -195,6 +204,7 @@ public void displayAddButtons()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void drawCam()
 {
 	frame = webcam;
@@ -209,7 +219,7 @@ public void drawCam()
 
 
 //__________________________________________________________________________________________________________________________
-public void Start()
+public void startButton()
 {
 	println("Start button pressed ");
 	mode = 1;
@@ -218,6 +228,7 @@ public void Start()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void addPhoto()
 {
 	println("+photo button pressed");
@@ -228,6 +239,7 @@ public void addPhoto()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void addPanel()
 {
 	println("+panel button pressed");
