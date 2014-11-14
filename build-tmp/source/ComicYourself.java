@@ -121,150 +121,6 @@ public void draw()
 }
 
 
-//__________________________________________________________________________________________________________________________
-public void drawStartScreen()
-{
-	PImage startLogo = loadImage("logo.png");
-
-	float x = (width - startLogo.width)/2;
-	float y = (height - startLogo.height)/2;
-	image(startLogo, x, y);	
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void drawOverview()
-{
-	background(0xff012E4B);
-	fill(0xffEAA3A3);
-	font = loadFont("ArialMT-40.vlw");
-
-	textFont(font);
-	text("OVERVIEW", 20, 40);
-
-	fill(0xff817575);
-	text("photos", 60, 100);
-	text("panels", 60, height/2);
-
-	displayAddButtons();
-
-	for(int i = 0; i < numPhotos; i++)
-		image(Photos[i], 80, 140 + i*70, 80, 60);
-
-	for(int i = 0; i < numPanels; i++)
-		image(Panels[i], 80, (height/2 + 40) + i*70, 80, 60);
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void displayStartButton()
-{
-	cp5 = new ControlP5(this);
-
-	cp5.setControlFont(buttonFont);
-
-	cp5.addButton("startButton")
-		.setPosition((width - 80)/2, 650)
-		.setCaptionLabel("Start")
-		.align(CENTER,CENTER,CENTER,CENTER)
-		.setSize(80, 40)
-		;
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void displayAddButtons()
-{
-	if(displayButtons)
-	{
-		cp5 = new ControlP5(this);
-
-		cp5.setControlFont(buttonFont);
-
-		println("  Add Buttons");
-
-		cp5.addButton("addPhoto")
-			.setPosition(200, 100 - 32)
-			.setCaptionLabel("+")
-			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
-			;
-
-		cp5.addButton("addPanel")
-			.setPosition(200, height/2 - 32)
-			.setCaptionLabel("+")
-			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
-			;
-
-		displayButtons = false;
-	}
-}
-
-
-/*
-//__________________________________________________________________________________________________________________________
-void drawCam()
-{
-	println("---drawcam called");
-	frame = webcam;
-    pushMatrix();
-
-    //flip across x axis
-    scale(-1,1);
-    image(frame, -width, 0, width, height);
-    popMatrix();
-}
-*/
-
-
-//__________________________________________________________________________________________________________________________
-public void displayPhotos()
-{
-	for(int i = 0; i < numPhotos - currPhotoIndex; i++)
-	{
-		image(Photos[currPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
-	}
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void startButton()
-{
-	println("Start button pressed ");
-	mode = 1;
-	cp5.hide();
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void addPhoto()
-{
-	println("+photo button pressed");
-	mode = 2;
-	phase = 1;
-	cp5.hide();
-	displayButtons = true;
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void addPanel()
-{
-	println("+panel button pressed");
-	mode = 3;
-	phase = 1;
-	cp5.hide();
-	displayButtons = true;
-}
-
-
 
 //__________________________________________________________________________________________________________________________
 public void captureEvent(Capture video) 
@@ -293,10 +149,11 @@ public void keyPressed()
 			displayButtons = true;
 		}
 	}
-  
 }
 
+// Mode 2: Take a picture
 
+//__________________________________________________________________________________________________________________________
 public void drawCam()
 {
 	frame = webcam;
@@ -311,6 +168,7 @@ public void drawCam()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void mode2phase1Buttons()
 {
 	if(displayButtons)
@@ -343,6 +201,7 @@ public void mode2phase1Buttons()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void takePhoto()
 {
 	try
@@ -361,12 +220,147 @@ public void takePhoto()
 
 
 
+//__________________________________________________________________________________________________________________________
 public void backButton()
 {
 	mode = 1;
 	cp5.hide();  
 	displayButtons = true;
 }
+
+
+// Mode 0: Start Screen
+// Mode 1: Overview
+
+//__________________________________________________________________________________________________________________________
+public void drawStartScreen()
+{
+  PImage startLogo = loadImage("logo.png");
+
+  float x = (width - startLogo.width)/2;
+  float y = (height - startLogo.height)/2;
+  image(startLogo, x, y);  
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void drawOverview()
+{
+  background(0xff012E4B);
+  fill(0xffEAA3A3);
+  font = loadFont("ArialMT-40.vlw");
+
+  textFont(font);
+  text("OVERVIEW", 20, 40);
+
+  fill(0xff817575);
+  text("photos", 60, 100);
+  text("panels", 60, height/2);
+
+  displayAddButtons();
+
+  for(int i = 0; i < numPhotos; i++)
+    image(Photos[i], 80, 140 + i*70, 80, 60);
+
+  for(int i = 0; i < numPanels; i++)
+    image(Panels[i], 80, (height/2 + 40) + i*70, 80, 60);
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void displayStartButton()
+{
+  cp5 = new ControlP5(this);
+
+  cp5.setControlFont(buttonFont);
+
+  cp5.addButton("startButton")
+    .setPosition((width - 80)/2, 650)
+    .setCaptionLabel("Start")
+    .align(CENTER,CENTER,CENTER,CENTER)
+    .setSize(80, 40)
+    ;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void displayAddButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    println("  Add Buttons");
+
+    cp5.addButton("addPhoto")
+      .setPosition(200, 100 - 32)
+      .setCaptionLabel("+")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("addPanel")
+      .setPosition(200, height/2 - 32)
+      .setCaptionLabel("+")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+
+//__________________________________________________________________________________________________________________________
+public void displayPhotos()
+{
+  for(int i = 0; i < numPhotos - currPhotoIndex; i++)
+  {
+    image(Photos[currPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void startButton()
+{
+  println("Start button pressed ");
+  mode = 1;
+  cp5.hide();
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void addPhoto()
+{
+  println("+photo button pressed");
+  mode = 2;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void addPanel()
+{
+  println("+panel button pressed");
+  mode = 3;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ComicYourself" };
     if (passedArgs != null) {
