@@ -44,7 +44,7 @@ int numPanels = 0;
 int currPhotoIndex = 0;
 int mode = 0;
 int phase = 1;
-PImage frame;
+PImage frame, mode2Capture;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -88,6 +88,7 @@ public void draw()
 		{
 			// show live feed
 			drawCam();
+			mode2phase1Buttons();
 		}
 		else if(phase == 2)
 		{
@@ -204,20 +205,20 @@ public void displayAddButtons()
 }
 
 
-
+/*
 //__________________________________________________________________________________________________________________________
-public void drawCam()
+void drawCam()
 {
 	println("---drawcam called");
-	frame = webcam.get();
+	frame = webcam;
     pushMatrix();
 
     //flip across x axis
     scale(-1,1);
-    image(frame, -width, 0, width*(3/4), height*(3/4));
+    image(frame, -width, 0, width, height);
     popMatrix();
 }
-
+*/
 
 
 //__________________________________________________________________________________________________________________________
@@ -273,6 +274,99 @@ public void captureEvent(Capture video)
 
 
 
+//__________________________________________________________________________________________________________________________
+public void keyPressed()
+{
+	if (key == ' ')
+	{
+		if( mode == 2 && phase == 1)
+		{
+			try
+			{
+				mode2Capture = frame.get();      //takes the PImage frame and saves it to PImage mode2Capture
+			}
+			catch(NullPointerException e)
+			{
+				println("No picture taken! No webcam found!");
+			}
+			phase = 2;
+			displayButtons = true;
+		}
+	}
+  
+}
+
+
+public void drawCam()
+{
+	frame = webcam;
+
+	pushMatrix();
+
+	//flip across x axis
+	scale(-1,1);
+	image(frame, -700, 50, 640, 480);
+	popMatrix(); 
+}
+
+
+
+public void mode2phase1Buttons()
+{
+	if(displayButtons)
+	{
+		cp5 = new ControlP5(this);
+
+		cp5.setControlFont(buttonFont);
+
+		println("  Add Buttons");
+
+		cp5.addButton("takePhoto")
+			.setPosition(800, 200)
+			.setCaptionLabel("Cap")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
+			;
+
+		cp5.addButton("backButton")
+			.setPosition(800, 300)
+			.setCaptionLabel("<-")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
+			;
+
+		displayButtons = false;
+	}
+  
+
+}
+
+
+
+public void takePhoto()
+{
+	try
+	{
+		mode2Capture = frame.get();
+	}
+	catch(NullPointerException e)
+	{
+
+	}
+
+	phase = 2;
+	cp5.hide();
+	displayButtons = true;
+}
+
+
+
+public void backButton()
+{
+	mode = 1;
+	cp5.hide();  
+	displayButtons = true;
+}
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ComicYourself" };
     if (passedArgs != null) {
