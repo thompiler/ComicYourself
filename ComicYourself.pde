@@ -184,20 +184,6 @@ void displayAddButtons()
 }
 
 
-/*
-//__________________________________________________________________________________________________________________________
-void drawCam()
-{
-	println("---drawcam called");
-	frame = webcam;
-    pushMatrix();
-
-    //flip across x axis
-    scale(-1,1);
-    image(frame, -width, 0, width, height);
-    popMatrix();
-}
-*/
 
 
 //__________________________________________________________________________________________________________________________
@@ -272,7 +258,6 @@ void keyPressed()
 			displayButtons = true;
 		}
 	}
-  
 }
 
 
