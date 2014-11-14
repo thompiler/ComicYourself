@@ -41,9 +41,10 @@ PImage [] Photos;
 PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
-PImage frame;
+int currPhotoIndex = 0;
 int mode = 0;
 int phase = 1;
+PImage frame;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -103,7 +104,7 @@ public void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			//displayPhotos();
+			displayPhotos();
 		}
 		else if(phase == 2)
 		{
@@ -207,13 +208,25 @@ public void displayAddButtons()
 //__________________________________________________________________________________________________________________________
 public void drawCam()
 {
-	frame = webcam;
+	println("---drawcam called");
+	frame = webcam.get();
     pushMatrix();
 
     //flip across x axis
     scale(-1,1);
-    image(frame, -width, 0, width, height);
+    image(frame, -width, 0, width*(3/4), height*(3/4));
     popMatrix();
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void displayPhotos()
+{
+	for(int i = 0; i < numPhotos - currPhotoIndex; i++)
+	{
+		image(Photos[currPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
+	}
 }
 
 
@@ -235,6 +248,7 @@ public void addPhoto()
 	mode = 2;
 	phase = 1;
 	cp5.hide();
+	displayButtons = true;
 }
 
 
@@ -246,6 +260,7 @@ public void addPanel()
 	mode = 3;
 	phase = 1;
 	cp5.hide();
+	displayButtons = true;
 }
 
 
