@@ -15,7 +15,7 @@ import controlP5.*;
 
 //__________________________________________________________________________________________________________________________
 Capture webcam;
-PImage [] Photos;
+PImage [] Photos = new PImage[20];
 PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
@@ -39,6 +39,8 @@ void setup()
   webcam.start();
   
   displayStartButton();
+  
+  
 }
 
 
@@ -74,10 +76,8 @@ void draw()
     else if(phase == 2)
     {
       // show picture taken as freeze frame
-    }
-    else if(phase == 3)
-    {
-      // save pitcure to photo array
+      mode2phase2Image();
+      mode2phase2Buttons();
     }
   }
   else if(mode == 3)
