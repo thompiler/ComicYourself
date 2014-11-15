@@ -42,8 +42,6 @@ void mode2phase1Buttons()
 
 		displayButtons = false;
 	}
-  
-
 }
 
 

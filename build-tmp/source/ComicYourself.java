@@ -105,7 +105,7 @@ public void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			displayPhotos();
+			//mode3displayPhotos();
 		}
 		else if(phase == 2)
 		{
@@ -195,8 +195,6 @@ public void mode2phase1Buttons()
 
 		displayButtons = false;
 	}
-  
-
 }
 
 
@@ -260,11 +258,21 @@ public void drawOverview()
 
   displayAddButtons();
 
-  for(int i = 0; i < numPhotos; i++)
-    image(Photos[i], 80, 140 + i*70, 80, 60);
+  // display rectangles to show where photos are displayed
+  for(int i = 0; i < 5; i++)
+  {
+    noStroke();
+    fill(0xff558CAD);
+    rect(80 + i*90, 140, 80, 60);
+    rect(80 + i*90, (height/2 + 40), 80, 60);
+  }
 
-  for(int i = 0; i < numPanels; i++)
+  // display photos and panels created
+  for(int i = 0; i < numPhotos; i++)
+  {
+    image(Photos[i], 80, 140 + i*70, 80, 60);
     image(Panels[i], 80, (height/2 + 40) + i*70, 80, 60);
+  }
 }
 
 

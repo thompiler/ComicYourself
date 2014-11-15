@@ -29,11 +29,21 @@ void drawOverview()
 
   displayAddButtons();
 
-  for(int i = 0; i < numPhotos; i++)
-    image(Photos[i], 80, 140 + i*70, 80, 60);
+  // display rectangles to show where photos are displayed
+  for(int i = 0; i < 5; i++)
+  {
+    noStroke();
+    fill(#558CAD);
+    rect(80 + i*90, 140, 80, 60);
+    rect(80 + i*90, (height/2 + 40), 80, 60);
+  }
 
-  for(int i = 0; i < numPanels; i++)
-    image(Panels[i], 80, (height/2 + 40) + i*70, 80, 60);
+  // display photos and panels created
+  for(int i = 0; i < numPhotos; i++)
+  {
+    image(Photos[i], 80 + i*90, 140, 80, 60);
+    image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+  }
 }
 
 

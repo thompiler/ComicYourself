@@ -84,7 +84,7 @@ void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			displayPhotos();
+			//mode3displayPhotos();
 		}
 		else if(phase == 2)
 		{

@@ -10,3 +10,12 @@ Group members:
 
 Class:
 	CSC 690 - Interactive Multimedia Application Development
+
+
+Application layout
+	Mode #		Mode name
+	 0		Start screen
+	 1		Overview
+	 2		Add photo
+	 3		Add panel
+
