@@ -28,14 +28,14 @@ void mode2phase1Buttons()
 
 		cp5.addButton("takePhoto")
 			.setPosition(800, 200)
-			.setCaptionLabel("Cap")
+			.setCaptionLabel("C")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
 
 		cp5.addButton("backButton")
 			.setPosition(800, 300)
-			.setCaptionLabel("<-")
+			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;

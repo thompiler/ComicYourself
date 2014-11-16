@@ -21,6 +21,7 @@ PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
 int currPhotoIndex = 0;
+int photoIndex = 0;
 int mode = 0;
 int phase = 1;
 PImage frame, mode2Capture;
@@ -84,13 +85,14 @@ void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			//mode3displayPhotos();
+			mode3displayPhotos();
 		}
 		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
-			//displayPhoto(photoIndex);
+			displayPhoto(photoIndex);
+			mode3displayButtons();
 		}
 		else if(phase == 3)
 		{
@@ -127,6 +129,17 @@ void keyPressed()
 			phase = 2;
 			displayButtons = true;
 		}
+	}
+}
+
+
+void mousePressed()
+{
+	switch (mode) 
+	{
+		case 3: mode3mousePressed(); 
+				break;
+		
 	}
 }
 

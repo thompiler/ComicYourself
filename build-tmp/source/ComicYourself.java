@@ -42,6 +42,7 @@ PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
 int currPhotoIndex = 0;
+int photoIndex = 0;
 int mode = 0;
 int phase = 1;
 PImage frame, mode2Capture;
@@ -105,13 +106,14 @@ public void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			//mode3displayPhotos();
+			mode3displayPhotos();
 		}
 		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
-			//displayPhoto(photoIndex);
+			displayPhoto(photoIndex);
+			mode3displayButtons();
 		}
 		else if(phase == 3)
 		{
@@ -151,6 +153,17 @@ public void keyPressed()
 	}
 }
 
+
+public void mousePressed()
+{
+	switch (mode) 
+	{
+		case 3: mode3mousePressed(); 
+				break;
+		
+	}
+}
+
 // Mode 2: Take a picture
 
 //__________________________________________________________________________________________________________________________
@@ -181,14 +194,14 @@ public void mode2phase1Buttons()
 
 		cp5.addButton("takePhoto")
 			.setPosition(800, 200)
-			.setCaptionLabel("Cap")
+			.setCaptionLabel("C")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
 
 		cp5.addButton("backButton")
 			.setPosition(800, 300)
-			.setCaptionLabel("<-")
+			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
@@ -226,7 +239,106 @@ public void backButton()
 	displayButtons = true;
 }
 
+// Mode 3: Add a panel
+//		Phase 1: show horizontal list of photos to add
+//		Phase 2: show clicked photo large '<' button goes back and 'S' button adds clicked photo to panels array
 
+
+//__________________________________________________________________________________________________________________________
+public void mode3displayPhotos()
+{
+	background(0xff012E4B);
+	for(int i = 0; i < numPhotos; i++)
+		image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void displayPhoto(int index)
+{
+	image(Photos[index], 100, 100, 880, 660);
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode3back")
+      .setPosition(200, 100 - 32)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode3save")
+      .setPosition(200, height/2 - 32)
+      .setCaptionLabel("S")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3back()
+{
+  println("button: back to photo list");
+  mode = 3;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3save()
+{
+  println("button: save panel");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // Save copy of selected photo in panel array
+  PImage newPanel = Photos[photoIndex];
+  Panels[numPanels] = newPanel;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3mousePressed()
+{
+	if(phase == 1)
+	{
+		for(int i = 0; i < numPhotos; i++)
+		{
+			int x = Photos[i].width;
+			int y = Photos[i].height;
+			int photoX = 80 + i*110;
+			int photoY = height/2 + 40;
+
+			if(mouseX >= photoX 
+				&& mouseX <= photoX + x 
+				&& mouseY >= photoY 
+				&& mouseY <= photoY + y)
+				photoIndex = i;
+		}
+	}
+}
 // Mode 0: Start Screen
 // Mode 1: Overview
 
@@ -270,8 +382,8 @@ public void drawOverview()
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
   {
-    image(Photos[i], 80, 140 + i*70, 80, 60);
-    image(Panels[i], 80, (height/2 + 40) + i*70, 80, 60);
+    image(Photos[i], 80 + i*90, 140, 80, 60);
+    image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
   }
 }
 
