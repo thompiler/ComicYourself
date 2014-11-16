@@ -42,6 +42,8 @@ void setup()
 	webcam.start();
 
 	displayStartButton();
+	Photos = new PImage[20];
+	Panels = new PImage[20];
 }
 
 
@@ -73,6 +75,8 @@ void draw()
 		else if(phase == 2)
 		{
 			// show picture taken as freeze frame
+			displayPhoto(numPhotos - 1);
+			mode2phase2Buttons();
 		}
 		else if(phase == 3)
 		{

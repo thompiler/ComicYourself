@@ -8,7 +8,7 @@ void mode3displayPhotos()
 {
 	background(#012E4B);
 	for(int i = 0; i < numPhotos; i++)
-		image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
+		image(Photos[i], 80 + i*110, height/2, 100, 75);
 }
 
 
@@ -16,7 +16,7 @@ void mode3displayPhotos()
 //__________________________________________________________________________________________________________________________
 void displayPhoto(int index)
 {
-	image(Photos[index], 100, 100, 880, 660);
+	image(Photos[index], 100, 75, 800, 600);
 }
 
 
@@ -31,14 +31,14 @@ void mode3displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3back")
-      .setPosition(200, 100 - 32)
+      .setPosition(width/2 - 50, 680)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
     cp5.addButton("mode3save")
-      .setPosition(200, height/2 - 32)
+      .setPosition(width/2 + 10, 680)
       .setCaptionLabel("S")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -74,6 +74,7 @@ public void mode3save()
   // Save copy of selected photo in panel array
   PImage newPanel = Photos[photoIndex];
   Panels[numPanels] = newPanel;
+  numPanels++;
 }
 
 
@@ -81,20 +82,22 @@ public void mode3save()
 //__________________________________________________________________________________________________________________________
 void mode3mousePressed()
 {
+	//image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
 	if(phase == 1)
 	{
 		for(int i = 0; i < numPhotos; i++)
 		{
-			int x = Photos[i].width;
-			int y = Photos[i].height;
 			int photoX = 80 + i*110;
-			int photoY = height/2 + 40;
+			int photoY = height/2;
 
 			if(mouseX >= photoX 
-				&& mouseX <= photoX + x 
+				&& mouseX <= photoX + 100 
 				&& mouseY >= photoY 
-				&& mouseY <= photoY + y)
+				&& mouseY <= photoY + 75)
+			{
 				photoIndex = i;
+				phase = 2;
+			}
 		}
 	}
 }

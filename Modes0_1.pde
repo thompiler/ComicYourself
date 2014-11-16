@@ -40,10 +40,10 @@ void drawOverview()
 
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
-  {
     image(Photos[i], 80 + i*90, 140, 80, 60);
+  for(int i = 0; i < numPanels; i++)  
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
-  }
+
 }
 
 

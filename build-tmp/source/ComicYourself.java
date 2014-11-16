@@ -63,6 +63,8 @@ public void setup()
 	webcam.start();
 
 	displayStartButton();
+	Photos = new PImage[20];
+	Panels = new PImage[20];
 }
 
 
@@ -94,6 +96,8 @@ public void draw()
 		else if(phase == 2)
 		{
 			// show picture taken as freeze frame
+			displayPhoto(numPhotos - 1);
+			mode2phase2Buttons();
 		}
 		else if(phase == 3)
 		{
@@ -190,8 +194,6 @@ public void mode2phase1Buttons()
 
 		cp5.setControlFont(buttonFont);
 
-		println("  Add Buttons");
-
 		cp5.addButton("takePhoto")
 			.setPosition(800, 200)
 			.setCaptionLabel("C")
@@ -201,6 +203,34 @@ public void mode2phase1Buttons()
 
 		cp5.addButton("backButton")
 			.setPosition(800, 300)
+			.setCaptionLabel("<")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
+			;
+
+		displayButtons = false;
+	}
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase2Buttons()
+{
+	if(displayButtons)
+	{
+		cp5 = new ControlP5(this);
+
+		cp5.setControlFont(buttonFont);
+
+		cp5.addButton("mode2phase2save")
+			.setPosition(width/2 + 10, 675)
+			.setCaptionLabel("S")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
+			;
+
+		cp5.addButton("mode2phase2back")
+			.setPosition(width/2 - 50, 675)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
@@ -221,12 +251,14 @@ public void takePhoto()
 	}
 	catch(NullPointerException e)
 	{
-
+		println("Could not capture frame! Null pointer!");
 	}
 
 	phase = 2;
 	cp5.hide();
 	displayButtons = true;
+	Photos[numPhotos] = mode2Capture;
+	numPhotos++;
 }
 
 
@@ -239,6 +271,28 @@ public void backButton()
 	displayButtons = true;
 }
 
+
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase2save()
+{
+	phase = 1;
+	mode = 1;
+	cp5.hide();
+	displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase2back()
+{
+	phase = 1;
+	cp5.hide();  
+	displayButtons = true;
+	numPhotos--;
+}
 // Mode 3: Add a panel
 //		Phase 1: show horizontal list of photos to add
 //		Phase 2: show clicked photo large '<' button goes back and 'S' button adds clicked photo to panels array
@@ -249,7 +303,7 @@ public void mode3displayPhotos()
 {
 	background(0xff012E4B);
 	for(int i = 0; i < numPhotos; i++)
-		image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
+		image(Photos[i], 80 + i*110, height/2, 100, 75);
 }
 
 
@@ -257,7 +311,7 @@ public void mode3displayPhotos()
 //__________________________________________________________________________________________________________________________
 public void displayPhoto(int index)
 {
-	image(Photos[index], 100, 100, 880, 660);
+	image(Photos[index], 100, 75, 800, 600);
 }
 
 
@@ -272,14 +326,14 @@ public void mode3displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3back")
-      .setPosition(200, 100 - 32)
+      .setPosition(width/2 - 50, 680)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
     cp5.addButton("mode3save")
-      .setPosition(200, height/2 - 32)
+      .setPosition(width/2 + 10, 680)
       .setCaptionLabel("S")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -315,6 +369,7 @@ public void mode3save()
   // Save copy of selected photo in panel array
   PImage newPanel = Photos[photoIndex];
   Panels[numPanels] = newPanel;
+  numPanels++;
 }
 
 
@@ -322,20 +377,22 @@ public void mode3save()
 //__________________________________________________________________________________________________________________________
 public void mode3mousePressed()
 {
+	//image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
 	if(phase == 1)
 	{
 		for(int i = 0; i < numPhotos; i++)
 		{
-			int x = Photos[i].width;
-			int y = Photos[i].height;
 			int photoX = 80 + i*110;
-			int photoY = height/2 + 40;
+			int photoY = height/2;
 
 			if(mouseX >= photoX 
-				&& mouseX <= photoX + x 
+				&& mouseX <= photoX + 100 
 				&& mouseY >= photoY 
-				&& mouseY <= photoY + y)
+				&& mouseY <= photoY + 75)
+			{
 				photoIndex = i;
+				phase = 2;
+			}
 		}
 	}
 }
@@ -381,10 +438,10 @@ public void drawOverview()
 
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
-  {
     image(Photos[i], 80 + i*90, 140, 80, 60);
+  for(int i = 0; i < numPanels; i++)  
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
-  }
+
 }
 
 
