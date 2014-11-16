@@ -99,10 +99,6 @@ public void draw()
 			displayPhoto(numPhotos - 1);
 			mode2phase2Buttons();
 		}
-		else if(phase == 3)
-		{
-			// save pitcure to photo array
-		}
 	}
 	else if(mode == 3)
 	{
@@ -118,10 +114,6 @@ public void draw()
 			// display save or discard buttons
 			displayPhoto(photoIndex);
 			mode3displayButtons();
-		}
-		else if(phase == 3)
-		{
-			// save photo in panel array
 		}
 	}
 }
@@ -158,13 +150,15 @@ public void keyPressed()
 }
 
 
+
+//__________________________________________________________________________________________________________________________
 public void mousePressed()
 {
 	switch (mode) 
 	{
 		case 3: mode3mousePressed(); 
 				break;
-		
+		default: break;
 	}
 }
 
@@ -223,14 +217,14 @@ public void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition(width/2 + 10, 675)
+			.setPosition(width/2 + 10, 677)
 			.setCaptionLabel("S")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
 
 		cp5.addButton("mode2phase2back")
-			.setPosition(width/2 - 50, 675)
+			.setPosition(width/2 - 50, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
@@ -326,14 +320,14 @@ public void mode3displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3back")
-      .setPosition(width/2 - 50, 680)
+      .setPosition(width/2 - 50, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
     cp5.addButton("mode3save")
-      .setPosition(width/2 + 10, 680)
+      .setPosition(width/2 + 10, 677)
       .setCaptionLabel("S")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -377,7 +371,6 @@ public void mode3save()
 //__________________________________________________________________________________________________________________________
 public void mode3mousePressed()
 {
-	//image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
 	if(phase == 1)
 	{
 		for(int i = 0; i < numPhotos; i++)

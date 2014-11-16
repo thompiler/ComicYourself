@@ -78,10 +78,6 @@ void draw()
 			displayPhoto(numPhotos - 1);
 			mode2phase2Buttons();
 		}
-		else if(phase == 3)
-		{
-			// save pitcure to photo array
-		}
 	}
 	else if(mode == 3)
 	{
@@ -97,10 +93,6 @@ void draw()
 			// display save or discard buttons
 			displayPhoto(photoIndex);
 			mode3displayButtons();
-		}
-		else if(phase == 3)
-		{
-			// save photo in panel array
 		}
 	}
 }
@@ -137,13 +129,15 @@ void keyPressed()
 }
 
 
+
+//__________________________________________________________________________________________________________________________
 void mousePressed()
 {
 	switch (mode) 
 	{
 		case 3: mode3mousePressed(); 
 				break;
-		
+		default: break;
 	}
 }
 

@@ -31,14 +31,14 @@ void mode3displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3back")
-      .setPosition(width/2 - 50, 680)
+      .setPosition(width/2 - 50, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
     cp5.addButton("mode3save")
-      .setPosition(width/2 + 10, 680)
+      .setPosition(width/2 + 10, 677)
       .setCaptionLabel("S")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -82,7 +82,6 @@ public void mode3save()
 //__________________________________________________________________________________________________________________________
 void mode3mousePressed()
 {
-	//image(Photos[i], 80 + i*110, (height/2 + 40), 100, 75);
 	if(phase == 1)
 	{
 		for(int i = 0; i < numPhotos; i++)

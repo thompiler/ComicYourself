@@ -53,14 +53,14 @@ void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition(width/2 + 10, 675)
+			.setPosition(width/2 + 10, 677)
 			.setCaptionLabel("S")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
 
 		cp5.addButton("mode2phase2back")
-			.setPosition(width/2 - 50, 675)
+			.setPosition(width/2 - 50, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
