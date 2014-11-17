@@ -43,6 +43,7 @@ void mode2phase1Buttons()
 }
 
 
+
 //__________________________________________________________________________________________________________________________
 void mode2phase2Buttons()
 {
@@ -87,8 +88,26 @@ public void takePhoto()
 	phase = 2;
 	cp5.hide();
 	displayButtons = true;
+	mirror(mode2Capture);
 	Photos[numPhotos] = mode2Capture;
 	numPhotos++;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mirror(PImage capImg) {
+  capImg.loadPixels();
+  for (int y=0; y<capImg.height; y++) {
+    for (int x=0; x<capImg.width/2; x++) {
+      int loc = x + y * capImg.width;
+      int mirroredLoc = capImg.width-1 - x + y * capImg.width;
+      int temp = capImg.pixels[loc];
+      capImg.pixels[loc] = capImg.pixels[mirroredLoc];
+      capImg.pixels[mirroredLoc] = temp;
+    }
+  }
+  capImg.updatePixels();
 }
 
 

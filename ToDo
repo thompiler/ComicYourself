@@ -1,8 +1,13 @@
 To Do
 
+// - is must do
+// + is suggestion
+// * is possible feature
+
 Overview(Mode 1)
 	- Add arrow buttons to scroll through taken photos.
 	- Add 'save project' button that will save the state of the project.
 	- Add 'export strip' button that will export the comic strip as a single image file.
+	+ Make panel overview thumbnails larger
 
 - Discuss main draw function structure with Jason. Might move phase selection inside specific mode functions.

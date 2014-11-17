@@ -90,6 +90,13 @@ void displayAddButtons()
       .setSize(40, 40)
       ;
 
+    cp5.addButton("mode1export")
+      .setPosition(width - 200, 100)
+      .setCaptionLabel("Export")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(100, 40)
+      ;
+
     displayButtons = false;
   }
 }
@@ -126,6 +133,46 @@ public void addPhoto()
   phase = 1;
   cp5.hide();
   displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode1export()
+{
+  println("Export button pressed ");
+
+  if(numPanels > 0)
+  {
+    // export panels as one combined pimage
+    // 1. create white pimage with dimensions to fit all panels
+
+    int border = 15;
+    PImage comicStrip = createImage(border + (border + 640)*numPanels, 480 + 2 * border, RGB);
+    comicStrip.loadPixels();
+
+    for (int i = 0; i < (border + (border + 640)*numPanels); i++)
+      for (int j = 0; j < 480 + 2 * border; j++)
+        comicStrip.pixels[j*(border + (border + 640)*numPanels) + i] = color(255, 255, 255);
+
+    // 2. loop through panels and write them to output pimage
+    for(int i = 0; i < numPanels; i++)
+    {
+      int cX = border + (640 + border) * i;
+      int cY = border;
+      Panels[i].loadPixels();
+      for(int x = 0; x < 640; x++)
+      {
+        for(int y = 0; y < 480; y++)
+        {
+          comicStrip.pixels[y*comicStrip.width + cY*comicStrip.width + cX + x] = Panels[i].pixels[y*640 + x];
+        }
+      }
+    }
+    comicStrip.updatePixels();
+    println("Comic Strip Exported to File");
+    comicStrip.save("comicStrip.png");
+  }
 }
 
 
