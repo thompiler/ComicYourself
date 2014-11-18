@@ -11,6 +11,8 @@ import processing.video.*;
 import java.awt.*;
 import controlP5.*;
 import gab.opencv.*;
+import ddf.minim.* ;
+
 
 
 
@@ -29,6 +31,9 @@ PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
 PFont buttonFont;
+Minim minim;
+AudioPlayer Snap, Click;
+
 
 
 
@@ -44,6 +49,11 @@ void setup()
 	displayStartButton();
 	Photos = new PImage[20];
 	Panels = new PImage[20];
+
+	// sound
+	minim = new Minim(this);
+	Snap = minim.loadFile("snap.wav");
+	Click = minim.loadFile("click.wav");
 }
 
 
@@ -114,16 +124,7 @@ void keyPressed()
 	{
 		if( mode == 2 && phase == 1)
 		{
-			try
-			{
-				mode2Capture = frame.get();      //takes the PImage frame and saves it to PImage mode2Capture
-			}
-			catch(NullPointerException e)
-			{
-				println("No picture taken! No webcam found!");
-			}
-			phase = 2;
-			displayButtons = true;
+			takePhoto();
 		}
 	}
 }

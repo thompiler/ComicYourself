@@ -7,6 +7,7 @@ import processing.video.*;
 import java.awt.*; 
 import controlP5.*; 
 import gab.opencv.*; 
+import ddf.minim.*; 
 
 import java.util.HashMap; 
 import java.util.ArrayList; 
@@ -35,6 +36,8 @@ public class ComicYourself extends PApplet {
 
 
 
+
+
 //__________________________________________________________________________________________________________________________
 Capture webcam;
 PImage [] Photos;
@@ -50,6 +53,9 @@ PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
 PFont buttonFont;
+Minim minim;
+AudioPlayer Snap, Click;
+
 
 
 
@@ -65,6 +71,11 @@ public void setup()
 	displayStartButton();
 	Photos = new PImage[20];
 	Panels = new PImage[20];
+
+	// sound
+	minim = new Minim(this);
+	Snap = minim.loadFile("snap.wav");
+	Click = minim.loadFile("click.wav");
 }
 
 
@@ -135,16 +146,7 @@ public void keyPressed()
 	{
 		if( mode == 2 && phase == 1)
 		{
-			try
-			{
-				mode2Capture = frame.get();      //takes the PImage frame and saves it to PImage mode2Capture
-			}
-			catch(NullPointerException e)
-			{
-				println("No picture taken! No webcam found!");
-			}
-			phase = 2;
-			displayButtons = true;
+			takePhoto();
 		}
 	}
 }
@@ -173,7 +175,7 @@ public void drawCam()
 
 	//flip across x axis
 	scale(-1,1);
-	image(frame, -700, 50, 640, 480);
+	image(frame, -(width - 800)/2 -800, 70, 800, 600);
 	popMatrix(); 
 }
 
@@ -189,14 +191,14 @@ public void mode2phase1Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("takePhoto")
-			.setPosition(800, 200)
+			.setPosition(width/2 + 10, 677)
 			.setCaptionLabel("C")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
 
 		cp5.addButton("backButton")
-			.setPosition(800, 300)
+			.setPosition(width/2 - 50, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
@@ -240,6 +242,7 @@ public void mode2phase2Buttons()
 //__________________________________________________________________________________________________________________________
 public void takePhoto()
 {
+	Snap.play();
 	try
 	{
 		mode2Capture = frame.get();
@@ -324,7 +327,7 @@ public void mode3displayPhotos()
 //__________________________________________________________________________________________________________________________
 public void displayPhoto(int index)
 {
-	image(Photos[index], 100, 75, 800, 600);
+	image(Photos[index], (width - 800)/2, 70, 800, 600);
 }
 
 
@@ -451,8 +454,20 @@ public void drawOverview()
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
     image(Photos[i], 80 + i*90, 140, 80, 60);
-  for(int i = 0; i < numPanels; i++)  
+  for(int i = 0; i < numPanels; i++) 
+  {
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+
+    // show "X" on panel when mouse over
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= height/2 + 40
+      && mouseY <= height/2 + 40 + 60)
+    {
+      text("X", 80 + i*90, (height/2 + 40 + 35));
+    }
+  }
+
 
 }
 
@@ -501,7 +516,7 @@ public void displayAddButtons()
       ;
 
     cp5.addButton("mode1export")
-      .setPosition(width - 200, 100)
+      .setPosition(250, 7)
       .setCaptionLabel("Export")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)

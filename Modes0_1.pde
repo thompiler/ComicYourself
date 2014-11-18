@@ -41,8 +41,20 @@ void drawOverview()
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
     image(Photos[i], 80 + i*90, 140, 80, 60);
-  for(int i = 0; i < numPanels; i++)  
+  for(int i = 0; i < numPanels; i++) 
+  {
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+
+    // show "X" on panel when mouse over
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= height/2 + 40
+      && mouseY <= height/2 + 40 + 60)
+    {
+      text("X", 80 + i*90, (height/2 + 40 + 35));
+    }
+  }
+
 
 }
 
@@ -91,7 +103,7 @@ void displayAddButtons()
       ;
 
     cp5.addButton("mode1export")
-      .setPosition(width - 200, 100)
+      .setPosition(250, 7)
       .setCaptionLabel("Export")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)

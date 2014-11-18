@@ -9,7 +9,7 @@ void drawCam()
 
 	//flip across x axis
 	scale(-1,1);
-	image(frame, -700, 50, 640, 480);
+	image(frame, -(width - 800)/2 -800, 70, 800, 600);
 	popMatrix(); 
 }
 
@@ -25,14 +25,14 @@ void mode2phase1Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("takePhoto")
-			.setPosition(800, 200)
+			.setPosition(width/2 + 10, 677)
 			.setCaptionLabel("C")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
 
 		cp5.addButton("backButton")
-			.setPosition(800, 300)
+			.setPosition(width/2 - 50, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
@@ -76,6 +76,7 @@ void mode2phase2Buttons()
 //__________________________________________________________________________________________________________________________
 public void takePhoto()
 {
+	Snap.play();
 	try
 	{
 		mode2Capture = frame.get();
