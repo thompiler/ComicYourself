@@ -10,7 +10,6 @@
 import processing.video.*;
 import java.awt.*;
 import controlP5.*;
-import gab.opencv.*;
 import ddf.minim.* ;
 
 
