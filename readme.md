@@ -1,8 +1,8 @@
 #Comic Yourself
-for fun personalized comic creation
+An application for fun personalized comic creation
 
 ##Description:
-Comic Yourself is a personal comic strip creation application.  It uses the user's webcam to take photos which the user can edit, draw on, and add speech bubbles to in order to create their own comic strip.  This application is the final project for CSC 690 at San Francisco State University and was created in Processing.  For more about Processing please visit their [homepage].
+Comic Yourself is a personal comic strip creation application.  It uses the user's webcam to take photos which the user can edit, draw on, and add speech bubbles to in order to create their own comic strip.  This application is the final project for CSC 690 at San Francisco State University and was created in Processing.  For more about Processing, please visit their [homepage].
 
 *Expected completion before January 2015*
 
