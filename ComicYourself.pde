@@ -49,10 +49,12 @@ void setup()
 	Photos = new PImage[20];
 	Panels = new PImage[20];
 
-	// sound
 	minim = new Minim(this);
 	Snap = minim.loadFile("snap.wav");
 	Click = minim.loadFile("click.wav");
+	// sound used is from freesound.org
+  	// https://www.freesound.org/people/stijn/sounds/43680/
+  	// https://www.freesound.org/people/Snapper4298/sounds/178186/
 }
 
 
