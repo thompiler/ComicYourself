@@ -11,3 +11,8 @@ Overview(Mode 1)
 	+ Make panel overview thumbnails larger
 
 - Discuss main draw function structure with Jason. Might move phase selection inside specific mode functions.
+
+
+Milestone 2:
+	- Simple photo editing with selection and drawing modes
+	- Replace background mode
