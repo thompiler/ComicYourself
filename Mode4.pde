@@ -3,6 +3,8 @@
 //	Phase 1 = simple drawing mode (ie: ms paint)
 //	Phase 2 = selection and removal
 
+// variable used:
+
 
 //__________________________________________________________________________________________________________________________
 void mode4phase1displayButtons()
@@ -24,7 +26,7 @@ void mode4phase1displayButtons()
       .setPosition(width/2 + 10, 677)
       .setCaptionLabel("Draw")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 80)
+      .setSize(80, 40)
       ;
 
     displayButtons = false;
@@ -48,12 +50,36 @@ public void mode4phase1back()
 //__________________________________________________________________________________________________________________________
 public void mode4phase1draw()
 {
-  println("button: save panel");
-  mode = 3;
+  println("button: edit photo");
   phase = 2;
   cp5.hide();
   displayButtons = true;
+  displayPhoto = true;
+  background(255);
 }
+
+
+
+//__________________________________________________________________________________________________________________________
+void mode4phase2draw()
+{
+	mode4phase2displayButtons();
+
+	if(displayPhoto)
+	{
+		displayPhoto(photoIndex);
+		displayPhoto = false;
+	}
+
+	//noStroke();
+	fill(paint);
+	stroke(paint);
+	strokeWeight(strokeWt);
+
+	if(flag == 1)
+		line(mouseX, mouseY, pmouseX, pmouseY);
+}
+
 
 
 
@@ -73,11 +99,11 @@ void mode4phase2displayButtons()
       .setSize(40, 40)
       ;
 
-    cp5.addButton("mode4draw")
+    cp5.addButton("mode4phase2save")
       .setPosition(width/2 + 10, 677)
-      .setCaptionLabel("Draw")
+      .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 80)
+      .setSize(80, 40)
       ;
 
     displayButtons = false;
@@ -90,10 +116,48 @@ void mode4phase2displayButtons()
 public void mode4phase2back()
 {
   println("button: back to photo list");
-  mode = 1;
+  mode = 4;
   phase = 1;
   cp5.hide();
   displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase2save()
+{
+	println("button: save to photo list");
+	mode = 1;
+	phase = 1;
+	cp5.hide();
+	displayButtons = true;
+
+	// save edited photo to photo list
+  	editPhoto = createImage(640, 480, RGB);
+	editPhoto.copy((width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+	Photos[numPhotos] = editPhoto;
+	numPhotos++;
+
+  	//image(Photos[index], (width - 800)/2, 70, 800, 600);
+
+  	//int pictureX = 0;
+  	//int pictureY = 0;
+
+  	/*
+  	int displayX = (width - 800)/2;
+  	int displayY = 70;
+  	editPhoto = createImage(800, 600);
+  	editPhoto.loadPixels();
+
+  	for(int picX = 0; picX < 800; picX++)
+  	{
+  		for(int picY = 0; picY < 600; picY++)
+  		{
+  			editPhoto.pixels[pictureY*640 + pictureX] = pixels[(displayY + picY)*1080 + (displayX + picX)];
+  		}
+  	}
+  	editPhoto.updatePixels();
+	*/
 }
 
 

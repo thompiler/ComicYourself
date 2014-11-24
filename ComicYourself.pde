@@ -38,6 +38,7 @@ color paint = color(0);
 int strokeWt = 1;
 int flag = 0;
 PImage editPhoto;
+boolean displayPhoto = true;
 
 
 
@@ -46,6 +47,8 @@ PImage editPhoto;
 void setup()
 {
 	size(1080, 720);
+	background(255);
+
 	buttonFont = loadFont("CordiaNew-Bold-30.vlw");
   	textFont(buttonFont);
 	webcam = new Capture(this, 640, 480);
@@ -68,20 +71,22 @@ void setup()
 //__________________________________________________________________________________________________________________________
 void draw()
 {
-	background(255);	
-
 	if(mode == 0)
 	{
 		// START SCREEN mode
+		background(255);
 		drawStartScreen();
 	}
 	else if(mode == 1)
 	{
 		// OVERVIEW mode
+		background(255);	
+
 		drawOverview();
 	}
 	else if(mode == 2)
 	{
+		background(255);
 		// TAKE A PHOTO mode
 		if(phase == 1)
 		{
@@ -98,10 +103,12 @@ void draw()
 	}
 	else if(mode == 3)
 	{
-		// MAKE A PANEL mode
+		// MAKE A PANEL mode]
+		background(255);
 		if(phase == 1)
 		{
 			// show list of taken photos
+
 			mode3displayPhotos();
 		}
 		else if(phase == 2)
@@ -117,6 +124,7 @@ void draw()
 		if(phase == 1)
 		{
 			// edit photo hub
+			background(255);
 			displayPhoto(photoIndex);
 			mode4phase1displayButtons();
 		}
@@ -170,6 +178,30 @@ void mousePressed()
 		case 3: mode3mousePressed(); 
 				break;
 		default: break;
+	}
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mouseDragged()
+{
+	if(mode == 4 && phase == 2)
+	{
+		println("mouseDragged");
+ 		flag = 1;
+ 	}
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mouseReleased()
+{
+	if(mode == 4 && phase == 2)
+	{
+		flag = 0;
+		println("mouse released");
 	}
 }
 

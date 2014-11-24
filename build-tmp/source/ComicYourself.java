@@ -54,6 +54,13 @@ PFont buttonFont;
 Minim minim;
 AudioPlayer Snap, Click;
 
+//mode 4 variables:
+int paint = color(0);
+int strokeWt = 1;
+int flag = 0;
+PImage editPhoto;
+boolean displayPhoto = true;
+
 
 
 
@@ -61,6 +68,8 @@ AudioPlayer Snap, Click;
 public void setup()
 {
 	size(1080, 720);
+	background(255);
+
 	buttonFont = loadFont("CordiaNew-Bold-30.vlw");
   	textFont(buttonFont);
 	webcam = new Capture(this, 640, 480);
@@ -83,20 +92,22 @@ public void setup()
 //__________________________________________________________________________________________________________________________
 public void draw()
 {
-	background(255);	
-
 	if(mode == 0)
 	{
 		// START SCREEN mode
+		background(255);
 		drawStartScreen();
 	}
 	else if(mode == 1)
 	{
 		// OVERVIEW mode
+		background(255);	
+
 		drawOverview();
 	}
 	else if(mode == 2)
 	{
+		background(255);
 		// TAKE A PHOTO mode
 		if(phase == 1)
 		{
@@ -113,10 +124,12 @@ public void draw()
 	}
 	else if(mode == 3)
 	{
-		// MAKE A PANEL mode
+		// MAKE A PANEL mode]
+		background(255);
 		if(phase == 1)
 		{
 			// show list of taken photos
+
 			mode3displayPhotos();
 		}
 		else if(phase == 2)
@@ -131,15 +144,23 @@ public void draw()
 	{
 		if(phase == 1)
 		{
-
+			// edit photo hub
+			background(255);
+			displayPhoto(photoIndex);
+			mode4phase1displayButtons();
 		}
 		else if(phase == 2)
 		{
-
+			// simple drawing mode
+			mode4phase2draw();
 		}
 		else if(phase == 3)
 		{
-			
+
+		}
+		else if(phase == 4)
+		{
+			// save edits
 		}
 	}
 }
@@ -173,9 +194,35 @@ public void mousePressed()
 {
 	switch (mode) 
 	{
+		case 1: mode1mousePressed();
+				break;
 		case 3: mode3mousePressed(); 
 				break;
 		default: break;
+	}
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mouseDragged()
+{
+	if(mode == 4 && phase == 2)
+	{
+		println("mouseDragged");
+ 		flag = 1;
+ 	}
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mouseReleased()
+{
+	if(mode == 4 && phase == 2)
+	{
+		flag = 0;
+		println("mouse released");
 	}
 }
 
@@ -431,6 +478,164 @@ public void mode3mousePressed()
 //	Phase 1 = simple drawing mode (ie: ms paint)
 //	Phase 2 = selection and removal
 
+// variable used:
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode4phase1back")
+      .setPosition(width/2 - 50, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode4phase1draw")
+      .setPosition(width/2 + 10, 677)
+      .setCaptionLabel("Draw")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1back()
+{
+  println("button: back to photo list");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1draw()
+{
+  println("button: edit photo");
+  phase = 2;
+  cp5.hide();
+  displayButtons = true;
+  displayPhoto = true;
+  background(255);
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase2draw()
+{
+	mode4phase2displayButtons();
+
+	if(displayPhoto)
+	{
+		displayPhoto(photoIndex);
+		displayPhoto = false;
+	}
+
+	//noStroke();
+	fill(paint);
+	stroke(paint);
+	strokeWeight(strokeWt);
+
+	if(flag == 1)
+		line(mouseX, mouseY, pmouseX, pmouseY);
+}
+
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase2displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode4phase2back")
+      .setPosition(width/2 - 50, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode4phase2save")
+      .setPosition(width/2 + 10, 677)
+      .setCaptionLabel("Save")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase2back()
+{
+  println("button: back to photo list");
+  mode = 4;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase2save()
+{
+	println("button: save to photo list");
+	mode = 1;
+	phase = 1;
+	cp5.hide();
+	displayButtons = true;
+
+	// save edited photo to photo list
+  	editPhoto = createImage(640, 480, RGB);
+	editPhoto.copy((width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+	Photos[numPhotos] = editPhoto;
+	numPhotos++;
+
+  	//image(Photos[index], (width - 800)/2, 70, 800, 600);
+
+  	//int pictureX = 0;
+  	//int pictureY = 0;
+
+  	/*
+  	int displayX = (width - 800)/2;
+  	int displayY = 70;
+  	editPhoto = createImage(800, 600);
+  	editPhoto.loadPixels();
+
+  	for(int picX = 0; picX < 800; picX++)
+  	{
+  		for(int picY = 0; picY < 600; picY++)
+  		{
+  			editPhoto.pixels[pictureY*640 + pictureX] = pixels[(displayY + picY)*1080 + (displayX + picX)];
+  		}
+  	}
+  	editPhoto.updatePixels();
+	*/
+}
+
+
 
 // Mode 0: Start Screen
 // Mode 1: Overview
@@ -496,8 +701,6 @@ public void drawOverview()
       && mouseY <= height/2 + 40 + 60)
       text("X", 80 + i*90, (height/2 + 40 + 35));
   }
-
-
 }
 
 
@@ -639,6 +842,30 @@ public void addPanel()
   phase = 1;
   cp5.hide();
   displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode1mousePressed()
+{
+    for(int i = 0; i < numPhotos; i++)
+    {
+      int photoX = 80 + i*110;
+      int photoY = 140;
+
+      if(mouseX >= 80 + i*90
+        && mouseX <= 80 + i*90 + 80
+        && mouseY >= 140
+        && mouseY <= 140 + 60)
+      {
+        mode = 4;
+        photoIndex = i;
+        phase = 1;
+        cp5.hide();
+        displayButtons = true;
+      }
+    }
 }
 
   static public void main(String[] passedArgs) {

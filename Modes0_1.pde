@@ -221,9 +221,10 @@ void mode1mousePressed()
         && mouseY <= 140 + 60)
       {
         mode = 4;
-        photoIndex = 2;
+        photoIndex = i;
         phase = 1;
-        displayButtons = TRUE;
+        cp5.hide();
+        displayButtons = true;
       }
     }
 }
