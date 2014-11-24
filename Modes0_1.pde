@@ -40,7 +40,17 @@ void drawOverview()
 
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
+  {
     image(Photos[i], 80 + i*90, 140, 80, 60);
+
+    fill(#CE235F);
+
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= 140
+      && mouseY <= 140 + 60)
+      text("Edit", 80 + i*90, 140 + 35);
+  }
   for(int i = 0; i < numPanels; i++) 
   {
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
@@ -50,12 +60,8 @@ void drawOverview()
       && mouseX <= 80 + i*90 + 80
       && mouseY >= height/2 + 40
       && mouseY <= height/2 + 40 + 60)
-    {
       text("X", 80 + i*90, (height/2 + 40 + 35));
-    }
   }
-
-
 }
 
 
@@ -197,5 +203,28 @@ public void addPanel()
   phase = 1;
   cp5.hide();
   displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mode1mousePressed()
+{
+    for(int i = 0; i < numPhotos; i++)
+    {
+      int photoX = 80 + i*110;
+      int photoY = 140;
+
+      if(mouseX >= 80 + i*90
+        && mouseX <= 80 + i*90 + 80
+        && mouseY >= 140
+        && mouseY <= 140 + 60)
+      {
+        mode = 4;
+        photoIndex = 2;
+        phase = 1;
+        displayButtons = TRUE;
+      }
+    }
 }
 

@@ -33,6 +33,12 @@ PFont buttonFont;
 Minim minim;
 AudioPlayer Snap, Click;
 
+//mode 4 variables:
+color paint = color(0);
+int strokeWt = 1;
+int flag = 0;
+PImage editPhoto;
+
 
 
 
@@ -106,6 +112,28 @@ void draw()
 			mode3displayButtons();
 		}
 	}
+	else if(mode == 4)
+	{
+		if(phase == 1)
+		{
+			// edit photo hub
+			displayPhoto(photoIndex);
+			mode4phase1displayButtons();
+		}
+		else if(phase == 2)
+		{
+			// simple drawing mode
+			mode4phase2draw();
+		}
+		else if(phase == 3)
+		{
+
+		}
+		else if(phase == 4)
+		{
+			// save edits
+		}
+	}
 }
 
 
@@ -137,6 +165,8 @@ void mousePressed()
 {
 	switch (mode) 
 	{
+		case 1: mode1mousePressed();
+				break;
 		case 3: mode3mousePressed(); 
 				break;
 		default: break;

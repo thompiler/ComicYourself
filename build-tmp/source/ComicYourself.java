@@ -6,7 +6,6 @@ import processing.opengl.*;
 import processing.video.*; 
 import java.awt.*; 
 import controlP5.*; 
-import gab.opencv.*; 
 import ddf.minim.*; 
 
 import java.util.HashMap; 
@@ -29,7 +28,6 @@ public class ComicYourself extends PApplet {
 
 
 //__________________________________________________________________________________________________________________________
-
 
 
 
@@ -72,10 +70,12 @@ public void setup()
 	Photos = new PImage[20];
 	Panels = new PImage[20];
 
-	// sound
 	minim = new Minim(this);
 	Snap = minim.loadFile("snap.wav");
 	Click = minim.loadFile("click.wav");
+	// sound used is from freesound.org
+  	// https://www.freesound.org/people/stijn/sounds/43680/
+  	// https://www.freesound.org/people/Snapper4298/sounds/178186/
 }
 
 
@@ -125,6 +125,21 @@ public void draw()
 			// display save or discard buttons
 			displayPhoto(photoIndex);
 			mode3displayButtons();
+		}
+	}
+	else if(mode == 4)
+	{
+		if(phase == 1)
+		{
+
+		}
+		else if(phase == 2)
+		{
+
+		}
+		else if(phase == 3)
+		{
+			
 		}
 	}
 }
@@ -411,6 +426,12 @@ public void mode3mousePressed()
 		}
 	}
 }
+// File: Mode4.pde
+// Mode4 is the photo editing hub
+//	Phase 1 = simple drawing mode (ie: ms paint)
+//	Phase 2 = selection and removal
+
+
 // Mode 0: Start Screen
 // Mode 1: Overview
 
@@ -453,7 +474,17 @@ public void drawOverview()
 
   // display photos and panels created
   for(int i = 0; i < numPhotos; i++)
+  {
     image(Photos[i], 80 + i*90, 140, 80, 60);
+
+    fill(0xffCE235F);
+
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= 140
+      && mouseY <= 140 + 60)
+      text("Edit", 80 + i*90, 140 + 35);
+  }
   for(int i = 0; i < numPanels; i++) 
   {
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
@@ -463,9 +494,7 @@ public void drawOverview()
       && mouseX <= 80 + i*90 + 80
       && mouseY >= height/2 + 40
       && mouseY <= height/2 + 40 + 60)
-    {
       text("X", 80 + i*90, (height/2 + 40 + 35));
-    }
   }
 
 
