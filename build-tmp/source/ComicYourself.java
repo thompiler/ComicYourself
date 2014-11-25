@@ -147,13 +147,14 @@ public void draw()
 			// show list of taken photos
 
 			mode3displayPhotos();
+			mode3phase1displayButtons();
 		}
 		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
 			displayPhoto(photoIndex);
-			mode3displayButtons();
+			mode3phase2displayButtons();
 		}
 	}
 	else if(mode == 4)
@@ -426,6 +427,7 @@ public void mode2phase2save()
 	mode = 1;
 	cp5.hide();
 	displayButtons = true;
+	removeBackground = false;
 }
 
 
@@ -532,7 +534,7 @@ public void displayPhoto(int index)
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3displayButtons()
+public void mode3phase1displayButtons()
 {
   if(displayButtons)
   {
@@ -540,14 +542,48 @@ public void mode3displayButtons()
 
     cp5.setControlFont(buttonFont);
 
-    cp5.addButton("mode3back")
+    cp5.addButton("mode3phase1back")
+      .setPosition(width/2 - 10, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3pase1back()
+{
+  println("button: back to photo list");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase2displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode3phase2back")
       .setPosition(width/2 - 50, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
-    cp5.addButton("mode3save")
+    cp5.addButton("mode3phase2save")
       .setPosition(width/2 + 10, 677)
       .setCaptionLabel("S")
       .align(CENTER,CENTER,CENTER,CENTER)
@@ -561,7 +597,7 @@ public void mode3displayButtons()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3back()
+public void mode3pase2back()
 {
   println("button: back to photo list");
   mode = 3;
@@ -573,7 +609,7 @@ public void mode3back()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3save()
+public void mode3phase2save()
 {
   println("button: save panel");
   mode = 1;
@@ -683,11 +719,15 @@ public void mode4phase2draw()
 		displayPhoto = false;
 	}
 
-	//noStroke();
+	noStroke();
+	fill(255, 255, 255);
+	ellipse((width - 200)/2, 20, 50, 50);
+
 	fill(paint);
+	ellipse((width - 200)/2, 20, strokeWt, strokeWt);
+
 	stroke(paint);
 	strokeWeight(strokeWt);
-
 	if(flag == 1
 		&& mouseX >= (width - 800)/2
 		&& mouseX <= (width - 800)/2 + 800
@@ -727,7 +767,7 @@ public void mode4phase2displayButtons()
     	.setPosition((width - 100)/2, 20)
     	.setSize(100, 20)
     	.setRange(0, 50)
-    	.setNumberOfTickMarks(5)
+    	.setNumberOfTickMarks(10)
     	;
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);

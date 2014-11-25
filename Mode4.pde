@@ -71,11 +71,15 @@ void mode4phase2draw()
 		displayPhoto = false;
 	}
 
-	//noStroke();
+	noStroke();
+	fill(255, 255, 255);
+	ellipse((width - 200)/2, 20, 50, 50);
+
 	fill(paint);
+	ellipse((width - 200)/2, 20, strokeWt, strokeWt);
+
 	stroke(paint);
 	strokeWeight(strokeWt);
-
 	if(flag == 1
 		&& mouseX >= (width - 800)/2
 		&& mouseX <= (width - 800)/2 + 800
@@ -115,7 +119,7 @@ void mode4phase2displayButtons()
     	.setPosition((width - 100)/2, 20)
     	.setSize(100, 20)
     	.setRange(0, 50)
-    	.setNumberOfTickMarks(5)
+    	.setNumberOfTickMarks(10)
     	;
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);

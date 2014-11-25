@@ -182,6 +182,7 @@ public void mode2phase2save()
 	mode = 1;
 	cp5.hide();
 	displayButtons = true;
+	removeBackground = false;
 }
 
 

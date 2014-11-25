@@ -22,7 +22,7 @@ void displayPhoto(int index)
 
 
 //__________________________________________________________________________________________________________________________
-void mode3displayButtons()
+void mode3phase1displayButtons()
 {
   if(displayButtons)
   {
@@ -30,14 +30,48 @@ void mode3displayButtons()
 
     cp5.setControlFont(buttonFont);
 
-    cp5.addButton("mode3back")
+    cp5.addButton("mode3phase1back")
+      .setPosition(width/2 - 10, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3pase1back()
+{
+  println("button: back to photo list");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mode3phase2displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode3phase2back")
       .setPosition(width/2 - 50, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
-    cp5.addButton("mode3save")
+    cp5.addButton("mode3phase2save")
       .setPosition(width/2 + 10, 677)
       .setCaptionLabel("S")
       .align(CENTER,CENTER,CENTER,CENTER)
@@ -51,7 +85,7 @@ void mode3displayButtons()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3back()
+public void mode3pase2back()
 {
   println("button: back to photo list");
   mode = 3;
@@ -63,7 +97,7 @@ public void mode3back()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3save()
+public void mode3phase2save()
 {
   println("button: save panel");
   mode = 1;

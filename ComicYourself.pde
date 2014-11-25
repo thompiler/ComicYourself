@@ -126,13 +126,14 @@ void draw()
 			// show list of taken photos
 
 			mode3displayPhotos();
+			mode3phase1displayButtons();
 		}
 		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
 			displayPhoto(photoIndex);
-			mode3displayButtons();
+			mode3phase2displayButtons();
 		}
 	}
 	else if(mode == 4)
