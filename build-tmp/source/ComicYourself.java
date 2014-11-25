@@ -737,9 +737,9 @@ public void mode4phase2save()
 	displayButtons = true;
 
 	// save edited photo to photo list
-	PImage screen = get();
+	PImage screenShot = get();
   	editPhoto = createImage(640, 480, RGB);
-	//editPhoto = copy(screen, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
 

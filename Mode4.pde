@@ -133,32 +133,11 @@ public void mode4phase2save()
 	displayButtons = true;
 
 	// save edited photo to photo list
-	PImage screen = get();
+	PImage screenShot = get();
   	editPhoto = createImage(640, 480, RGB);
-	//editPhoto = copy(screen, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
-
-  	//image(Photos[index], (width - 800)/2, 70, 800, 600);
-
-  	//int pictureX = 0;
-  	//int pictureY = 0;
-
-  	/*
-  	int displayX = (width - 800)/2;
-  	int displayY = 70;
-  	editPhoto = createImage(800, 600);
-  	editPhoto.loadPixels();
-
-  	for(int picX = 0; picX < 800; picX++)
-  	{
-  		for(int picY = 0; picY < 600; picY++)
-  		{
-  			editPhoto.pixels[pictureY*640 + pictureX] = pixels[(displayY + picY)*1080 + (displayX + picX)];
-  		}
-  	}
-  	editPhoto.updatePixels();
-	*/
 }
 
 
