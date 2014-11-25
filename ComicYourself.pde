@@ -40,6 +40,7 @@ int strokeWt = 1;
 int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
+ColorPicker cp;
 
 //Jason edits for mode 2
 boolean removeBackground = false;
@@ -181,6 +182,20 @@ void keyPressed()
 			takePhoto();
 		}
 	}
+	if (mode == 4)
+	{
+		switch(key)
+		{
+			case('1'):
+			// method A to change color
+			cp.setArrayValue(new float[] {120, 0, 120, 255});
+			break;
+			case('2'):
+			// method B to change color
+			cp.setColorValue(color(255, 0, 0, 255));
+			break;
+		}
+	}
 }
 
 
@@ -222,3 +237,17 @@ void mouseReleased()
 	}
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void controlEvent(ControlEvent c)
+{
+  if(c.isFrom(cp))
+  {
+    int r = int(c.getArrayValue(0));
+    int g = int(c.getArrayValue(1));
+    int b = int(c.getArrayValue(2));
+    int a = int(c.getArrayValue(3));
+    paint = color(r,g,b,a);
+    println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
+  }
+}

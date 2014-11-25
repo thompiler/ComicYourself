@@ -124,6 +124,10 @@ void mode4phase2displayButtons()
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
 
+	cp = cp5.addColorPicker("colorPicker")
+		.setPosition((width + 100)/2, 20)
+		.setColorValue(color(255, 128, 0, 128))
+		;
 
     displayButtons = false;
   }
@@ -163,4 +167,10 @@ public void mode4phase2save()
 void brushSize(int theBrushSize)
 {
 	strokeWt = theBrushSize;
+}
+
+
+void picker(int col)
+{
+  println("picker\talpha:"+alpha(col)+"\tred:"+red(col)+"\tgreen:"+green(col)+"\tblue:"+blue(col)+"\tcol"+col);
 }

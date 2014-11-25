@@ -61,6 +61,7 @@ int strokeWt = 1;
 int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
+ColorPicker cp;
 
 //Jason edits for mode 2
 boolean removeBackground = false;
@@ -202,6 +203,20 @@ public void keyPressed()
 			takePhoto();
 		}
 	}
+	if (mode == 4)
+	{
+		switch(key)
+		{
+			case('1'):
+			// method A to change color
+			cp.setArrayValue(new float[] {120, 0, 120, 255});
+			break;
+			case('2'):
+			// method B to change color
+			cp.setColorValue(color(255, 0, 0, 255));
+			break;
+		}
+	}
 }
 
 
@@ -243,6 +258,20 @@ public void mouseReleased()
 	}
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void controlEvent(ControlEvent c)
+{
+  if(c.isFrom(cp))
+  {
+    int r = PApplet.parseInt(c.getArrayValue(0));
+    int g = PApplet.parseInt(c.getArrayValue(1));
+    int b = PApplet.parseInt(c.getArrayValue(2));
+    int a = PApplet.parseInt(c.getArrayValue(3));
+    paint = color(r,g,b,a);
+    println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
+  }
+}
 // Mode 2: Take a picture
 
 //__________________________________________________________________________________________________________________________
@@ -772,6 +801,10 @@ public void mode4phase2displayButtons()
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
 
+	cp = cp5.addColorPicker("colorPicker")
+		.setPosition((width + 100)/2, 20)
+		.setColorValue(color(255, 128, 0, 128))
+		;
 
     displayButtons = false;
   }
@@ -811,6 +844,12 @@ public void mode4phase2save()
 public void brushSize(int theBrushSize)
 {
 	strokeWt = theBrushSize;
+}
+
+
+public void picker(int col)
+{
+  println("picker\talpha:"+alpha(col)+"\tred:"+red(col)+"\tgreen:"+green(col)+"\tblue:"+blue(col)+"\tcol"+col);
 }
 
 // Mode 0: Start Screen
