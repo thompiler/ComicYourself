@@ -47,7 +47,7 @@ int photoIndex = 0;
 int mode = 0;
 int phase = 1;
 int threshold = 40;
-PImage frame, mode2Capture, mode2Calibration;
+PImage frame, mode2Capture, mode2Calibration, calibratedFrame;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -252,18 +252,21 @@ public void drawCam()
 
     frame = webcam;
     
-    if(removeBackground)
-    	removeBackground(frame);
+    //if(removeBackground)
+    //	removeBackground(frame);
 	
 	pushMatrix();
 
 	//flip across x axis
 	scale(-1,1);
-	image(frame, -(width - 800)/2 -800, 70, 800, 600);
+	if(removeBackground)
+		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
+	else
+		image(frame, -(width - 800)/2 -800, 70, 800, 600);		
 	popMatrix(); 
 }
 
-public void removeBackground(PImage frame)
+public PImage removeBackground(PImage frame)
 {       
         
     mode2Calibration.loadPixels();
@@ -284,8 +287,9 @@ public void removeBackground(PImage frame)
         
       }
     }
-    frame.updatePixels();        
-    
+    frame.updatePixels(); 
+    calibratedFrame = frame.get();       
+    return calibratedFrame;
 }
 
 
@@ -361,7 +365,11 @@ public void takePhoto()
 	Snap.play();
 	try
 	{
-		mode2Capture = frame.get();
+		if(removeBackground)
+			mode2Capture = calibratedFrame.get();
+		else
+			mode2Capture = frame.get();
+
 	}
 	catch(NullPointerException e)
 	{
@@ -680,7 +688,11 @@ public void mode4phase2draw()
 	stroke(paint);
 	strokeWeight(strokeWt);
 
-	if(flag == 1)
+	if(flag == 1
+		&& mouseX >= (width - 800)/2
+		&& mouseX <= (width - 800)/2 + 800
+		&& mouseY >= 70
+		&& mouseY <= 70 + 600)
 		line(mouseX, mouseY, pmouseX, pmouseY);
 }
 
@@ -697,18 +709,29 @@ public void mode4phase2displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase2back")
-      .setPosition(width/2 - 50, 677)
-      .setCaptionLabel("<")
-      .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 40)
-      ;
+		.setPosition(width/2 - 50, 677)
+		.setCaptionLabel("<")
+		.align(CENTER,CENTER,CENTER,CENTER)
+		.setSize(40, 40)
+		;
 
     cp5.addButton("mode4phase2save")
-      .setPosition(width/2 + 10, 677)
-      .setCaptionLabel("Save")
-      .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(80, 40)
-      ;
+		.setPosition(width/2 + 10, 677)
+		.setCaptionLabel("Save")
+		.align(CENTER,CENTER,CENTER,CENTER)
+		.setSize(80, 40)
+		;
+
+    cp5.addSlider("brushSize")
+    	.setCaptionLabel("Brush Size")
+    	.setPosition((width - 100)/2, 20)
+    	.setSize(100, 20)
+    	.setRange(0, 50)
+    	.setNumberOfTickMarks(5)
+    	;
+
+    cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+
 
     displayButtons = false;
   }
@@ -742,30 +765,13 @@ public void mode4phase2save()
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
-
-  	//image(Photos[index], (width - 800)/2, 70, 800, 600);
-
-  	//int pictureX = 0;
-  	//int pictureY = 0;
-
-  	/*
-  	int displayX = (width - 800)/2;
-  	int displayY = 70;
-  	editPhoto = createImage(800, 600);
-  	editPhoto.loadPixels();
-
-  	for(int picX = 0; picX < 800; picX++)
-  	{
-  		for(int picY = 0; picY < 600; picY++)
-  		{
-  			editPhoto.pixels[pictureY*640 + pictureX] = pixels[(displayY + picY)*1080 + (displayX + picX)];
-  		}
-  	}
-  	editPhoto.updatePixels();
-	*/
 }
 
 
+public void brushSize(int theBrushSize)
+{
+	strokeWt = theBrushSize;
+}
 
 // Mode 0: Start Screen
 // Mode 1: Overview

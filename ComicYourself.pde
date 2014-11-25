@@ -26,7 +26,7 @@ int photoIndex = 0;
 int mode = 0;
 int phase = 1;
 int threshold = 40;
-PImage frame, mode2Capture, mode2Calibration;
+PImage frame, mode2Capture, mode2Calibration, calibratedFrame;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;

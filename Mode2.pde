@@ -8,18 +8,21 @@ void drawCam()
 
     frame = webcam;
     
-    if(removeBackground)
-    	removeBackground(frame);
+    //if(removeBackground)
+    //	removeBackground(frame);
 	
 	pushMatrix();
 
 	//flip across x axis
 	scale(-1,1);
-	image(frame, -(width - 800)/2 -800, 70, 800, 600);
+	if(removeBackground)
+		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
+	else
+		image(frame, -(width - 800)/2 -800, 70, 800, 600);		
 	popMatrix(); 
 }
 
-void removeBackground(PImage frame)
+PImage removeBackground(PImage frame)
 {       
         
     mode2Calibration.loadPixels();
@@ -40,8 +43,9 @@ void removeBackground(PImage frame)
         
       }
     }
-    frame.updatePixels();        
-    
+    frame.updatePixels(); 
+    calibratedFrame = frame.get();       
+    return calibratedFrame;
 }
 
 
@@ -117,7 +121,11 @@ public void takePhoto()
 	Snap.play();
 	try
 	{
-		mode2Capture = frame.get();
+		if(removeBackground)
+			mode2Capture = calibratedFrame.get();
+		else
+			mode2Capture = frame.get();
+
 	}
 	catch(NullPointerException e)
 	{

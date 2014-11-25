@@ -76,7 +76,11 @@ void mode4phase2draw()
 	stroke(paint);
 	strokeWeight(strokeWt);
 
-	if(flag == 1)
+	if(flag == 1
+		&& mouseX >= (width - 800)/2
+		&& mouseX <= (width - 800)/2 + 800
+		&& mouseY >= 70
+		&& mouseY <= 70 + 600)
 		line(mouseX, mouseY, pmouseX, pmouseY);
 }
 
@@ -93,18 +97,29 @@ void mode4phase2displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase2back")
-      .setPosition(width/2 - 50, 677)
-      .setCaptionLabel("<")
-      .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 40)
-      ;
+		.setPosition(width/2 - 50, 677)
+		.setCaptionLabel("<")
+		.align(CENTER,CENTER,CENTER,CENTER)
+		.setSize(40, 40)
+		;
 
     cp5.addButton("mode4phase2save")
-      .setPosition(width/2 + 10, 677)
-      .setCaptionLabel("Save")
-      .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(80, 40)
-      ;
+		.setPosition(width/2 + 10, 677)
+		.setCaptionLabel("Save")
+		.align(CENTER,CENTER,CENTER,CENTER)
+		.setSize(80, 40)
+		;
+
+    cp5.addSlider("brushSize")
+    	.setCaptionLabel("Brush Size")
+    	.setPosition((width - 100)/2, 20)
+    	.setSize(100, 20)
+    	.setRange(0, 50)
+    	.setNumberOfTickMarks(5)
+    	;
+
+    cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+
 
     displayButtons = false;
   }
@@ -141,3 +156,7 @@ public void mode4phase2save()
 }
 
 
+void brushSize(int theBrushSize)
+{
+	strokeWt = theBrushSize;
+}
