@@ -25,7 +25,8 @@ int currPhotoIndex = 0;
 int photoIndex = 0;
 int mode = 0;
 int phase = 1;
-PImage frame, mode2Capture;
+int threshold = 40;
+PImage frame, mode2Capture, mode2Calibration;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -39,6 +40,10 @@ int strokeWt = 1;
 int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
+
+//Jason edits for mode 2
+boolean removeBackground = false;
+
 
 
 
@@ -57,6 +62,9 @@ void setup()
 	displayStartButton();
 	Photos = new PImage[20];
 	Panels = new PImage[20];
+
+	//added by Jason
+	mode2Calibration = webcam.get();
 
 	minim = new Minim(this);
 	Snap = minim.loadFile("snap.wav");
@@ -97,9 +105,17 @@ void draw()
 		else if(phase == 2)
 		{
 			// show picture taken as freeze frame
+			textFont(font);
+	       	text("Do you want to keep this picture?", 20, 40);
 			displayPhoto(numPhotos - 1);
 			mode2phase2Buttons();
 		}
+		else if(phase == 3)
+		{
+			calibrationPhase();
+			mode2phase3buttons();
+		}
+
 	}
 	else if(mode == 3)
 	{

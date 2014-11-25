@@ -46,7 +46,8 @@ int currPhotoIndex = 0;
 int photoIndex = 0;
 int mode = 0;
 int phase = 1;
-PImage frame, mode2Capture;
+int threshold = 40;
+PImage frame, mode2Capture, mode2Calibration;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -60,6 +61,10 @@ int strokeWt = 1;
 int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
+
+//Jason edits for mode 2
+boolean removeBackground = false;
+
 
 
 
@@ -78,6 +83,9 @@ public void setup()
 	displayStartButton();
 	Photos = new PImage[20];
 	Panels = new PImage[20];
+
+	//added by Jason
+	mode2Calibration = webcam.get();
 
 	minim = new Minim(this);
 	Snap = minim.loadFile("snap.wav");
@@ -118,9 +126,17 @@ public void draw()
 		else if(phase == 2)
 		{
 			// show picture taken as freeze frame
+			textFont(font);
+	       	text("Do you want to keep this picture?", 20, 40);
 			displayPhoto(numPhotos - 1);
 			mode2phase2Buttons();
 		}
+		else if(phase == 3)
+		{
+			calibrationPhase();
+			mode2phase3buttons();
+		}
+
 	}
 	else if(mode == 3)
 	{
@@ -230,15 +246,46 @@ public void mouseReleased()
 
 //__________________________________________________________________________________________________________________________
 public void drawCam()
-{
-	frame = webcam;
+{  
+    textFont(font);
+    text("Capture Mode", 20, 40);
 
+    frame = webcam;
+    
+    if(removeBackground)
+    	removeBackground(frame);
+	
 	pushMatrix();
 
 	//flip across x axis
 	scale(-1,1);
 	image(frame, -(width - 800)/2 -800, 70, 800, 600);
 	popMatrix(); 
+}
+
+public void removeBackground(PImage frame)
+{       
+        
+    mode2Calibration.loadPixels();
+    frame.loadPixels();
+    for (int y=0; y<frame.height; y++) {
+      for (int x=0; x<frame.width; x++) {
+        int loc = x + y * frame.width;
+        int display = frame.pixels[loc];
+        int comparison = mode2Calibration.pixels[loc];
+        
+        float r1 = red(display); float g1 = green(display); float b1 = blue(display);
+        float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
+        float diff = dist(r1,g1,b1,r2,g2,b2);
+        
+        if(diff < threshold){
+              frame.pixels[loc] = color(255);
+        }
+        
+      }
+    }
+    frame.updatePixels();        
+    
 }
 
 
@@ -265,6 +312,13 @@ public void mode2phase1Buttons()
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
+                
+                cp5.addButton("goToCalibrationPhase")
+                        .setPosition(width/2 + 60, 677)
+                        .setCaptionLabel("Cal")
+                        .align(CENTER,CENTER,CENTER,CENTER)
+                        .setSize(40, 40)
+                        ;
 
 		displayButtons = false;
 	}
@@ -349,8 +403,12 @@ public void backButton()
 	displayButtons = true;
 }
 
-
-
+public void goToCalibrationPhase()
+{
+        phase = 3;
+        cp5.hide();
+        displayButtons = true;
+}
 
 
 //__________________________________________________________________________________________________________________________
@@ -370,6 +428,77 @@ public void mode2phase2back()
 	cp5.hide();  
 	displayButtons = true;
 	numPhotos--;
+}
+
+//_________________________________________________________________
+public void calibrationPhase()
+{
+  textFont(font);
+  text("Please step off screen and take a photo of your background.", 20, 40);
+  
+  frame = webcam;
+
+  pushMatrix();
+
+  //flip across x axis
+  scale(-1,1);
+  image(frame, -(width - 800)/2 -800, 70, 800, 600);
+  popMatrix(); 
+}
+//-----------------------------
+public void mode2phase3buttons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("takeCalibrationPhoto")
+      .setPosition(width/2 + 10, 677)
+      .setCaptionLabel("C")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode2phase3back")
+      .setPosition(width/2 - 50, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+  
+}
+
+//----------------------------------
+public void takeCalibrationPhoto(){
+  Snap.play();
+  try
+  {
+    mode2Calibration = frame.get();
+  }
+  catch(NullPointerException e)
+  {
+    println("Could not capture frame! Null pointer!");
+  }
+
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+  //mirror(mode2Calibration);
+  removeBackground = true;
+  
+  
+}
+//-----------------------------
+public void mode2phase3back()
+{
+  phase = 1;
+  cp5.hide();  
+  displayButtons = true;
 }
 // Mode 3: Add a panel
 //		Phase 1: show horizontal list of photos to add
@@ -608,8 +737,9 @@ public void mode4phase2save()
 	displayButtons = true;
 
 	// save edited photo to photo list
+	PImage screen = get();
   	editPhoto = createImage(640, 480, RGB);
-	editPhoto.copy((width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+	//editPhoto = copy(screen, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
 
