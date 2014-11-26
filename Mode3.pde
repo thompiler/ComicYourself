@@ -65,7 +65,7 @@ void mode3phase2displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3phase2back")
-      .setPosition(width/2 - 50, 677)
+      .setPosition(width/2 - 150, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -130,6 +130,7 @@ void mode3mousePressed()
 			{
 				photoIndex = i;
 				phase = 2;
+        //displayButtons = true;
 			}
 		}
 	}
