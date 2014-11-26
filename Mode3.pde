@@ -44,7 +44,7 @@ void mode3phase1displayButtons()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3pase1back()
+public void mode3phase1back()
 {
   println("button: back to photo list");
   mode = 1;
@@ -130,7 +130,9 @@ void mode3mousePressed()
 			{
 				photoIndex = i;
 				phase = 2;
-        //displayButtons = true;
+
+        cp5.hide();
+        displayButtons = true;
 			}
 		}
 	}
