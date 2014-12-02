@@ -16,9 +16,18 @@ void drawCam()
 	//flip across x axis
 	scale(-1,1);
 	if(removeBackground)
+        {
 		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
+        }
+        else if(changeBackground)
+        {
+          image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+
+        }
 	else
-		image(frame, -(width - 800)/2 -800, 70, 800, 600);		
+        {
+		image(frame, -(width - 800)/2 -800, 70, 800, 600);	
+        }	
 	popMatrix(); 
 }
 
@@ -60,26 +69,34 @@ void mode2phase1Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("takePhoto")
-			.setPosition(width/2 + 10, 677)
-			.setCaptionLabel("C")
+			.setPosition(width/2 - 30, 677)
+			.setCaptionLabel("Capture")
 			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
+			.setSize(100, 40)
 			;
 
 		cp5.addButton("backButton")
-			.setPosition(width/2 - 50, 677)
+			.setPosition(width/2 - 100, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
                 
                 cp5.addButton("goToCalibrationPhase")
-                        .setPosition(width/2 + 60, 677)
-                        .setCaptionLabel("Cal")
+                        .setPosition(width/2 + 100, 677)
+                        .setCaptionLabel("Calibrate")
                         .align(CENTER,CENTER,CENTER,CENTER)
-                        .setSize(40, 40)
+                        .setSize(110, 40)
                         ;
 
+                if(removeBackground){
+                cp5.addButton("backgroundSelection")
+                        .setPosition(width/2 + 250, 677)
+                        .setCaptionLabel("Background")
+                        .align(CENTER,CENTER,CENTER,CENTER)
+                        .setSize(200, 40)
+                        ;
+                }
 		displayButtons = false;
 	}
 }
@@ -96,10 +113,10 @@ void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition(width/2 + 10, 677)
-			.setCaptionLabel("S")
+			.setPosition(width/2 + 40, 677)
+			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
+			.setSize(80, 40)
 			;
 
 		cp5.addButton("mode2phase2back")
@@ -123,8 +140,11 @@ public void takePhoto()
 	{
 		if(removeBackground)
 			mode2Capture = calibratedFrame.get();
-		else
+		else if(changeBackground)
+                        mode2Capture = editedFrame.get();                
+                else
 			mode2Capture = frame.get();
+
 
 	}
 	catch(NullPointerException e)
@@ -183,6 +203,7 @@ public void mode2phase2save()
 	cp5.hide();
 	displayButtons = true;
 	removeBackground = false;
+        changeBackground = false;
 }
 
 
@@ -210,6 +231,8 @@ public void calibrationPhase()
   image(frame, -(width - 800)/2 -800, 70, 800, 600);
   popMatrix(); 
 }
+
+
 //-----------------------------
 public void mode2phase3buttons()
 {
@@ -264,4 +287,54 @@ public void mode2phase3back()
   phase = 1;
   cp5.hide();  
   displayButtons = true;
+}
+
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+
+public void loadStockBackground()
+{
+  String path = sketchPath+"/stockbackground/"; //folder of images rename as needed
+  File[] files = listFiles(path);
+  stockBackground = new PImage[files.length];
+  for(int i=0; i<files.length; i++){
+    stockBackground[i]=loadImage(files[i].getAbsolutePath());
+    imageResize(stockBackground[i]);
+  }
+}
+
+public void imageResize(PImage img){
+  img.resize(640,480);
+}
+
+public void backgroundSelection()
+{
+  loadStockBackground();
+  changeBackground = true;
+  removeBackground = false;  
+}
+
+PImage changeBackground(PImage frame)
+{       
+        
+    stockBackground[0].loadPixels();
+    frame.loadPixels();
+    for (int y=0; y<frame.height; y++) {
+      for (int x=0; x<frame.width; x++) {
+        int loc = x + y * frame.width;
+        color display = frame.pixels[loc];        
+        
+        if(display == color(255)){
+              frame.pixels[loc] = stockBackground[0].pixels[loc];
+        }
+        
+      }
+    }
+    frame.updatePixels(); 
+    editedFrame = frame.get();       
+    return editedFrame;
 }

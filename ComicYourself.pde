@@ -18,6 +18,8 @@ import ddf.minim.* ;
 //__________________________________________________________________________________________________________________________
 Capture webcam;
 PImage [] Photos;
+PImage [] stockBackground;
+boolean changeBackground = false;
 PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
@@ -25,8 +27,7 @@ int currPhotoIndex = 0;
 int photoIndex = 0;
 int mode = 0;
 int phase = 1;
-int threshold = 40;
-PImage frame, mode2Capture, mode2Calibration, calibratedFrame;
+PImage frame, mode2Capture, mode2Calibration, calibratedFrame, editedFrame;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
@@ -41,9 +42,12 @@ int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
 ColorPicker cp;
+PFont smallFont;
+float resizeValue = 100;
 
 //Jason edits for mode 2
 boolean removeBackground = false;
+int threshold = 70;
 
 
 
@@ -56,6 +60,7 @@ void setup()
 	background(255);
 
 	buttonFont = loadFont("CordiaNew-Bold-30.vlw");
+        smallFont = loadFont("Calibri-18.vlw");
   	textFont(buttonFont);
 	webcam = new Capture(this, 640, 480);
 	webcam.start();
@@ -75,6 +80,21 @@ void setup()
   	// https://www.freesound.org/people/Snapper4298/sounds/178186/
 }
 
+//__________________________________________________________________________________________________________________________
+//__________________________________________________________________________________________________________________________
+//__________________________________________________________________________________________________________________________
+File[] listFiles(String directory){
+  File file = new File(directory);
+  if(file.isDirectory()){
+    File[] files = file.listFiles();
+    return files;
+  } else {
+    return null;
+  }
+}
+//__________________________________________________________________________________________________________________________
+//__________________________________________________________________________________________________________________________
+//__________________________________________________________________________________________________________________________
 
 
 //__________________________________________________________________________________________________________________________
@@ -107,7 +127,7 @@ void draw()
 		{
 			// show picture taken as freeze frame
 			textFont(font);
-	       	text("Do you want to keep this picture?", 20, 40);
+	       	        text("Do you want to keep this picture?", 20, 40);
 			displayPhoto(numPhotos - 1);
 			mode2phase2Buttons();
 		}
@@ -120,7 +140,7 @@ void draw()
 	}
 	else if(mode == 3)
 	{
-		// MAKE A PANEL mode]
+		// MAKE A PANEL mode
 		background(255);
 		if(phase == 1)
 		{
@@ -137,7 +157,7 @@ void draw()
 			mode3phase2displayButtons();
 		}
 	}
-	else if(mode == 4)
+	else if(mode == 4) // edit photo mode
 	{
 		if(phase == 1)
 		{
@@ -153,7 +173,12 @@ void draw()
 		}
 		else if(phase == 3)
 		{
-
+                        ///*
+                        println("r--"+resizeValue);
+                        background(255);
+                        displayResizedPhoto(photoIndex, resizeValue);
+                        mode4phase3displayButtons();
+                        //*/
 		}
 		else if(phase == 4)
 		{
