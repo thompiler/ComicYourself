@@ -3,31 +3,28 @@
 //__________________________________________________________________________________________________________________________
 void drawCam()
 {  
-    textFont(font);
-    text("Capture Mode", 20, 40);
+  textFont(font);
+  text("Capture Mode", 20, 40);
 
-    frame = webcam;
-    
-    //if(removeBackground)
-    //	removeBackground(frame);
+  frame = webcam;
+  
+  //if(removeBackground)
+  //	removeBackground(frame);
 	
 	pushMatrix();
 
 	//flip across x axis
 	scale(-1,1);
-	if(removeBackground)
-        {
-		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
-        }
-        else if(changeBackground)
-        {
-          image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
 
-        }
+	if(removeBackground)
+		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
+
+  else if(changeBackground)
+    image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+
 	else
-        {
 		image(frame, -(width - 800)/2 -800, 70, 800, 600);	
-        }	
+  
 	popMatrix(); 
 }
 

@@ -1,9 +1,8 @@
 // File: Mode4.pde
 // Mode4 is the photo editing hub
-//	Phase 1 = simple drawing mode (ie: ms paint)
+//	Phase 1 = editing hub with buttons to different phases
+//  Phase 2 = simple drawing mode (ie: ms paint)
 //	Phase 2 = selection and removal
-
-// variable used:
 
 
 //__________________________________________________________________________________________________________________________
@@ -28,18 +27,17 @@ void mode4phase1displayButtons()
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
-      ///*
+    
     cp5.addButton("mode4phase1resize")
       .setPosition(width/2 + 100, 677)
       .setCaptionLabel("Resize")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(90, 40)
-      ;//*/
+      ;
 
     displayButtons = false;
   }
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -51,7 +49,6 @@ public void mode4phase1back()
   cp5.hide();
   displayButtons = true;
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -66,7 +63,6 @@ public void mode4phase1draw()
   paint = color(255, 128, 0, 255);
 }
 
-///*
 
 //__________________________________________________________________________________________________________________________
 public void mode4phase1resize()
@@ -80,21 +76,21 @@ public void mode4phase1resize()
   //displayResizePhoto = true;
   resizeValue = 100;
 }
-//*/
+
 
 //__________________________________________________________________________________________________________________________
 void mode4phase2draw()
 {
-        fill(#909090);
-        textFont(smallFont);
-        text("Brush size:", (width - 100)/2 - 30, 15);
-        textFont(buttonFont);
+  fill(#909090);
+  textFont(smallFont);
+  text("Brush size:", (width - 100)/2 - 30, 15);
+  textFont(buttonFont);
         
 	mode4phase2displayButtons();
 
 	if(displayPhoto)
 	{
-		displayPhoto(photoIndex);
+		displayPhoto(currentPhotoIndex);
 		displayPhoto = false;
 	}
 
@@ -106,9 +102,6 @@ void mode4phase2draw()
         stroke(paint);
 	ellipse((width - 200)/2 - 60, 20, strokeWt, strokeWt);
 
-
-
-
 	stroke(paint);
 	strokeWeight(strokeWt);
 
@@ -116,11 +109,10 @@ void mode4phase2draw()
 		&& mouseX >= (width - 800)/2
 		&& mouseX <= (width - 800)/2 + 800
 		&& mouseY >= 70
-		&& mouseY <= 70 + 600)
-		line(mouseX, mouseY, pmouseX, pmouseY);
+		&& mouseY <= 70 + 600
+    )
+		  line(mouseX, mouseY, pmouseX, pmouseY);
 }
-
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -134,18 +126,18 @@ void mode4phase2displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase2back")
-		.setPosition(width/2 - 50, 677)
-		.setCaptionLabel("<")
-		.align(CENTER,CENTER,CENTER,CENTER)
-		.setSize(40, 40)
-		;
+  		.setPosition(width/2 - 50, 677)
+  		.setCaptionLabel("<")
+  		.align(CENTER,CENTER,CENTER,CENTER)
+  		.setSize(40, 40)
+  		;
 
     cp5.addButton("mode4phase2save")
-		.setPosition(width/2 + 10, 677)
-		.setCaptionLabel("Save")
-		.align(CENTER,CENTER,CENTER,CENTER)
-		.setSize(80, 40)
-		;
+  		.setPosition(width/2 + 10, 677)
+  		.setCaptionLabel("Save")
+  		.align(CENTER,CENTER,CENTER,CENTER)
+  		.setSize(80, 40)
+  		;
 
     cp5.addSlider("brushSize")
     	.setCaptionLabel("")
@@ -160,10 +152,11 @@ void mode4phase2displayButtons()
 
     cp5.setControlFont(smallFont);
 
-	cp = cp5.addColorPicker("colorPicker")
-		.setPosition((width + 100)/2 + 20, 5)
-		.setColorValue(color(255, 128, 0, 255))
-		;
+  	cp = cp5.addColorPicker("colorPicker")
+  		.setPosition((width + 100)/2 + 20, 5)
+  		.setColorValue(color(255, 128, 0, 255))
+  		;
+
     cp5.setControlFont(buttonFont);
 
     displayButtons = false;
@@ -194,25 +187,28 @@ public void mode4phase2save()
 
 	// save edited photo to photo list
 	PImage screenShot = get();
-  	editPhoto = createImage(640, 480, RGB);
+  editPhoto = createImage(640, 480, RGB);
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
 }
 
 
-void brushSize(int theBrushSize)
-{
-	strokeWt = theBrushSize;
-}
+//__________________________________________________________________________________________________________________________
+void brushSize(int theBrushSize) { strokeWt = theBrushSize; }
 
 
+//__________________________________________________________________________________________________________________________
 void picker(int col)
 {
-  println("picker\talpha:"+alpha(col)+"\tred:"+red(col)+"\tgreen:"+green(col)+"\tblue:"+blue(col)+"\tcol"+col);
+  println("picker\talpha:"
+    +alpha(col)
+    +"\tred:"+red(col)
+    +"\tgreen:"+green(col)
+    +"\tblue:"+blue(col)
+    +"\tcol"+col)
+    ;
 }
-
-///*
 
 
 //__________________________________________________________________________________________________________________________
@@ -262,7 +258,3 @@ void imageSize(float value)
 }
 
 
-
-
-
-//*/

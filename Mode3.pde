@@ -112,7 +112,7 @@ public void mode3phase2save()
   displayButtons = true;
 
   // Save copy of selected photo in panel array
-  PImage newPanel = Photos[photoIndex];
+  PImage newPanel = Photos[currentPhotoIndex];
   Panels[numPanels] = newPanel;
   numPanels++;
 }
@@ -134,7 +134,7 @@ void mode3mousePressed()
 				&& mouseY >= photoY 
 				&& mouseY <= photoY + 75)
 			{
-				photoIndex = i;
+				currentPhotoIndex = i;
 				phase = 2;
 
         cp5.hide();

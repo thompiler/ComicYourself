@@ -23,14 +23,16 @@ boolean changeBackground = false;
 PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
-int currPhotoIndex = 0;
-int photoIndex = 0;
+int currentPanelIndex = 0;
+int currentPhotoIndex = 0;
+int tintValue = 255;
 int mode = 0;
 int phase = 1;
-PImage frame, mode2Capture, mode2Calibration, calibratedFrame, editedFrame;
+PImage frame, mode2Capture, mode2Calibration, calibratedFrame, editedFrame, exportedComic;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
+boolean displayExportedComic = false;
 PFont buttonFont;
 Minim minim;
 AudioPlayer Snap, Click;
@@ -60,7 +62,7 @@ void setup()
 	background(255);
 
 	buttonFont = loadFont("CordiaNew-Bold-30.vlw");
-        smallFont = loadFont("Calibri-18.vlw");
+    smallFont = loadFont("Calibri-18.vlw");
   	textFont(buttonFont);
 	webcam = new Capture(this, 640, 480);
 	webcam.start();
@@ -80,21 +82,20 @@ void setup()
   	// https://www.freesound.org/people/Snapper4298/sounds/178186/
 }
 
+
 //__________________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________________
-File[] listFiles(String directory){
-  File file = new File(directory);
-  if(file.isDirectory()){
-    File[] files = file.listFiles();
-    return files;
-  } else {
-    return null;
-  }
+File[] listFiles(String directory)
+{
+	File file = new File(directory);
+
+	if(file.isDirectory())
+	{
+    	File[] files = file.listFiles();
+    	return files;
+	}
+	else
+    	return null;
 }
-//__________________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________________
 
 
 //__________________________________________________________________________________________________________________________
@@ -110,7 +111,6 @@ void draw()
 	{
 		// OVERVIEW mode
 		background(255);	
-
 		drawOverview();
 	}
 	else if(mode == 2)
@@ -127,7 +127,7 @@ void draw()
 		{
 			// show picture taken as freeze frame
 			textFont(font);
-	       	        text("Do you want to keep this picture?", 20, 40);
+	       	text("Do you want to keep this picture?", 20, 40);
 			displayPhoto(numPhotos - 1);
 			mode2phase2Buttons();
 		}
@@ -145,15 +145,17 @@ void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-
 			mode3displayPhotos();
 			mode3phase1displayButtons();
+			textFont(font);
+  			fill(#817575);
+			text("Select a photo from the list to add to a panel.", 20, 40);
 		}
 		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
-			displayPhoto(photoIndex);
+			displayPhoto(currentPhotoIndex);
 			mode3phase2displayButtons();
 		}
 	}
@@ -163,7 +165,7 @@ void draw()
 		{
 			// edit photo hub
 			background(255);
-			displayPhoto(photoIndex);
+			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
 		}
 		else if(phase == 2)
@@ -173,12 +175,9 @@ void draw()
 		}
 		else if(phase == 3)
 		{
-                        ///*
-                        println("r--"+resizeValue);
-                        background(255);
-                        displayResizedPhoto(photoIndex, resizeValue);
-                        mode4phase3displayButtons();
-                        //*/
+            background(255);
+            displayResizedPhoto(currentPhotoIndex, resizeValue);
+            mode4phase3displayButtons();
 		}
 		else if(phase == 4)
 		{
@@ -188,13 +187,8 @@ void draw()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
-void captureEvent(Capture video) 
-{
-  video.read();
-}
-
+void captureEvent(Capture video) { video.read(); }
 
 
 //__________________________________________________________________________________________________________________________
@@ -224,7 +218,6 @@ void keyPressed()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 void mousePressed()
 {
@@ -251,7 +244,6 @@ void mouseDragged()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 void mouseReleased()
 {
@@ -266,13 +258,15 @@ void mouseReleased()
 //__________________________________________________________________________________________________________________________
 public void controlEvent(ControlEvent c)
 {
-  if(c.isFrom(cp))
-  {
-    int r = int(c.getArrayValue(0));
-    int g = int(c.getArrayValue(1));
-    int b = int(c.getArrayValue(2));
-    int a = int(c.getArrayValue(3));
-    paint = color(r,g,b,a);
-    println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
-  }
+	// For use in Mode 4: Edit Photo
+	// This function sends the values from the color slider into the paint variable
+  	if(c.isFrom(cp))
+    {
+		int r = int(c.getArrayValue(0));
+		int g = int(c.getArrayValue(1));
+		int b = int(c.getArrayValue(2));
+		int a = int(c.getArrayValue(3));
+		paint = color(r, g, b, a);
+		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
+  	}
 }

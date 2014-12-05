@@ -39,11 +39,10 @@ void drawOverview()
   }
 
   // display photos and panels created
+  fill(#CE235F);
   for(int i = 0; i < numPhotos; i++)
   {
     image(Photos[i], 80 + i*90, 140, 80, 60);
-
-    fill(#CE235F);
 
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -55,12 +54,19 @@ void drawOverview()
   {
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
 
-    // show "X" on panel when mouse over
+    // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
       && mouseY >= height/2 + 40
       && mouseY <= height/2 + 40 + 60)
-      text("X", 80 + i*90, (height/2 + 40 + 35));
+      text("Edit", 80 + i*90, (height/2 + 40 + 35));
+  }
+  if(displayExportedComic)
+  {
+    fill(#817575);
+    float ratio = (exportedComic.width/exportedComic.height);
+    image(exportedComic, 80, (height/2 + 190), 100*ratio, 100);
+    text("Exported Comic: ", 80, (height/2 + 150));
   }
 }
 
@@ -125,9 +131,9 @@ void displayAddButtons()
 //__________________________________________________________________________________________________________________________
 void displayPhotos()
 {
-  for(int i = 0; i < numPhotos - currPhotoIndex; i++)
+  for(int i = 0; i < numPhotos - currentPhotoIndex; i++)
   {
-    image(Photos[currPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
+    image(Photos[currentPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
   }
 }
 
@@ -187,7 +193,9 @@ public void mode1export()
         }
       }
     }
+    displayExportedComic = true;
     comicStrip.updatePixels();
+    exportedComic = comicStrip;
     println("Comic Strip Exported to File");
     comicStrip.save("comicStrip.png");
   }
@@ -210,22 +218,35 @@ public void addPanel()
 //__________________________________________________________________________________________________________________________
 void mode1mousePressed()
 {
-    for(int i = 0; i < numPhotos; i++)
-    {
-      int photoX = 80 + i*110;
-      int photoY = 140;
+  for(int i = 0; i < numPhotos; i++)
+  {
+    int photoX = 80 + i*110;
+    int photoY = 140;
 
-      if(mouseX >= 80 + i*90
-        && mouseX <= 80 + i*90 + 80
-        && mouseY >= 140
-        && mouseY <= 140 + 60)
-      {
-        mode = 4;
-        photoIndex = i;
-        phase = 1;
-        cp5.hide();
-        displayButtons = true;
-      }
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= 140
+      && mouseY <= 140 + 60)
+    {
+      mode = 4;
+      currentPhotoIndex = i;
+      phase = 1;
+      cp5.hide();
+      displayButtons = true;
     }
+  }
+
+  for(int i = 0; i < numPanels; i++) 
+  {
+    // show "Edit" on panel when mouse over
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= height/2 + 40
+      && mouseY <= height/2 + 40 + 60)
+    {
+      mode = 5;
+
+    }
+  }
 }
 

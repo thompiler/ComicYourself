@@ -39,18 +39,21 @@ public class ComicYourself extends PApplet {
 //__________________________________________________________________________________________________________________________
 Capture webcam;
 PImage [] Photos;
+PImage [] stockBackground;
+boolean changeBackground = false;
 PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
-int currPhotoIndex = 0;
-int photoIndex = 0;
+int currentPanelIndex = 0;
+int currentPhotoIndex = 0;
+int tintValue = 255;
 int mode = 0;
 int phase = 1;
-int threshold = 40;
-PImage frame, mode2Capture, mode2Calibration, calibratedFrame;
+PImage frame, mode2Capture, mode2Calibration, calibratedFrame, editedFrame, exportedComic;
 PFont font;
 ControlP5 cp5;
 boolean displayButtons = true;
+boolean displayExportedComic = false;
 PFont buttonFont;
 Minim minim;
 AudioPlayer Snap, Click;
@@ -62,9 +65,12 @@ int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
 ColorPicker cp;
+PFont smallFont;
+float resizeValue = 100;
 
 //Jason edits for mode 2
 boolean removeBackground = false;
+int threshold = 70;
 
 
 
@@ -77,6 +83,7 @@ public void setup()
 	background(255);
 
 	buttonFont = loadFont("CordiaNew-Bold-30.vlw");
+    smallFont = loadFont("Calibri-18.vlw");
   	textFont(buttonFont);
 	webcam = new Capture(this, 640, 480);
 	webcam.start();
@@ -97,6 +104,20 @@ public void setup()
 }
 
 
+//__________________________________________________________________________________________________________________________
+public File[] listFiles(String directory)
+{
+	File file = new File(directory);
+
+	if(file.isDirectory())
+	{
+    	File[] files = file.listFiles();
+    	return files;
+	}
+	else
+    	return null;
+}
+
 
 //__________________________________________________________________________________________________________________________
 public void draw()
@@ -111,7 +132,6 @@ public void draw()
 	{
 		// OVERVIEW mode
 		background(255);	
-
 		drawOverview();
 	}
 	else if(mode == 2)
@@ -141,30 +161,32 @@ public void draw()
 	}
 	else if(mode == 3)
 	{
-		// MAKE A PANEL mode]
+		// MAKE A PANEL mode
 		background(255);
 		if(phase == 1)
 		{
 			// show list of taken photos
-
 			mode3displayPhotos();
 			mode3phase1displayButtons();
+			textFont(font);
+  			fill(0xff817575);
+			text("Select a photo from the list to add to a panel.", 20, 40);
 		}
 		else if(phase == 2)
 		{
 			// show photo that user clicked large
 			// display save or discard buttons
-			displayPhoto(photoIndex);
+			displayPhoto(currentPhotoIndex);
 			mode3phase2displayButtons();
 		}
 	}
-	else if(mode == 4)
+	else if(mode == 4) // edit photo mode
 	{
 		if(phase == 1)
 		{
 			// edit photo hub
 			background(255);
-			displayPhoto(photoIndex);
+			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
 		}
 		else if(phase == 2)
@@ -174,7 +196,9 @@ public void draw()
 		}
 		else if(phase == 3)
 		{
-
+            background(255);
+            displayResizedPhoto(currentPhotoIndex, resizeValue);
+            mode4phase3displayButtons();
 		}
 		else if(phase == 4)
 		{
@@ -184,13 +208,8 @@ public void draw()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
-public void captureEvent(Capture video) 
-{
-  video.read();
-}
-
+public void captureEvent(Capture video) { video.read(); }
 
 
 //__________________________________________________________________________________________________________________________
@@ -220,7 +239,6 @@ public void keyPressed()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 public void mousePressed()
 {
@@ -247,7 +265,6 @@ public void mouseDragged()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 public void mouseReleased()
 {
@@ -262,37 +279,45 @@ public void mouseReleased()
 //__________________________________________________________________________________________________________________________
 public void controlEvent(ControlEvent c)
 {
-  if(c.isFrom(cp))
-  {
-    int r = PApplet.parseInt(c.getArrayValue(0));
-    int g = PApplet.parseInt(c.getArrayValue(1));
-    int b = PApplet.parseInt(c.getArrayValue(2));
-    int a = PApplet.parseInt(c.getArrayValue(3));
-    paint = color(r,g,b,a);
-    println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
-  }
+	// For use in Mode 4: Edit Photo
+	// This function sends the values from the color slider into the paint variable
+  	if(c.isFrom(cp))
+    {
+		int r = PApplet.parseInt(c.getArrayValue(0));
+		int g = PApplet.parseInt(c.getArrayValue(1));
+		int b = PApplet.parseInt(c.getArrayValue(2));
+		int a = PApplet.parseInt(c.getArrayValue(3));
+		paint = color(r, g, b, a);
+		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
+  	}
 }
 // Mode 2: Take a picture
 
 //__________________________________________________________________________________________________________________________
 public void drawCam()
 {  
-    textFont(font);
-    text("Capture Mode", 20, 40);
+  textFont(font);
+  text("Capture Mode", 20, 40);
 
-    frame = webcam;
-    
-    //if(removeBackground)
-    //	removeBackground(frame);
+  frame = webcam;
+  
+  //if(removeBackground)
+  //	removeBackground(frame);
 	
 	pushMatrix();
 
 	//flip across x axis
 	scale(-1,1);
+
 	if(removeBackground)
 		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
+
+  else if(changeBackground)
+    image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+
 	else
-		image(frame, -(width - 800)/2 -800, 70, 800, 600);		
+		image(frame, -(width - 800)/2 -800, 70, 800, 600);	
+  
 	popMatrix(); 
 }
 
@@ -334,26 +359,34 @@ public void mode2phase1Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("takePhoto")
-			.setPosition(width/2 + 10, 677)
-			.setCaptionLabel("C")
+			.setPosition(width/2 - 30, 677)
+			.setCaptionLabel("Capture")
 			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
+			.setSize(100, 40)
 			;
 
 		cp5.addButton("backButton")
-			.setPosition(width/2 - 50, 677)
+			.setPosition(width/2 - 100, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
                 
                 cp5.addButton("goToCalibrationPhase")
-                        .setPosition(width/2 + 60, 677)
-                        .setCaptionLabel("Cal")
+                        .setPosition(width/2 + 100, 677)
+                        .setCaptionLabel("Calibrate")
                         .align(CENTER,CENTER,CENTER,CENTER)
-                        .setSize(40, 40)
+                        .setSize(110, 40)
                         ;
 
+                if(removeBackground){
+                cp5.addButton("backgroundSelection")
+                        .setPosition(width/2 + 250, 677)
+                        .setCaptionLabel("Background")
+                        .align(CENTER,CENTER,CENTER,CENTER)
+                        .setSize(200, 40)
+                        ;
+                }
 		displayButtons = false;
 	}
 }
@@ -370,10 +403,10 @@ public void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition(width/2 + 10, 677)
-			.setCaptionLabel("S")
+			.setPosition(width/2 + 40, 677)
+			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
+			.setSize(80, 40)
 			;
 
 		cp5.addButton("mode2phase2back")
@@ -397,8 +430,11 @@ public void takePhoto()
 	{
 		if(removeBackground)
 			mode2Capture = calibratedFrame.get();
-		else
+		else if(changeBackground)
+                        mode2Capture = editedFrame.get();                
+                else
 			mode2Capture = frame.get();
+
 
 	}
 	catch(NullPointerException e)
@@ -457,6 +493,7 @@ public void mode2phase2save()
 	cp5.hide();
 	displayButtons = true;
 	removeBackground = false;
+        changeBackground = false;
 }
 
 
@@ -484,6 +521,8 @@ public void calibrationPhase()
   image(frame, -(width - 800)/2 -800, 70, 800, 600);
   popMatrix(); 
 }
+
+
 //-----------------------------
 public void mode2phase3buttons()
 {
@@ -539,6 +578,56 @@ public void mode2phase3back()
   cp5.hide();  
   displayButtons = true;
 }
+
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+//_________________________________________________________________
+
+public void loadStockBackground()
+{
+  String path = sketchPath+"/stockbackground/"; //folder of images rename as needed
+  File[] files = listFiles(path);
+  stockBackground = new PImage[files.length];
+  for(int i=0; i<files.length; i++){
+    stockBackground[i]=loadImage(files[i].getAbsolutePath());
+    imageResize(stockBackground[i]);
+  }
+}
+
+public void imageResize(PImage img){
+  img.resize(640,480);
+}
+
+public void backgroundSelection()
+{
+  loadStockBackground();
+  changeBackground = true;
+  removeBackground = false;  
+}
+
+public PImage changeBackground(PImage frame)
+{       
+        
+    stockBackground[0].loadPixels();
+    frame.loadPixels();
+    for (int y=0; y<frame.height; y++) {
+      for (int x=0; x<frame.width; x++) {
+        int loc = x + y * frame.width;
+        int display = frame.pixels[loc];        
+        
+        if(display == color(255)){
+              frame.pixels[loc] = stockBackground[0].pixels[loc];
+        }
+        
+      }
+    }
+    frame.updatePixels(); 
+    editedFrame = frame.get();       
+    return editedFrame;
+}
 // Mode 3: Add a panel
 //		Phase 1: show horizontal list of photos to add
 //		Phase 2: show clicked photo large '<' button goes back and 'S' button adds clicked photo to panels array
@@ -558,6 +647,12 @@ public void mode3displayPhotos()
 public void displayPhoto(int index)
 {
 	image(Photos[index], (width - 800)/2, 70, 800, 600);
+}
+
+//__________________________________________________________________________________________________________________________
+public void displayResizedPhoto(int index, float resize)
+{
+  image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
 }
 
 
@@ -585,7 +680,7 @@ public void mode3phase1displayButtons()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3pase1back()
+public void mode3phase1back()
 {
   println("button: back to photo list");
   mode = 1;
@@ -647,7 +742,7 @@ public void mode3phase2save()
   displayButtons = true;
 
   // Save copy of selected photo in panel array
-  PImage newPanel = Photos[photoIndex];
+  PImage newPanel = Photos[currentPhotoIndex];
   Panels[numPanels] = newPanel;
   numPanels++;
 }
@@ -669,19 +764,20 @@ public void mode3mousePressed()
 				&& mouseY >= photoY 
 				&& mouseY <= photoY + 75)
 			{
-				photoIndex = i;
+				currentPhotoIndex = i;
 				phase = 2;
-        //displayButtons = true;
+
+        cp5.hide();
+        displayButtons = true;
 			}
 		}
 	}
 }
 // File: Mode4.pde
 // Mode4 is the photo editing hub
-//	Phase 1 = simple drawing mode (ie: ms paint)
+//	Phase 1 = editing hub with buttons to different phases
+//  Phase 2 = simple drawing mode (ie: ms paint)
 //	Phase 2 = selection and removal
-
-// variable used:
 
 
 //__________________________________________________________________________________________________________________________
@@ -706,11 +802,17 @@ public void mode4phase1displayButtons()
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
+    
+    cp5.addButton("mode4phase1resize")
+      .setPosition(width/2 + 100, 677)
+      .setCaptionLabel("Resize")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(90, 40)
+      ;
 
     displayButtons = false;
   }
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -724,7 +826,6 @@ public void mode4phase1back()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 public void mode4phase1draw()
 {
@@ -734,39 +835,59 @@ public void mode4phase1draw()
   displayButtons = true;
   displayPhoto = true;
   background(255);
+  paint = color(255, 128, 0, 255);
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1resize()
+{
+  println("button: resize photo");
+  phase = 3;
+  cp5.hide();
+  displayButtons = true;
+  displayPhoto = true;
+  background(255);
+  //displayResizePhoto = true;
+  resizeValue = 100;
+}
 
 
 //__________________________________________________________________________________________________________________________
 public void mode4phase2draw()
 {
+  fill(0xff909090);
+  textFont(smallFont);
+  text("Brush size:", (width - 100)/2 - 30, 15);
+  textFont(buttonFont);
+        
 	mode4phase2displayButtons();
 
 	if(displayPhoto)
 	{
-		displayPhoto(photoIndex);
+		displayPhoto(currentPhotoIndex);
 		displayPhoto = false;
 	}
 
-	noStroke();
+	stroke(255, 255, 255);
 	fill(255, 255, 255);
-	ellipse((width - 200)/2, 20, 50, 50);
+	ellipse((width - 200)/2 - 60, 20, 60, 60);
 
 	fill(paint);
-	ellipse((width - 200)/2, 20, strokeWt, strokeWt);
+        stroke(paint);
+	ellipse((width - 200)/2 - 60, 20, strokeWt, strokeWt);
 
 	stroke(paint);
 	strokeWeight(strokeWt);
+
 	if(flag == 1
 		&& mouseX >= (width - 800)/2
 		&& mouseX <= (width - 800)/2 + 800
 		&& mouseY >= 70
-		&& mouseY <= 70 + 600)
-		line(mouseX, mouseY, pmouseX, pmouseY);
+		&& mouseY <= 70 + 600
+    )
+		  line(mouseX, mouseY, pmouseX, pmouseY);
 }
-
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -775,37 +896,43 @@ public void mode4phase2displayButtons()
   if(displayButtons)
   {
     cp5 = new ControlP5(this);
+    fill(0xff909090);
 
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase2back")
-		.setPosition(width/2 - 50, 677)
-		.setCaptionLabel("<")
-		.align(CENTER,CENTER,CENTER,CENTER)
-		.setSize(40, 40)
-		;
+  		.setPosition(width/2 - 50, 677)
+  		.setCaptionLabel("<")
+  		.align(CENTER,CENTER,CENTER,CENTER)
+  		.setSize(40, 40)
+  		;
 
     cp5.addButton("mode4phase2save")
-		.setPosition(width/2 + 10, 677)
-		.setCaptionLabel("Save")
-		.align(CENTER,CENTER,CENTER,CENTER)
-		.setSize(80, 40)
-		;
+  		.setPosition(width/2 + 10, 677)
+  		.setCaptionLabel("Save")
+  		.align(CENTER,CENTER,CENTER,CENTER)
+  		.setSize(80, 40)
+  		;
 
     cp5.addSlider("brushSize")
-    	.setCaptionLabel("Brush Size")
-    	.setPosition((width - 100)/2, 20)
+    	.setCaptionLabel("")
+    	.setPosition((width - 100)/2 - 30, 20)
     	.setSize(100, 20)
-    	.setRange(0, 50)
+    	.setRange(1, 50)
+        .setValue(5)
     	.setNumberOfTickMarks(10)
     	;
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
 
-	cp = cp5.addColorPicker("colorPicker")
-		.setPosition((width + 100)/2, 20)
-		.setColorValue(color(255, 128, 0, 128))
-		;
+    cp5.setControlFont(smallFont);
+
+  	cp = cp5.addColorPicker("colorPicker")
+  		.setPosition((width + 100)/2 + 20, 5)
+  		.setColorValue(color(255, 128, 0, 255))
+  		;
+
+    cp5.setControlFont(buttonFont);
 
     displayButtons = false;
   }
@@ -835,24 +962,78 @@ public void mode4phase2save()
 
 	// save edited photo to photo list
 	PImage screenShot = get();
-  	editPhoto = createImage(640, 480, RGB);
+  editPhoto = createImage(640, 480, RGB);
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
 }
 
 
-public void brushSize(int theBrushSize)
-{
-	strokeWt = theBrushSize;
-}
+//__________________________________________________________________________________________________________________________
+public void brushSize(int theBrushSize) { strokeWt = theBrushSize; }
 
 
+//__________________________________________________________________________________________________________________________
 public void picker(int col)
 {
-  println("picker\talpha:"+alpha(col)+"\tred:"+red(col)+"\tgreen:"+green(col)+"\tblue:"+blue(col)+"\tcol"+col);
+  println("picker\talpha:"
+    +alpha(col)
+    +"\tred:"+red(col)
+    +"\tgreen:"+green(col)
+    +"\tblue:"+blue(col)
+    +"\tcol"+col)
+    ;
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase3displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode4phase2back")
+      .setPosition(width/2 - 50, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+      
+   cp5.addButton("mode4phase2save")
+      .setPosition(width/2 + 10, 677)
+      .setCaptionLabel("Save")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+      
+    cp5.addSlider("imageSize")
+      .setCaptionLabel("")
+      .setPosition((width - 100)/2 - 30, 20)
+      .setSize(100, 20)
+      .setRange(1, 100)
+      .setDefaultValue(100)
+      .setValue(100)
+      .setNumberOfTickMarks(50)
+      ;
+
+    cp5.getController("imageSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+
+    displayButtons = false;
+  }
+}
+
+
+public void imageSize(float value)
+{
+  println(value);
+  resizeValue = value;
+}
+
+
+// Edit Panel mode
 // Mode 0: Start Screen
 // Mode 1: Overview
 
@@ -894,11 +1075,10 @@ public void drawOverview()
   }
 
   // display photos and panels created
+  fill(0xffCE235F);
   for(int i = 0; i < numPhotos; i++)
   {
     image(Photos[i], 80 + i*90, 140, 80, 60);
-
-    fill(0xffCE235F);
 
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -910,12 +1090,19 @@ public void drawOverview()
   {
     image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
 
-    // show "X" on panel when mouse over
+    // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
       && mouseY >= height/2 + 40
       && mouseY <= height/2 + 40 + 60)
-      text("X", 80 + i*90, (height/2 + 40 + 35));
+      text("Edit", 80 + i*90, (height/2 + 40 + 35));
+  }
+  if(displayExportedComic)
+  {
+    fill(0xff817575);
+    float ratio = (exportedComic.width/exportedComic.height);
+    image(exportedComic, 80, (height/2 + 190), 100*ratio, 100);
+    text("Exported Comic: ", 80, (height/2 + 150));
   }
 }
 
@@ -980,9 +1167,9 @@ public void displayAddButtons()
 //__________________________________________________________________________________________________________________________
 public void displayPhotos()
 {
-  for(int i = 0; i < numPhotos - currPhotoIndex; i++)
+  for(int i = 0; i < numPhotos - currentPhotoIndex; i++)
   {
-    image(Photos[currPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
+    image(Photos[currentPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
   }
 }
 
@@ -1042,7 +1229,9 @@ public void mode1export()
         }
       }
     }
+    displayExportedComic = true;
     comicStrip.updatePixels();
+    exportedComic = comicStrip;
     println("Comic Strip Exported to File");
     comicStrip.save("comicStrip.png");
   }
@@ -1065,23 +1254,36 @@ public void addPanel()
 //__________________________________________________________________________________________________________________________
 public void mode1mousePressed()
 {
-    for(int i = 0; i < numPhotos; i++)
-    {
-      int photoX = 80 + i*110;
-      int photoY = 140;
+  for(int i = 0; i < numPhotos; i++)
+  {
+    int photoX = 80 + i*110;
+    int photoY = 140;
 
-      if(mouseX >= 80 + i*90
-        && mouseX <= 80 + i*90 + 80
-        && mouseY >= 140
-        && mouseY <= 140 + 60)
-      {
-        mode = 4;
-        photoIndex = i;
-        phase = 1;
-        cp5.hide();
-        displayButtons = true;
-      }
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= 140
+      && mouseY <= 140 + 60)
+    {
+      mode = 4;
+      currentPhotoIndex = i;
+      phase = 1;
+      cp5.hide();
+      displayButtons = true;
     }
+  }
+
+  for(int i = 0; i < numPanels; i++) 
+  {
+    // show "Edit" on panel when mouse over
+    if(mouseX >= 80 + i*90
+      && mouseX <= 80 + i*90 + 80
+      && mouseY >= height/2 + 40
+      && mouseY <= height/2 + 40 + 60)
+    {
+      mode = 5;
+
+    }
+  }
 }
 
   static public void main(String[] passedArgs) {
