@@ -295,10 +295,18 @@ public void mousePressed()
 //__________________________________________________________________________________________________________________________
 public void mouseDragged()
 {
-	if(mode == 4 && phase == 2)
+	if(mode == 4) 
 	{
-		println("mouseDragged");
- 		flag = 1;
+		if(phase == 2)
+		{
+			println("mouseDragged");
+ 			flag = 1;
+ 		}
+ 		if(phase == 4)
+ 		{
+ 			LayersX[numLayers-1] = mouseX;
+ 			LayersY[numLayers-1] = mouseY;
+ 		}
  	}
 }
 
@@ -1129,14 +1137,12 @@ public void mode4phase4display()
   text("Layer", 20, 40);
   displayPhoto(currentPhotoIndex);
 
-
-
   for(int i = 0; i < numLayers; i++)
   {
     int layerWidth = (int)((1.25f)*Photos[i].width);
     int layerHeight = (int)((1.25f)*Photos[i].height);
-    println("layerWidth: "+layerWidth+",  layerHeight: "+layerHeight);
-    image(Photos[i], LayersX[i], LayersY[i], layerWidth, layerHeight);
+    println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
+    image(Photos[Layers[i]], LayersX[i], LayersY[i], layerWidth, layerHeight);
   }
   mode4phase4displayButtons();
 }
@@ -1151,7 +1157,7 @@ public void mode4phase4displayButtons()
 
     cp5.setControlFont(buttonFont);
 
-    cp5.addButton("mode4phase2back")
+    cp5.addButton("mode4phase4back")
       .setPosition((width-800)/2, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
@@ -1165,7 +1171,7 @@ public void mode4phase4displayButtons()
       .setSize(80, 40)
       ;
     
-    cp5.addButton("mode4phase2save")
+    cp5.addButton("mode4phase4save")
       .setPosition(width/2 + 100, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
@@ -1174,6 +1180,38 @@ public void mode4phase4displayButtons()
 
     displayButtons = false;
   }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase4back()
+{
+  println("button: back to photo list");
+  mode = 4;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+  numLayers = 0;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase4save()
+{
+  println("button: save to photo list");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // save edited photo to photo list
+  PImage screenShot = get();
+  editPhoto = createImage(640, 480, RGB);
+  editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+  Photos[numPhotos] = editPhoto;
+  numPhotos++;
+  numLayers = 0;
+
 }
 
 

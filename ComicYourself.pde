@@ -274,10 +274,18 @@ void mousePressed()
 //__________________________________________________________________________________________________________________________
 void mouseDragged()
 {
-	if(mode == 4 && phase == 2)
+	if(mode == 4) 
 	{
-		println("mouseDragged");
- 		flag = 1;
+		if(phase == 2)
+		{
+			println("mouseDragged");
+ 			flag = 1;
+ 		}
+ 		if(phase == 4)
+ 		{
+ 			LayersX[numLayers-1] = mouseX;
+ 			LayersY[numLayers-1] = mouseY;
+ 		}
  	}
 }
 
