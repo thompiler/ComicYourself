@@ -12,19 +12,11 @@ void mode3displayPhotos()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 void displayPhoto(int index)
 {
 	image(Photos[index], (width - 800)/2, 70, 800, 600);
 }
-
-//__________________________________________________________________________________________________________________________
-void displayResizedPhoto(int index, float resize)
-{
-  image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
-}
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -37,7 +29,7 @@ void mode3phase1displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3phase1back")
-      .setPosition(width/2 - 10, 677)
+      .setPosition((width-800)/2, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -71,7 +63,7 @@ void mode3phase2displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode3phase2back")
-      .setPosition(width/2 - 150, 677)
+      .setPosition((width-800)/2, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -91,7 +83,7 @@ void mode3phase2displayButtons()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode3pase2back()
+public void mode3phase2back()
 {
   println("button: back to photo list");
   mode = 3;

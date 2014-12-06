@@ -167,7 +167,7 @@ void draw()
 		if(phase == 1)
 		{
 			// edit photo hub
-			background(255);
+  			background(#012E4B);
 			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
 		}
@@ -178,7 +178,7 @@ void draw()
 		}
 		else if(phase == 3)
 		{
-            background(255);
+            background(#012E4B);
             displayResizedPhoto(currentPhotoIndex, resizeValue);
             mode4phase3displayButtons();
 		}

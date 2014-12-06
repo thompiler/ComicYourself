@@ -73,7 +73,7 @@ void mode2phase1Buttons()
 			;
 
 		cp5.addButton("backButton")
-			.setPosition(width/2 - 100, 677)
+			.setPosition((width-800)/2, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
@@ -117,7 +117,7 @@ void mode2phase2Buttons()
 			;
 
 		cp5.addButton("mode2phase2back")
-			.setPosition(width/2 - 50, 677)
+			.setPosition((width-800)/2, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
@@ -247,7 +247,7 @@ public void mode2phase3buttons()
       ;
 
     cp5.addButton("mode2phase3back")
-      .setPosition(width/2 - 50, 677)
+      .setPosition((width-800)/20, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)

@@ -1,8 +1,8 @@
 // File: Mode4.pde
-// Mode4 is the photo editing hub
+// Mode 4 is the photo editing hub
 //	Phase 1 = editing hub with buttons to different phases
 //  Phase 2 = simple drawing mode (ie: ms paint)
-//	Phase 2 = selection and removal
+//	Phase 3 = resize a photo
 
 
 //__________________________________________________________________________________________________________________________
@@ -15,7 +15,7 @@ void mode4phase1displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase1back")
-      .setPosition(width/2 - 50, 677)
+      .setPosition((width-800)/2, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -116,6 +116,13 @@ void mode4phase2draw()
 
 
 //__________________________________________________________________________________________________________________________
+void displayResizedPhoto(int index, float resize)
+{
+  image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
+}
+
+
+//__________________________________________________________________________________________________________________________
 void mode4phase2displayButtons()
 {
   if(displayButtons)
@@ -126,7 +133,7 @@ void mode4phase2displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase2back")
-  		.setPosition(width/2 - 50, 677)
+  		.setPosition((width-800)/2, 677)
   		.setCaptionLabel("<")
   		.align(CENTER,CENTER,CENTER,CENTER)
   		.setSize(40, 40)
@@ -221,13 +228,13 @@ void mode4phase3displayButtons()
     cp5.setControlFont(buttonFont);
 
     cp5.addButton("mode4phase2back")
-      .setPosition(width/2 - 50, 677)
+      .setPosition((width-800)/2, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
       
-   cp5.addButton("mode4phase2save")
+   cp5.addButton("mode4phase3save")
       .setPosition(width/2 + 10, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
@@ -251,6 +258,36 @@ void mode4phase3displayButtons()
 }
 
 
+//__________________________________________________________________________________________________________________________
+public void mode4phase3save()
+{
+  println("button: save resized photo to photo list");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true; 
+
+    //image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
+
+            
+  // save edited photo to photo list
+  int resizedHeight = (int)(480 * (resizeValue/100));
+  int resizedWidth = (int)(640 * (resizeValue/100));
+  int resizedHeight2 = (int)(600 * (resizeValue/100));
+  int resizedWidth2 = (int)(800 * (resizeValue/100));
+  int resizedX = (int)((width - (800 * (resizeValue/100)))/2);
+  int resizedY = (int)(70 + (300 - (600 * (resizeValue/100)/2)));
+  PImage screenShot = get();
+  println("Created resized photo with dimensions: "+resizedWidth+", "+resizedHeight);
+  editPhoto = createImage(resizedWidth, resizedHeight, RGB);
+  //editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, resizedWidth, resizedHeight);
+  editPhoto.copy(screenShot, resizedX, resizedY, resizedWidth2, resizedHeight2, 0, 0, resizedWidth, resizedHeight);
+  Photos[numPhotos] = editPhoto;
+  numPhotos++;
+}
+
+
+//__________________________________________________________________________________________________________________________
 void imageSize(float value)
 {
   println(value);
