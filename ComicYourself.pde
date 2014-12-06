@@ -52,7 +52,10 @@ boolean removeBackground = false;
 int threshold = 70;
 
 // Thom's variables for Milestone 3
-
+int [] Layers;
+int [] LayersX;
+int [] LayersY;
+int numLayers = 0;
 
 
 
@@ -73,6 +76,9 @@ void setup()
 	displayStartButton();
 	Photos = new PImage[20];
 	Panels = new PImage[20];
+	Layers = new int[10];
+	LayersX = new int[10];
+	LayersY = new int[10];
 
 	//added by Jason
 	mode2Calibration = webcam.get();
@@ -167,24 +173,40 @@ void draw()
 		if(phase == 1)
 		{
 			// edit photo hub
+			textFont(font);
+  			fill(#817575);
   			background(#012E4B);
+  			text("Edit Photo", 20, 40);
 			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
 		}
 		else if(phase == 2)
 		{
 			// simple drawing mode
+			textFont(font);
+  			fill(#817575);
+			text("Draw", 20, 40);
 			mode4phase2draw();
 		}
 		else if(phase == 3)
 		{
+			textFont(font);
+  			fill(#817575);
             background(#012E4B);
+            text("Resize", 20, 40);
             displayResizedPhoto(currentPhotoIndex, resizeValue);
             mode4phase3displayButtons();
 		}
 		else if(phase == 4)
 		{
-			// save edits
+			// Layer photos phase
+			mode4phase4display();
+			
+		}
+		else if(phase == 5)
+		{
+			// pick a photo to add as a layer
+			mode4phase5display();
 		}
 	}
 	else if(mode == 5)
@@ -240,6 +262,8 @@ void mousePressed()
 		case 1: mode1mousePressed();
 				break;
 		case 3: mode3mousePressed(); 
+				break;
+		case 4: mode4mousePressed();
 				break;
 		default: break;
 	}

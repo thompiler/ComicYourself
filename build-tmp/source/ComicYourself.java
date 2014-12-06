@@ -73,7 +73,10 @@ boolean removeBackground = false;
 int threshold = 70;
 
 // Thom's variables for Milestone 3
-
+int [] Layers;
+int [] LayersX;
+int [] LayersY;
+int numLayers = 0;
 
 
 
@@ -94,6 +97,9 @@ public void setup()
 	displayStartButton();
 	Photos = new PImage[20];
 	Panels = new PImage[20];
+	Layers = new int[10];
+	LayersX = new int[10];
+	LayersY = new int[10];
 
 	//added by Jason
 	mode2Calibration = webcam.get();
@@ -188,24 +194,40 @@ public void draw()
 		if(phase == 1)
 		{
 			// edit photo hub
+			textFont(font);
+  			fill(0xff817575);
   			background(0xff012E4B);
+  			text("Edit Photo", 20, 40);
 			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
 		}
 		else if(phase == 2)
 		{
 			// simple drawing mode
+			textFont(font);
+  			fill(0xff817575);
+			text("Draw", 20, 40);
 			mode4phase2draw();
 		}
 		else if(phase == 3)
 		{
+			textFont(font);
+  			fill(0xff817575);
             background(0xff012E4B);
+            text("Resize", 20, 40);
             displayResizedPhoto(currentPhotoIndex, resizeValue);
             mode4phase3displayButtons();
 		}
 		else if(phase == 4)
 		{
-			// save edits
+			// Layer photos phase
+			mode4phase4display();
+			
+		}
+		else if(phase == 5)
+		{
+			// pick a photo to add as a layer
+			mode4phase5display();
 		}
 	}
 	else if(mode == 5)
@@ -261,6 +283,8 @@ public void mousePressed()
 		case 1: mode1mousePressed();
 				break;
 		case 3: mode3mousePressed(); 
+				break;
+		case 4: mode4mousePressed();
 				break;
 		default: break;
 	}
@@ -803,7 +827,7 @@ public void mode4phase1displayButtons()
       ;
 
     cp5.addButton("mode4phase1draw")
-      .setPosition(width/2 + 10, 677)
+      .setPosition(width/2, 677)
       .setCaptionLabel("Draw")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -812,6 +836,13 @@ public void mode4phase1displayButtons()
     cp5.addButton("mode4phase1resize")
       .setPosition(width/2 + 100, 677)
       .setCaptionLabel("Resize")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(90, 40)
+      ;
+
+    cp5.addButton("mode4phase1layer")
+      .setPosition(width/2 + 200, 677)
+      .setCaptionLabel("Layer")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(90, 40)
       ;
@@ -860,6 +891,18 @@ public void mode4phase1resize()
 
 
 //__________________________________________________________________________________________________________________________
+public void mode4phase1layer()
+{
+  println("button: layer photo");
+  phase = 4;
+  cp5.hide();
+  displayButtons = true;
+  displayPhoto = true;
+  background(255);
+}
+
+
+//__________________________________________________________________________________________________________________________
 public void mode4phase2draw()
 {
   fill(0xff909090);
@@ -880,7 +923,7 @@ public void mode4phase2draw()
 	ellipse((width - 200)/2 - 60, 20, 60, 60);
 
 	fill(paint);
-        stroke(paint);
+  stroke(paint);
 	ellipse((width - 200)/2 - 60, 20, strokeWt, strokeWt);
 
 	stroke(paint);
@@ -921,7 +964,7 @@ public void mode4phase2displayButtons()
   		;
 
     cp5.addButton("mode4phase2save")
-  		.setPosition(width/2 + 10, 677)
+  		.setPosition(width/2, 677)
   		.setCaptionLabel("Save")
   		.align(CENTER,CENTER,CENTER,CENTER)
   		.setSize(80, 40)
@@ -1016,7 +1059,7 @@ public void mode4phase3displayButtons()
       ;
       
    cp5.addButton("mode4phase3save")
-      .setPosition(width/2 + 10, 677)
+      .setPosition(width/2, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -1027,9 +1070,9 @@ public void mode4phase3displayButtons()
       .setPosition((width - 100)/2 - 30, 20)
       .setSize(100, 20)
       .setRange(1, 100)
-      .setDefaultValue(100)
+      //.setDefaultValue(100)
       .setValue(100)
-      .setNumberOfTickMarks(50)
+      //.setNumberOfTickMarks(50)
       ;
 
     cp5.getController("imageSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
@@ -1076,6 +1119,151 @@ public void imageSize(float value)
 }
 
 
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase4display()
+{
+  textFont(font);
+  fill(0xff817575);
+  background(0xff012E4B);
+  text("Layer", 20, 40);
+  displayPhoto(currentPhotoIndex);
+
+
+
+  for(int i = 0; i < numLayers; i++)
+  {
+    int layerWidth = (int)((1.25f)*Photos[i].width);
+    int layerHeight = (int)((1.25f)*Photos[i].height);
+    println("layerWidth: "+layerWidth+",  layerHeight: "+layerHeight);
+    image(Photos[i], LayersX[i], LayersY[i], layerWidth, layerHeight);
+  }
+  mode4phase4displayButtons();
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase4displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode4phase2back")
+      .setPosition((width-800)/2, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode4phase4addPhoto")
+      .setPosition(width/2, 677)
+      .setCaptionLabel("+Photo")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+    
+    cp5.addButton("mode4phase2save")
+      .setPosition(width/2 + 100, 677)
+      .setCaptionLabel("Save")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase4addPhoto()
+{
+  textFont(font);
+  fill(0xff817575);
+  println("button: pick a photo from photo list");
+  phase = 5;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase5display()
+{
+  textFont(font);
+  fill(0xff817575);
+  background(0xff012E4B);
+  mode3displayPhotos();
+  text("Pick a photo to add as a layer", 20, 40);
+  mode4phase4displayButtons();
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase5displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode4phase5back")
+      .setPosition((width-800)/2, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase5back()
+{
+  println("button: back to photo");
+  phase = 4;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4mousePressed()
+{
+  if(phase == 5)
+  {
+    for(int i = 0; i < numPhotos; i++)
+    {
+      int photoX = 80 + i*110;
+      int photoY = height/2;
+
+      if(mouseX >= photoX 
+        && mouseX <= photoX + 100 
+        && mouseY >= photoY 
+        && mouseY <= photoY + 75)
+      {
+        Layers[numLayers] = i;
+        LayersX[numLayers] = (width - 800)/2;
+        LayersY[numLayers] = 70;
+        numLayers++;
+        phase = 4;
+        println("-- added photo as layer");
+
+
+        cp5.hide();
+        displayButtons = true;
+      }
+    }
+  }
+}
 // Edit Panel mode
 
 
