@@ -285,9 +285,6 @@ public void mode4phase3save()
   phase = 1;
   cp5.hide();
   displayButtons = true; 
-
-    //image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
-
             
   // save edited photo to photo list
   int resizedHeight = (int)(480 * (resizeValue/100));
@@ -326,8 +323,8 @@ void mode4phase4display()
 
   for(int i = 0; i < numLayers; i++)
   {
-    int layerWidth = (int)((1.25)*Photos[i].width);
-    int layerHeight = (int)((1.25)*Photos[i].height);
+    int layerWidth = (int)((1.25)*Photos[Layers[i]].width);
+    int layerHeight = (int)((1.25)*Photos[Layers[i]].height);
     println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
     image(Photos[Layers[i]], LayersX[i], LayersY[i], layerWidth, layerHeight);
   }
