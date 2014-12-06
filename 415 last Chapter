@@ -1,0 +1,49 @@
+415 last Chapter
+
+////////////////////// IO SYSTEMS /////////////////////
+
+without input and output computers would be useless!
+
+MANAGEMENT
+	-important function of os
+	-io devices vary greatly and new ones are being created constantly
+	-device performance
+
+DEVICE DRIVERS
+	encapsulated device control interface
+
+IO HARDWARE
+	storage, transmission, human interface
+
+	IO Signals
+		Port - hardware port that connects to a device
+		Bus - like signal freeway for device signals
+			Daisy Chain - like freeway that goes thru each device
+		Controller - like a CPU for the specific device
+			eg: disk controller
+			- has micro code, private memory registers
+
+......................
+
+Memory mapped IO
+	-used for graphics eg: a 2d array of pixels
+
+POLLING
+	-waiting for io requests
+	-keep checking until done
+	-polling takes about 3 CPU cycles
+	faster way?
+
+-->INTERUPTS!
+		CPU Interupt request line
+			-one big interupt handler?
+				maybe better to make separate interupt handlers
+				-
+
+.....................
+
+APPLICATION IO INTERFACE
+
+.......................
+
+Higher resolution clock?

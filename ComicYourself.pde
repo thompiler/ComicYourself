@@ -51,6 +51,9 @@ float resizeValue = 100;
 boolean removeBackground = false;
 int threshold = 70;
 
+// Thom's variables for Milestone 3
+
+
 
 
 
@@ -182,6 +185,17 @@ void draw()
 		else if(phase == 4)
 		{
 			// save edits
+		}
+	}
+	else if(mode == 5)
+	{
+		// Edit Panel mode
+		// -simple functions eg: delete a panel
+		if(phase == 1)
+		{
+			background(255);
+			displayPanel(currentPanelIndex);
+		    mode5phase1displayButtons();	
 		}
 	}
 }

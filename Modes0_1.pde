@@ -245,7 +245,10 @@ void mode1mousePressed()
       && mouseY <= height/2 + 40 + 60)
     {
       mode = 5;
-
+      phase = 1;
+      cp5.hide();
+      displayButtons = true;
+      currentPanelIndex = i;
     }
   }
 }
