@@ -318,7 +318,6 @@ void mode4phase4display()
   textFont(font);
   fill(#817575);
   background(#012E4B);
-  text("Layer", 20, 40);
   displayPhoto(currentPhotoIndex);
 
   for(int i = 0; i < numLayers; i++)
@@ -328,6 +327,14 @@ void mode4phase4display()
     println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
     image(Photos[Layers[i]], LayersX[i], LayersY[i], layerWidth, layerHeight);
   }
+
+  noStroke();
+  fill(#012E4B);
+  rect(0, 0, width, 70);    //top
+  rect(0, 0, (width-800)/2, height); // left
+  rect(0, 70+600, width, height-670); // bottom
+  rect((width+800)/2, 0, width-(width+800)/2, height); // right
+  text("Layer", 20, 40);
   mode4phase4displayButtons();
 }
 
@@ -419,7 +426,7 @@ void mode4phase5display()
   background(#012E4B);
   mode3displayPhotos();
   text("Pick a photo to add as a layer", 20, 40);
-  mode4phase4displayButtons();
+  mode4phase5displayButtons();
 }
 
 

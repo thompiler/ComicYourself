@@ -172,15 +172,17 @@ public void mode1export()
     // 1. create white pimage with dimensions to fit all panels
 
     int border = 15;
-    PImage comicStrip = createImage(border + (border + 640)*numPanels, 480 + 2 * border, RGB);
+    PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
     comicStrip.loadPixels();
 
-    for (int i = 0; i < (border + (border + 640)*numPanels); i++)
+    println("numPanels: "+numPanels+",  numHalfPanels: " + numHalfPanels+ ",  diff: "+(numPanels - numHalfPanels));
+
+    for (int i = 0; i < (border + (border + 640)*(numPanels - numHalfPanels/2)); i++)
       for (int j = 0; j < 480 + 2 * border; j++)
-        comicStrip.pixels[j*(border + (border + 640)*numPanels) + i] = color(255, 255, 255);
+        comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
 
     // 2. loop through panels and write them to output pimage
-    for(int i = 0; i < numPanels; i++)
+/*    for(int i = 0; i < numPanels; i++)
     {
       int cX = border + (640 + border) * i;
       int cY = border;
@@ -193,6 +195,42 @@ public void mode1export()
         }
       }
     }
+*/
+        // 2. loop through panels and write them to output pimage
+    int numBlocks = 0;
+
+    for(int i = 0; i < numPanels; i++)
+    {
+      boolean written = false;
+      println(i);
+      int cX = border + (640 + border) * numBlocks;
+      int cY = border;
+      Panels[i].loadPixels();
+
+      if(PanelSizes[i] == 1)
+      {
+        comicStrip.copy(Panels[i], 0, 0, 640, 480, cX, cY, 640, 480);
+      }
+      else if(PanelSizes[i] == 2) 
+      {
+        if(i > 0)
+        {
+          int cX2 = border + (640 + border) * (numBlocks-1);
+          int cY2 = border + 480/2;
+          if(PanelSizes[i-1] == 2)
+          {
+            comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
+            numBlocks--;
+            written = true;
+          }
+        }
+        if(!written)
+          comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX, cY, 640, 480/2);
+      }
+      numBlocks++;
+    }
+
+
     displayExportedComic = true;
     comicStrip.updatePixels();
     exportedComic = comicStrip;

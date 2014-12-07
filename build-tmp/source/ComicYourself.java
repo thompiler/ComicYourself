@@ -77,6 +77,8 @@ int [] Layers;
 int [] LayersX;
 int [] LayersY;
 int numLayers = 0;
+int [] PanelSizes;
+int numHalfPanels = 0;
 
 
 
@@ -100,6 +102,7 @@ public void setup()
 	Layers = new int[10];
 	LayersX = new int[10];
 	LayersY = new int[10];
+	PanelSizes = new int[20];
 
 	//added by Jason
 	mode2Calibration = webcam.get();
@@ -302,7 +305,7 @@ public void mouseDragged()
 			println("mouseDragged");
  			flag = 1;
  		}
- 		if(phase == 4)
+ 		if(phase == 4 && numLayers > 0)
  		{
  			LayersX[numLayers-1] = mouseX;
  			LayersY[numLayers-1] = mouseY;
@@ -746,10 +749,17 @@ public void mode3phase2displayButtons()
       ;
 
     cp5.addButton("mode3phase2save")
-      .setPosition(width/2 + 10, 677)
-      .setCaptionLabel("S")
+      .setPosition(width/2 - 40, 677)
+      .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 40)
+      .setSize(80, 40)
+      ;
+
+    cp5.addButton("mode3phase2saveHalf")
+      .setPosition(width/2 + 60, 677)
+      .setCaptionLabel("Save Half")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(120, 40)
       ;
 
     displayButtons = false;
@@ -782,9 +792,29 @@ public void mode3phase2save()
   // Save copy of selected photo in panel array
   PImage newPanel = Photos[currentPhotoIndex];
   Panels[numPanels] = newPanel;
+  PanelSizes[numPanels] = 1;
   numPanels++;
 }
 
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase2saveHalf()
+{
+  println("button: save half panel");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // Save copy of selected photo in panel array
+  PImage newHalfPanel = createImage(640, 480/2, RGB); 
+  newHalfPanel.copy(Photos[currentPhotoIndex], 0, 0, 640, 480/2, 0, 0, 640, 480/2);
+  Panels[numPanels] = newHalfPanel;
+  PanelSizes[numPanels] = 2;
+  numPanels++;
+  numHalfPanels++;
+}
 
 
 //__________________________________________________________________________________________________________________________
@@ -1131,7 +1161,6 @@ public void mode4phase4display()
   textFont(font);
   fill(0xff817575);
   background(0xff012E4B);
-  text("Layer", 20, 40);
   displayPhoto(currentPhotoIndex);
 
   for(int i = 0; i < numLayers; i++)
@@ -1141,6 +1170,14 @@ public void mode4phase4display()
     println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
     image(Photos[Layers[i]], LayersX[i], LayersY[i], layerWidth, layerHeight);
   }
+
+  noStroke();
+  fill(0xff012E4B);
+  rect(0, 0, width, 70);    //top
+  rect(0, 0, (width-800)/2, height); // left
+  rect(0, 70+600, width, height-670); // bottom
+  rect((width+800)/2, 0, width-(width+800)/2, height); // right
+  text("Layer", 20, 40);
   mode4phase4displayButtons();
 }
 
@@ -1232,7 +1269,7 @@ public void mode4phase5display()
   background(0xff012E4B);
   mode3displayPhotos();
   text("Pick a photo to add as a layer", 20, 40);
-  mode4phase4displayButtons();
+  mode4phase5displayButtons();
 }
 
 
@@ -1557,15 +1594,17 @@ public void mode1export()
     // 1. create white pimage with dimensions to fit all panels
 
     int border = 15;
-    PImage comicStrip = createImage(border + (border + 640)*numPanels, 480 + 2 * border, RGB);
+    PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
     comicStrip.loadPixels();
 
-    for (int i = 0; i < (border + (border + 640)*numPanels); i++)
+    println("numPanels: "+numPanels+",  numHalfPanels: " + numHalfPanels+ ",  diff: "+(numPanels - numHalfPanels));
+
+    for (int i = 0; i < (border + (border + 640)*(numPanels - numHalfPanels/2)); i++)
       for (int j = 0; j < 480 + 2 * border; j++)
-        comicStrip.pixels[j*(border + (border + 640)*numPanels) + i] = color(255, 255, 255);
+        comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
 
     // 2. loop through panels and write them to output pimage
-    for(int i = 0; i < numPanels; i++)
+/*    for(int i = 0; i < numPanels; i++)
     {
       int cX = border + (640 + border) * i;
       int cY = border;
@@ -1578,6 +1617,42 @@ public void mode1export()
         }
       }
     }
+*/
+        // 2. loop through panels and write them to output pimage
+    int numBlocks = 0;
+
+    for(int i = 0; i < numPanels; i++)
+    {
+      boolean written = false;
+      println(i);
+      int cX = border + (640 + border) * numBlocks;
+      int cY = border;
+      Panels[i].loadPixels();
+
+      if(PanelSizes[i] == 1)
+      {
+        comicStrip.copy(Panels[i], 0, 0, 640, 480, cX, cY, 640, 480);
+      }
+      else if(PanelSizes[i] == 2) 
+      {
+        if(i > 0)
+        {
+          int cX2 = border + (640 + border) * (numBlocks-1);
+          int cY2 = border + 480/2;
+          if(PanelSizes[i-1] == 2)
+          {
+            comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
+            numBlocks--;
+            written = true;
+          }
+        }
+        if(!written)
+          comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX, cY, 640, 480/2);
+      }
+      numBlocks++;
+    }
+
+
     displayExportedComic = true;
     comicStrip.updatePixels();
     exportedComic = comicStrip;

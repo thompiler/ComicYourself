@@ -70,10 +70,17 @@ void mode3phase2displayButtons()
       ;
 
     cp5.addButton("mode3phase2save")
-      .setPosition(width/2 + 10, 677)
-      .setCaptionLabel("S")
+      .setPosition(width/2 - 40, 677)
+      .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 40)
+      .setSize(80, 40)
+      ;
+
+    cp5.addButton("mode3phase2saveHalf")
+      .setPosition(width/2 + 60, 677)
+      .setCaptionLabel("Save Half")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(120, 40)
       ;
 
     displayButtons = false;
@@ -106,9 +113,29 @@ public void mode3phase2save()
   // Save copy of selected photo in panel array
   PImage newPanel = Photos[currentPhotoIndex];
   Panels[numPanels] = newPanel;
+  PanelSizes[numPanels] = 1;
   numPanels++;
 }
 
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase2saveHalf()
+{
+  println("button: save half panel");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // Save copy of selected photo in panel array
+  PImage newHalfPanel = createImage(640, 480/2, RGB); 
+  newHalfPanel.copy(Photos[currentPhotoIndex], 0, 0, 640, 480/2, 0, 0, 640, 480/2);
+  Panels[numPanels] = newHalfPanel;
+  PanelSizes[numPanels] = 2;
+  numPanels++;
+  numHalfPanels++;
+}
 
 
 //__________________________________________________________________________________________________________________________

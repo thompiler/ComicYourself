@@ -56,6 +56,8 @@ int [] Layers;
 int [] LayersX;
 int [] LayersY;
 int numLayers = 0;
+int [] PanelSizes;
+int numHalfPanels = 0;
 
 
 
@@ -79,6 +81,7 @@ void setup()
 	Layers = new int[10];
 	LayersX = new int[10];
 	LayersY = new int[10];
+	PanelSizes = new int[20];
 
 	//added by Jason
 	mode2Calibration = webcam.get();
@@ -281,7 +284,7 @@ void mouseDragged()
 			println("mouseDragged");
  			flag = 1;
  		}
- 		if(phase == 4)
+ 		if(phase == 4 && numLayers > 0)
  		{
  			LayersX[numLayers-1] = mouseX;
  			LayersY[numLayers-1] = mouseY;
