@@ -52,8 +52,10 @@ void drawOverview()
   }
   for(int i = 0; i < numPanels; i++) 
   {
-    image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
-
+    if(PanelSizes[i] == 1)
+      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+    else if(PanelSizes[i] == 2)
+      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 30);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -174,29 +176,12 @@ public void mode1export()
     int border = 15;
     PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
     comicStrip.loadPixels();
-
-    println("numPanels: "+numPanels+",  numHalfPanels: " + numHalfPanels+ ",  diff: "+(numPanels - numHalfPanels));
-
-    for (int i = 0; i < (border + (border + 640)*(numPanels - numHalfPanels/2)); i++)
+    int Max = (border + (border + 640)*(numPanels - numHalfPanels/2));
+    for (int i = 0; i < Max; i++)
       for (int j = 0; j < 480 + 2 * border; j++)
         comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
 
     // 2. loop through panels and write them to output pimage
-/*    for(int i = 0; i < numPanels; i++)
-    {
-      int cX = border + (640 + border) * i;
-      int cY = border;
-      Panels[i].loadPixels();
-      for(int x = 0; x < 640; x++)
-      {
-        for(int y = 0; y < 480; y++)
-        {
-          comicStrip.pixels[y*comicStrip.width + cY*comicStrip.width + cX + x] = Panels[i].pixels[y*640 + x];
-        }
-      }
-    }
-*/
-        // 2. loop through panels and write them to output pimage
     int numBlocks = 0;
 
     for(int i = 0; i < numPanels; i++)

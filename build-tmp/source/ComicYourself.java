@@ -79,7 +79,8 @@ int [] LayersY;
 int numLayers = 0;
 int [] PanelSizes;
 int numHalfPanels = 0;
-
+int halfX = (width - 800)/2;
+int halfY = 70;
 
 
 
@@ -190,6 +191,10 @@ public void draw()
 			// display save or discard buttons
 			displayPhoto(currentPhotoIndex);
 			mode3phase2displayButtons();
+		}
+		else if(phase == 3)
+		{
+			mode3phase3display();
 		}
 	}
 	else if(mode == 4) // edit photo mode
@@ -310,6 +315,15 @@ public void mouseDragged()
  			LayersX[numLayers-1] = mouseX;
  			LayersY[numLayers-1] = mouseY;
  		}
+ 	}
+ 	else if(mode == 3 && phase == 3)
+ 	{
+ 		if(mouseY < 70)
+ 			halfY = 70; 
+ 		else if(mouseY > (70+300))
+ 			halfY = 70+300;
+ 		else
+ 			halfY = mouseY;
  	}
 }
 
@@ -719,7 +733,6 @@ public void mode3phase1displayButtons()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 public void mode3phase1back()
 {
@@ -729,7 +742,6 @@ public void mode3phase1back()
   cp5.hide();
   displayButtons = true;
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -755,9 +767,9 @@ public void mode3phase2displayButtons()
       .setSize(80, 40)
       ;
 
-    cp5.addButton("mode3phase2saveHalf")
+    cp5.addButton("mode3phase2makeHalf")
       .setPosition(width/2 + 60, 677)
-      .setCaptionLabel("Save Half")
+      .setCaptionLabel("Make Half")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(120, 40)
       ;
@@ -765,7 +777,6 @@ public void mode3phase2displayButtons()
     displayButtons = false;
   }
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -777,7 +788,6 @@ public void mode3phase2back()
   cp5.hide();
   displayButtons = true;
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -797,9 +807,73 @@ public void mode3phase2save()
 }
 
 
+//__________________________________________________________________________________________________________________________
+public void mode3phase2makeHalf()
+{
+  println("button: display half photo");
+  phase = 3;
+  cp5.hide();
+  displayButtons = true;
+  halfX = (width - 800)/2;
+  halfY = 70;
+}
+
+
+//===========================================================================================================================
+public void mode3phase3display()
+{
+  background(0xff012E4B);
+  text("Move the rectangle to pick region to save", 20, 40);
+  mode3phase3displayButtons();
+  displayPhoto(currentPhotoIndex);
+  stroke(255);
+  noFill();
+  strokeWeight(3);
+  rect(halfX, halfY, 800, 300);
+}
+
 
 //__________________________________________________________________________________________________________________________
-public void mode3phase2saveHalf()
+public void mode3phase3displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode3phase3back")
+      .setPosition((width-800)/2, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode3phase3saveHalf")
+      .setPosition(width/2, 677)
+      .setCaptionLabel("Save Region")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(140, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase3back()
+{
+  println("button: back to photo list");
+  mode = 3;
+  phase = 2;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase3saveHalf()
 {
   println("button: save half panel");
   mode = 1;
@@ -809,7 +883,7 @@ public void mode3phase2saveHalf()
 
   // Save copy of selected photo in panel array
   PImage newHalfPanel = createImage(640, 480/2, RGB); 
-  newHalfPanel.copy(Photos[currentPhotoIndex], 0, 0, 640, 480/2, 0, 0, 640, 480/2);
+  newHalfPanel.copy(Photos[currentPhotoIndex], 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
   Panels[numPanels] = newHalfPanel;
   PanelSizes[numPanels] = 2;
   numPanels++;
@@ -1474,8 +1548,10 @@ public void drawOverview()
   }
   for(int i = 0; i < numPanels; i++) 
   {
-    image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
-
+    if(PanelSizes[i] == 1)
+      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+    else if(PanelSizes[i] == 2)
+      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 30);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -1596,29 +1672,12 @@ public void mode1export()
     int border = 15;
     PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
     comicStrip.loadPixels();
-
-    println("numPanels: "+numPanels+",  numHalfPanels: " + numHalfPanels+ ",  diff: "+(numPanels - numHalfPanels));
-
-    for (int i = 0; i < (border + (border + 640)*(numPanels - numHalfPanels/2)); i++)
+    int Max = (border + (border + 640)*(numPanels - numHalfPanels/2));
+    for (int i = 0; i < Max; i++)
       for (int j = 0; j < 480 + 2 * border; j++)
         comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
 
     // 2. loop through panels and write them to output pimage
-/*    for(int i = 0; i < numPanels; i++)
-    {
-      int cX = border + (640 + border) * i;
-      int cY = border;
-      Panels[i].loadPixels();
-      for(int x = 0; x < 640; x++)
-      {
-        for(int y = 0; y < 480; y++)
-        {
-          comicStrip.pixels[y*comicStrip.width + cY*comicStrip.width + cX + x] = Panels[i].pixels[y*640 + x];
-        }
-      }
-    }
-*/
-        // 2. loop through panels and write them to output pimage
     int numBlocks = 0;
 
     for(int i = 0; i < numPanels; i++)

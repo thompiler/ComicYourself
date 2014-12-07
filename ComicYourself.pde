@@ -58,7 +58,8 @@ int [] LayersY;
 int numLayers = 0;
 int [] PanelSizes;
 int numHalfPanels = 0;
-
+int halfX = (width - 800)/2;
+int halfY = 70;
 
 
 
@@ -169,6 +170,10 @@ void draw()
 			// display save or discard buttons
 			displayPhoto(currentPhotoIndex);
 			mode3phase2displayButtons();
+		}
+		else if(phase == 3)
+		{
+			mode3phase3display();
 		}
 	}
 	else if(mode == 4) // edit photo mode
@@ -289,6 +294,15 @@ void mouseDragged()
  			LayersX[numLayers-1] = mouseX;
  			LayersY[numLayers-1] = mouseY;
  		}
+ 	}
+ 	else if(mode == 3 && phase == 3)
+ 	{
+ 		if(mouseY < 70)
+ 			halfY = 70; 
+ 		else if(mouseY > (70+300))
+ 			halfY = 70+300;
+ 		else
+ 			halfY = mouseY;
  	}
 }
 
