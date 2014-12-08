@@ -546,7 +546,7 @@ void mode4phase6display()
   fill(#817575);
   background(#012E4B);
   displayPhoto(currentPhotoIndex);
-  text("Click and drawg crop selection", 20, 40);
+  text("Click and drag crop selection", 20, 40);
   mode4phase6displayButtons();
   if(cropX1 != 0)
   {
