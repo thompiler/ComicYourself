@@ -81,7 +81,11 @@ int [] PanelSizes;
 int numHalfPanels = 0;
 int halfX = (width - 800)/2;
 int halfY = 70;
-
+int rectX1 = 0;
+int rectY1 = 0;
+int rectX2 = 0;
+int rectY2 = 0;
+String textBubble = "";
 
 
 
@@ -249,6 +253,17 @@ public void draw()
 		    mode5phase1displayButtons();	
 		}
 	}
+	else if(mode == 6)
+	{
+		if(phase == 1)
+		{
+			mode6phase1display();
+		}
+		else if(phase == 2)
+		{
+			mode6phase2display();
+		}
+	}
 }
 
 
@@ -294,6 +309,7 @@ public void mousePressed()
 				break;
 		case 4: mode4mousePressed();
 				break;
+		case 6: mode6mousePressed();
 		default: break;
 	}
 }
@@ -325,6 +341,14 @@ public void mouseDragged()
  		else
  			halfY = mouseY;
  	}
+ 	else if(mode == 6 && phase ==1)
+	{
+		if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
+		{
+			rectX2 = mouseX;
+			rectY2 = mouseY;
+		}	
+	}
 }
 
 
@@ -344,7 +368,7 @@ public void controlEvent(ControlEvent c)
 {
 	// For use in Mode 4: Edit Photo
 	// This function sends the values from the color slider into the paint variable
-  	if(c.isFrom(cp))
+  	if(mode == 4 && c.isFrom(cp))
     {
 		int r = PApplet.parseInt(c.getArrayValue(0));
 		int g = PApplet.parseInt(c.getArrayValue(1));
@@ -353,6 +377,21 @@ public void controlEvent(ControlEvent c)
 		paint = color(r, g, b, a);
 		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
   	}
+  	else if( mode == 6 && c.isAssignableFrom(Textfield.class)) 
+  	{
+    	println("controlEvent: accessing a string from controller '"
+            +c.getName()+"': "
+            +c.getStringValue()
+            );
+  	}
+}
+
+
+
+public void input(String theText)
+{
+  // automatically receives results from controller input
+  println("a textfield event for controller 'input' : "+theText);
 }
 // Mode 2: Take a picture
 
@@ -939,8 +978,15 @@ public void mode4phase1displayButtons()
       ;
 
     cp5.addButton("mode4phase1draw")
-      .setPosition(width/2, 677)
+      .setPosition(width/2 - 100, 677)
       .setCaptionLabel("Draw")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    cp5.addButton("mode4phase1text")
+      .setPosition(width/2, 677)
+      .setCaptionLabel("Text")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
@@ -987,6 +1033,18 @@ public void mode4phase1draw()
   paint = color(255, 128, 0, 255);
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1text()
+{
+  println("button: add text to photo");
+  mode = 6;
+  phase = 1;
+  rectX1 = 0;
+  rectY1 = 0;
+  cp5.hide();
+  displayButtons = true;
+}
 
 //__________________________________________________________________________________________________________________________
 public void mode4phase1resize()
@@ -1494,6 +1552,196 @@ public void mode5phase1delete()
 
 
 
+// Add text bubbles mode
+
+//==========================================================================================================================
+public void mode6phase1display()
+{
+	background(0xff012E4B);
+	mode6phase1displayButtons();
+	displayPhoto(currentPhotoIndex);
+	textFont(font);
+	text("Click and drag to make the textbox size.", 20, 40);
+	if(rectX1 != 0)
+	{
+		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
+		fill(255);
+		noStroke();
+		rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1, 7);
+	}
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6phase1displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode6phase1back")
+      .setPosition((width-800)/2, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+      
+   cp5.addButton("mode6phase1save")
+      .setPosition(width/2, 677)
+      .setCaptionLabel("Save")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6phase1back()
+{
+  println("button: back to photo list");
+  mode = 4;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6phase1save()
+{
+  	println("button: save text bubble");
+  	if(rectX1 != 0)
+	{
+	  	phase = 2;
+	  	cp5.hide();
+	  	displayButtons = true;
+	}
+	else
+		text("Please make a rectangle first.", 200, 40);
+
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6mousePressed()
+{
+	if(phase == 1)
+	{
+		if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
+		{
+			rectX1 = mouseX;
+			rectY1 = mouseY;
+		}	
+	}
+}
+
+
+
+//==========================================================================================================================
+public void mode6phase2display()
+{
+	background(0xff012E4B);
+	mode6phase2displayButtons();
+	displayPhoto(currentPhotoIndex);
+	textFont(font);
+	fill(255);
+	text("Enter text", 20, 40);
+	if(rectX1 != 0)
+	{
+		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
+		fill(255);
+		stroke(255);
+		strokeWeight(10);
+		rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1, 7);
+		int triX = rectX1 + (rectX2 - rectX1)/2;
+		int triY = rectY2;
+		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
+		noStroke();
+	}
+	
+	fill(0,0,0);
+	int bubbleBorder = 10;
+	text(cp5.get(Textfield.class,"textBubble").getText(), 
+		rectX1+bubbleBorder, rectY1+bubbleBorder, 
+		rectX2 - rectX1 - bubbleBorder, rectY2 - rectY1 - bubbleBorder);
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6phase2displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode6phase2back")
+		.setPosition((width-800)/2, 677)
+		.setCaptionLabel("<")
+		.align(CENTER,CENTER,CENTER,CENTER)
+		.setSize(40, 40)
+		;
+      
+   	cp5.addButton("mode6phase2save")
+		.setPosition(width/2, 677)
+		.setCaptionLabel("Save")
+		.align(CENTER,CENTER,CENTER,CENTER)
+		.setSize(80, 40)
+		;
+
+	cp5.addTextfield("textBubble")
+		.setCaptionLabel("Add text")
+		.setPosition(width/2, 5)
+		.setSize(200,40)
+		.setFont(smallFont)
+		.setFocus(true)
+		.setColor(color(255,0,0))
+		;
+
+    displayButtons = false;
+  }
+}
+
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6phase2back()
+{
+  println("button: back to photo list");
+  mode = 4;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode6phase2save()
+{
+	println("button: save to photo list");
+	mode = 1;
+	phase = 1;
+	cp5.hide();
+	displayButtons = true;
+
+	// save edited photo to photo list
+	PImage screenShot = get();
+  	editPhoto = createImage(640, 480, RGB);
+	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
+	Photos[numPhotos] = editPhoto;
+	numPhotos++;
+}
 // Mode 0: Start Screen
 // Mode 1: Overview
 

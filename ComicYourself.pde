@@ -60,7 +60,11 @@ int [] PanelSizes;
 int numHalfPanels = 0;
 int halfX = (width - 800)/2;
 int halfY = 70;
-
+int rectX1 = 0;
+int rectY1 = 0;
+int rectX2 = 0;
+int rectY2 = 0;
+String textBubble = "";
 
 
 
@@ -228,6 +232,17 @@ void draw()
 		    mode5phase1displayButtons();	
 		}
 	}
+	else if(mode == 6)
+	{
+		if(phase == 1)
+		{
+			mode6phase1display();
+		}
+		else if(phase == 2)
+		{
+			mode6phase2display();
+		}
+	}
 }
 
 
@@ -273,6 +288,7 @@ void mousePressed()
 				break;
 		case 4: mode4mousePressed();
 				break;
+		case 6: mode6mousePressed();
 		default: break;
 	}
 }
@@ -304,6 +320,14 @@ void mouseDragged()
  		else
  			halfY = mouseY;
  	}
+ 	else if(mode == 6 && phase ==1)
+	{
+		if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
+		{
+			rectX2 = mouseX;
+			rectY2 = mouseY;
+		}	
+	}
 }
 
 
@@ -323,7 +347,7 @@ public void controlEvent(ControlEvent c)
 {
 	// For use in Mode 4: Edit Photo
 	// This function sends the values from the color slider into the paint variable
-  	if(c.isFrom(cp))
+  	if(mode == 4 && c.isFrom(cp))
     {
 		int r = int(c.getArrayValue(0));
 		int g = int(c.getArrayValue(1));
@@ -332,4 +356,19 @@ public void controlEvent(ControlEvent c)
 		paint = color(r, g, b, a);
 		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
   	}
+  	else if( mode == 6 && c.isAssignableFrom(Textfield.class)) 
+  	{
+    	println("controlEvent: accessing a string from controller '"
+            +c.getName()+"': "
+            +c.getStringValue()
+            );
+  	}
+}
+
+
+
+public void input(String theText)
+{
+  // automatically receives results from controller input
+  println("a textfield event for controller 'input' : "+theText);
 }

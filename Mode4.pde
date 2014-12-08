@@ -22,8 +22,15 @@ void mode4phase1displayButtons()
       ;
 
     cp5.addButton("mode4phase1draw")
-      .setPosition(width/2, 677)
+      .setPosition(width/2 - 100, 677)
       .setCaptionLabel("Draw")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    cp5.addButton("mode4phase1text")
+      .setPosition(width/2, 677)
+      .setCaptionLabel("Text")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
@@ -70,6 +77,18 @@ public void mode4phase1draw()
   paint = color(255, 128, 0, 255);
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1text()
+{
+  println("button: add text to photo");
+  mode = 6;
+  phase = 1;
+  rectX1 = 0;
+  rectY1 = 0;
+  cp5.hide();
+  displayButtons = true;
+}
 
 //__________________________________________________________________________________________________________________________
 public void mode4phase1resize()
