@@ -28,6 +28,13 @@ void mode4phase1displayButtons()
       .setSize(80, 40)
       ;
 
+    cp5.addButton("mode4phase1select")
+      .setPosition(width/2 - 200, 677)
+      .setCaptionLabel("Select")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
     cp5.addButton("mode4phase1text")
       .setPosition(width/2, 677)
       .setCaptionLabel("Text")
@@ -60,6 +67,15 @@ public void mode4phase1back()
   println("button: back to photo list");
   mode = 1;
   phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase1select()
+{
+  phase = 6;
   cp5.hide();
   displayButtons = true;
 }
@@ -511,4 +527,91 @@ void mode4mousePressed()
       }
     }
   }
+  else if(phase == 6)
+  {
+    if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
+    {
+      cropX1 = mouseX;
+      cropY1 = mouseY;
+    }
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mode4phase6display()
+{
+  textFont(font);
+  fill(#817575);
+  background(#012E4B);
+  displayPhoto(currentPhotoIndex);
+  text("Click and drawg crop selection", 20, 40);
+  mode4phase6displayButtons();
+  if(cropX1 != 0)
+  {
+    noFill();
+    strokeWeight(3);
+    stroke(255);
+    rect(cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1);
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+void mode4phase6displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode4phase6back")
+      .setPosition((width-800)/2, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode4phase6save")
+      .setPosition((width)/2, 677)
+      .setCaptionLabel("Save")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase6back()
+{
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase6save()
+{
+  println("button: cropped photo saved to photo list");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // save edited photo to photo list
+  displayPhoto(currentPhotoIndex);
+  PImage screenShot = get();
+  editPhoto = createImage(cropX2 - cropX1, cropY2 - cropY1, RGB);
+  editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropX2 - cropX1, cropY2 - cropY1);
+  Photos[numPhotos] = editPhoto;
+  numPhotos++;
 }

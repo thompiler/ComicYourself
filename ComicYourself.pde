@@ -65,6 +65,10 @@ int rectY1 = 0;
 int rectX2 = 0;
 int rectY2 = 0;
 String textBubble = "";
+int cropX1 = 0;
+int cropY1 = 0;
+int cropX2 = 0;
+int cropY2 = 0;
 
 
 
@@ -220,6 +224,11 @@ void draw()
 			// pick a photo to add as a layer
 			mode4phase5display();
 		}
+		else if(phase == 6)
+		{
+			// select and crop mode
+			mode4phase6display();
+		}
 	}
 	else if(mode == 5)
 	{
@@ -289,6 +298,7 @@ void mousePressed()
 		case 4: mode4mousePressed();
 				break;
 		case 6: mode6mousePressed();
+				break;
 		default: break;
 	}
 }
@@ -309,6 +319,14 @@ void mouseDragged()
  		{
  			LayersX[numLayers-1] = mouseX;
  			LayersY[numLayers-1] = mouseY;
+ 		}
+ 		if(phase == 6)
+ 		{
+ 			if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
+			{
+				cropX2 = mouseX;
+				cropY2 = mouseY;
+			}	
  		}
  	}
  	else if(mode == 3 && phase == 3)
