@@ -78,6 +78,10 @@ public void mode4phase1select()
   phase = 6;
   cp5.hide();
   displayButtons = true;
+  cropX1 = 0;
+  cropY1 = 0;
+  cropX2 = 0;
+  cropY2 = 0;
 }
 
 
@@ -540,7 +544,7 @@ void mode4mousePressed()
 
 
 //__________________________________________________________________________________________________________________________
-void mode4phase6display()
+void mode4phase6display() // Simple selection and crop mode
 {
   textFont(font);
   fill(#817575);
@@ -548,10 +552,10 @@ void mode4phase6display()
   displayPhoto(currentPhotoIndex);
   text("Click and drag crop selection", 20, 40);
   mode4phase6displayButtons();
-  if(cropX1 != 0)
+  if(cropX1 != 0 && cropX2 != 0)
   {
     noFill();
-    strokeWeight(3);
+    strokeWeight(1);
     stroke(255);
     rect(cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1);
   }
@@ -608,10 +612,32 @@ public void mode4phase6save()
   displayButtons = true;
 
   // save edited photo to photo list
+
+  int temp;
+  if(cropX1 > cropX2)
+  {
+    temp = cropX1;
+    cropX1 = cropX2;
+    cropX2 = temp;
+  }
+  if(cropY1 > cropY2)
+  {
+    temp = cropY1;
+    cropY1 = cropY2;
+    cropY2 = temp;
+  }
+
+
   displayPhoto(currentPhotoIndex);
   PImage screenShot = get();
-  editPhoto = createImage(cropX2 - cropX1, cropY2 - cropY1, RGB);
-  editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropX2 - cropX1, cropY2 - cropY1);
+
+  int cropWidth = cropX2 - cropX1;
+  int cropHeight = cropY2 - cropY1;
+  cropWidth = (int)(cropWidth * 0.8);
+  cropHeight = (int)(cropHeight * 0.8);
+
+  editPhoto = createImage(cropWidth, cropHeight, RGB);
+  editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropWidth, cropHeight);
   Photos[numPhotos] = editPhoto;
   numPhotos++;
 }

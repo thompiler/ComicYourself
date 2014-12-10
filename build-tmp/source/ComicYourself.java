@@ -227,6 +227,7 @@ public void draw()
 		}
 		else if(phase == 3)
 		{
+			// Simple resize of full photo
 			textFont(font);
   			fill(0xff817575);
             background(0xff012E4B);
@@ -289,19 +290,23 @@ public void keyPressed()
 		{
 			takePhoto();
 		}
+		if( mode == 2 && phase == 3)
+		{
+			takeCalibrationPhoto();
+		}
 	}
 	if (mode == 4)
 	{
 		switch(key)
 		{
 			case('1'):
-			// method A to change color
-			cp.setArrayValue(new float[] {120, 0, 120, 255});
-			break;
+				// method A to change color
+				cp.setArrayValue(new float[] {120, 0, 120, 255});
+				break;
 			case('2'):
-			// method B to change color
-			cp.setColorValue(color(255, 0, 0, 255));
-			break;
+				// method B to change color
+				cp.setColorValue(color(255, 0, 0, 255));
+				break;
 		}
 	}
 }
@@ -1052,6 +1057,10 @@ public void mode4phase1select()
   phase = 6;
   cp5.hide();
   displayButtons = true;
+  cropX1 = 0;
+  cropY1 = 0;
+  cropX2 = 0;
+  cropY2 = 0;
 }
 
 
@@ -1514,18 +1523,18 @@ public void mode4mousePressed()
 
 
 //__________________________________________________________________________________________________________________________
-public void mode4phase6display()
+public void mode4phase6display() // Simple selection and crop mode
 {
   textFont(font);
   fill(0xff817575);
   background(0xff012E4B);
   displayPhoto(currentPhotoIndex);
-  text("Click and drawg crop selection", 20, 40);
+  text("Click and drag crop selection", 20, 40);
   mode4phase6displayButtons();
-  if(cropX1 != 0)
+  if(cropX1 != 0 && cropX2 != 0)
   {
     noFill();
-    strokeWeight(3);
+    strokeWeight(1);
     stroke(255);
     rect(cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1);
   }
@@ -1582,10 +1591,32 @@ public void mode4phase6save()
   displayButtons = true;
 
   // save edited photo to photo list
+
+  int temp;
+  if(cropX1 > cropX2)
+  {
+    temp = cropX1;
+    cropX1 = cropX2;
+    cropX2 = temp;
+  }
+  if(cropY1 > cropY2)
+  {
+    temp = cropY1;
+    cropY1 = cropY2;
+    cropY2 = temp;
+  }
+
+
   displayPhoto(currentPhotoIndex);
   PImage screenShot = get();
-  editPhoto = createImage(cropX2 - cropX1, cropY2 - cropY1, RGB);
-  editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropX2 - cropX1, cropY2 - cropY1);
+
+  int cropWidth = cropX2 - cropX1;
+  int cropHeight = cropY2 - cropY1;
+  cropWidth = (int)(cropWidth * 0.8f);
+  cropHeight = (int)(cropHeight * 0.8f);
+
+  editPhoto = createImage(cropWidth, cropHeight, RGB);
+  editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropWidth, cropHeight);
   Photos[numPhotos] = editPhoto;
   numPhotos++;
 }
@@ -1683,12 +1714,32 @@ public void mode6phase1display()
 	displayPhoto(currentPhotoIndex);
 	textFont(font);
 	text("Click and drag to make the textbox size.", 20, 40);
-	if(rectX1 != 0)
+	if(rectX1 != 0 && rectX2 != 0)
 	{
 		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
 		fill(255);
-		noStroke();
 		rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1, 7);
+		stroke(255);
+		strokeWeight(10);
+		
+		int triX = rectX1 + (rectX2 - rectX1)/2;
+		int triY = rectY2;
+		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
+		
+
+		/*
+		int tri1 = rectX1 + (rectX2 - rectX1)/3;
+		int tri2 = rectX1 + (rectX2 - rectX1)/4;
+		int tri3 = rectY2 + (rectY2 - rectY1)/6;
+
+		beginShape();
+			vertex(tri1, rectY2);
+			vertex(tri2, tri3);
+			vertex(tri2, rectY2);
+		endShape();
+		*/
+
+		noStroke();
 	}
 }
 
@@ -1775,7 +1826,7 @@ public void mode6phase2display()
 	textFont(font);
 	fill(255);
 	text("Enter text", 20, 40);
-	if(rectX1 != 0)
+	if(rectX1 != 0 && rectX2 != 0)
 	{
 		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
 		fill(255);

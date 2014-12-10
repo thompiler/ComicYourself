@@ -8,12 +8,32 @@ public void mode6phase1display()
 	displayPhoto(currentPhotoIndex);
 	textFont(font);
 	text("Click and drag to make the textbox size.", 20, 40);
-	if(rectX1 != 0)
+	if(rectX1 != 0 && rectX2 != 0)
 	{
 		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
 		fill(255);
-		noStroke();
 		rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1, 7);
+		stroke(255);
+		strokeWeight(10);
+		
+		int triX = rectX1 + (rectX2 - rectX1)/2;
+		int triY = rectY2;
+		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
+		
+
+		/*
+		int tri1 = rectX1 + (rectX2 - rectX1)/3;
+		int tri2 = rectX1 + (rectX2 - rectX1)/4;
+		int tri3 = rectY2 + (rectY2 - rectY1)/6;
+
+		beginShape();
+			vertex(tri1, rectY2);
+			vertex(tri2, tri3);
+			vertex(tri2, rectY2);
+		endShape();
+		*/
+
+		noStroke();
 	}
 }
 
@@ -100,7 +120,7 @@ public void mode6phase2display()
 	textFont(font);
 	fill(255);
 	text("Enter text", 20, 40);
-	if(rectX1 != 0)
+	if(rectX1 != 0 && rectX2 != 0)
 	{
 		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
 		fill(255);

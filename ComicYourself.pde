@@ -206,6 +206,7 @@ void draw()
 		}
 		else if(phase == 3)
 		{
+			// Simple resize of full photo
 			textFont(font);
   			fill(#817575);
             background(#012E4B);
@@ -268,19 +269,23 @@ void keyPressed()
 		{
 			takePhoto();
 		}
+		if( mode == 2 && phase == 3)
+		{
+			takeCalibrationPhoto();
+		}
 	}
 	if (mode == 4)
 	{
 		switch(key)
 		{
 			case('1'):
-			// method A to change color
-			cp.setArrayValue(new float[] {120, 0, 120, 255});
-			break;
+				// method A to change color
+				cp.setArrayValue(new float[] {120, 0, 120, 255});
+				break;
 			case('2'):
-			// method B to change color
-			cp.setColorValue(color(255, 0, 0, 255));
-			break;
+				// method B to change color
+				cp.setColorValue(color(255, 0, 0, 255));
+				break;
 		}
 	}
 }
