@@ -461,10 +461,8 @@ public PImage removeBackground(PImage frame)
         float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
         float diff = dist(r1,g1,b1,r2,g2,b2);
         
-        if(diff < threshold){
+        if(diff < threshold)
               frame.pixels[loc] = color(255);
-        }
-        
       }
     }
     frame.updatePixels(); 
@@ -511,11 +509,30 @@ public void mode2phase1Buttons()
                         .align(CENTER,CENTER,CENTER,CENTER)
                         .setSize(200, 40)
                         ;
+
+                    cp5.addSlider("thresholdSize")
+                            .setCaptionLabel("")
+                            .setPosition((width - 100)/2 - 30, 20)
+                            .setSize(100, 20)
+                            .setRange(20, 150)
+                            //.setDefaultValue(100)
+                            .setValue(70)
+                            //.setNumberOfTickMarks(50)
+                            ;
+
+                  cp5.getController("thresholdSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);        
                 }
 		displayButtons = false;
 	}
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void thresholdSize(int value)
+{
+  println(value);
+  threshold = value;
+}
 
 
 //__________________________________________________________________________________________________________________________

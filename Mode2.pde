@@ -43,10 +43,8 @@ PImage removeBackground(PImage frame)
         float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
         float diff = dist(r1,g1,b1,r2,g2,b2);
         
-        if(diff < threshold){
+        if(diff < threshold)
               frame.pixels[loc] = color(255);
-        }
-        
       }
     }
     frame.updatePixels(); 
@@ -79,25 +77,42 @@ void mode2phase1Buttons()
 			.setSize(40, 40)
 			;
                 
-                cp5.addButton("goToCalibrationPhase")
-                        .setPosition(width/2 + 100, 677)
-                        .setCaptionLabel("Calibrate")
-                        .align(CENTER,CENTER,CENTER,CENTER)
-                        .setSize(110, 40)
-                        ;
+    cp5.addButton("goToCalibrationPhase")
+      .setPosition(width/2 + 100, 677)
+      .setCaptionLabel("Calibrate")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(110, 40)
+      ;
 
-                if(removeBackground){
-                cp5.addButton("backgroundSelection")
-                        .setPosition(width/2 + 250, 677)
-                        .setCaptionLabel("Background")
-                        .align(CENTER,CENTER,CENTER,CENTER)
-                        .setSize(200, 40)
-                        ;
-                }
+    if(removeBackground){
+      cp5.addButton("backgroundSelection")
+        .setPosition(width/2 + 250, 677)
+        .setCaptionLabel("Background")
+        .align(CENTER,CENTER,CENTER,CENTER)
+        .setSize(200, 40)
+        ;
+
+      cp5.addSlider("thresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width - 100)/2 - 30, 20)
+        .setSize(100, 20)
+        .setRange(20, 150)
+        .setValue(70)
+        ;
+
+      cp5.getController("thresholdSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);        
+    }
 		displayButtons = false;
 	}
 }
 
+
+//__________________________________________________________________________________________________________________________
+void thresholdSize(int value)
+{
+  println(value);
+  threshold = value;
+}
 
 
 //__________________________________________________________________________________________________________________________
