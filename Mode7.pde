@@ -8,6 +8,7 @@ public void mode7phase1display()
 	background(#012E4B);
 	mode7phase1displayButtons();
 	text("Search flickr for a photo to add.", 20, 40);
+	text("Use '+' to separate tags.", 20, 80);
 }
 
 
@@ -56,7 +57,6 @@ public void flickrSearchButton()
 	cp5.hide();
 	displayButtons = true;
 	flickrSearchQuery = cp5.get(Textfield.class,"flickrSearchQuery").getText();
-	text("searching...", (width-150)/2, 600);  // this does not display for some reason. I have tried a few different ways...
 	getFlickrData();
 }
 
@@ -65,7 +65,7 @@ public void flickrSearchButton()
 public void mode7phase1back()
 {
 	println("button: back to add photo");
-	mode = 4;
+	mode = 2;
 	phase = 1;
 	cp5.hide();
 	displayButtons = true;
@@ -81,10 +81,19 @@ public void mode7phase2display()
 	text("Showing results for \""+flickrSearchQuery+"\"", 20, 80);
 
 	int x=0, y=0, size = flickrPhotoList.size();
+	float flickrW, flickrH, compW = 640, compH = 480, compAspectRatio = compW/compH;
 
 	for (int i = 0; i < size; i++)
 	{
-		image((PImage) (flickrPhotoList.get(i)), x*width/5, 100+y*height/4);
+		flickrW = (float)flickrPhotoList.get(i).width;
+		flickrH = (float)flickrPhotoList.get(i).height;
+		float aspectRatio = flickrW/flickrH;
+
+		if(aspectRatio >= compAspectRatio)
+			image(flickrPhotoList.get(i), 20 + x*210, 100+y*160, 200, 200 * flickrH/flickrW);
+		else
+			image(flickrPhotoList.get(i), 20 + x*210, 100+y*160, 150 * flickrW/flickrH, 150);
+
 		x++;
 		if (x >= 5)
 		{
@@ -164,10 +173,18 @@ public void getFlickrData()
 		String title = pic.getString("title");
 		println("Photo " + i + " " + title + " " + url);
 		PImage img = loadImage(url);
+
+		if(img.width/img.height >= 640/480)
+			img.resize(640, 640 * img.height/img.width);
+		else
+			img.resize(480 * img.width/img.height, 480);
+		
+		/*
 		img.resize(width/5, width/5 * img.height/img.width);
 
 		if (img.height > height/4)
 			img.resize(height/4 * img.width/img.height, height/4);
+		*/
 
 		flickrPhotoList.add(img);
 	}
@@ -185,10 +202,29 @@ public void mode7mousePressed()
 
 		for(int i = 0; i < size; i++)
 		{
-			photoX = x*width/5;
-			photoY = 100+y*height/4;
-			photoW = flickrPhotoList.get(i).width;
-			photoH = flickrPhotoList.get(i).height;
+
+			float compW = 640, 
+				compH = 480, 
+				compAspectRatio = compW/compH,
+				flickrW = (float)flickrPhotoList.get(i).width,
+				flickrH = (float)flickrPhotoList.get(i).height,
+				aspectRatio = flickrW/flickrH
+				;
+
+			if(aspectRatio >= compAspectRatio)
+			{
+				photoW = 200;
+				photoH = (int)(200 * flickrH/flickrW);
+			}
+			else
+			{
+				photoW = (int)(150 * flickrW/flickrH);
+				photoH = 150;
+			}
+
+
+			photoX = 20 + x*210;
+			photoY = 100+y*160;
 
 			if(mouseY < photoY + photoH && mouseY > photoY 
 				&& mouseX < photoX + photoW && mouseX > photoX)
