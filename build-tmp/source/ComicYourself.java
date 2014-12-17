@@ -34,8 +34,6 @@ public class ComicYourself extends PApplet {
 
 
 
-
-
 //__________________________________________________________________________________________________________________________
 Capture webcam;
 PImage [] Photos;
@@ -91,6 +89,10 @@ int cropY1 = 0;
 int cropX2 = 0;
 int cropY2 = 0;
 
+// Variables for Mode 7: Flickr Search
+String flickrSearchQuery = "";
+boolean showFlickrResults = false;
+
 
 
 //__________________________________________________________________________________________________________________________
@@ -120,8 +122,8 @@ public void setup()
 	Snap = minim.loadFile("snap.wav");
 	Click = minim.loadFile("click.wav");
 	// sound used is from freesound.org
-  	// https://www.freesound.org/people/stijn/sounds/43680/
-  	// https://www.freesound.org/people/Snapper4298/sounds/178186/
+  	//   https://www.freesound.org/people/stijn/sounds/43680/
+  	//   https://www.freesound.org/people/Snapper4298/sounds/178186/
 }
 
 
@@ -274,6 +276,17 @@ public void draw()
 			mode6phase2display();
 		}
 	}
+	else if(mode == 7)
+	{
+		if(phase == 1)
+		{
+			mode7phase1display();
+		}
+		else if(phase == 2)
+		{
+			mode7phase2display();
+		}
+	}
 }
 
 
@@ -417,8 +430,9 @@ public void input(String theText)
   println("a textfield event for controller 'input' : "+theText);
 }
 // Mode 2: Take a picture
+// Author: Jason
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 public void drawCam()
 {  
   textFont(font);
@@ -472,7 +486,7 @@ public PImage removeBackground(PImage frame)
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode2phase1Buttons()
 {
 	if(displayButtons)
@@ -502,6 +516,13 @@ public void mode2phase1Buttons()
       .setSize(110, 40)
       ;
 
+    cp5.addButton("mode2phase1flickr")
+      .setPosition((width+800)/2+10, 70)
+      .setCaptionLabel("flickr")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(100, 40)
+      ;  
+
     if(removeBackground){
       cp5.addButton("backgroundSelection")
         .setPosition(width/2 + 250, 677)
@@ -511,7 +532,7 @@ public void mode2phase1Buttons()
         ;
 
       cp5.addSlider("thresholdSize")
-        .setCaptionLabel("")
+        .setCaptionLabel("Replace threshold")
         .setPosition((width - 100)/2 - 30, 20)
         .setSize(100, 20)
         .setRange(20, 150)
@@ -525,6 +546,65 @@ public void mode2phase1Buttons()
 }
 
 
+
+//__________________________________________________________________________________________________________________________
+public void takePhoto()
+{
+  Snap.play();
+  try
+  {
+    if(removeBackground)
+      mode2Capture = calibratedFrame.get();
+    else if(changeBackground)
+                        mode2Capture = editedFrame.get();                
+                else
+      mode2Capture = frame.get();
+
+
+  }
+  catch(NullPointerException e)
+  {
+    println("Could not capture frame! Null pointer!");
+  }
+
+  phase = 2;
+  cp5.hide();
+  displayButtons = true;
+  mirror(mode2Capture);
+  Photos[numPhotos] = mode2Capture;
+  numPhotos++;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void backButton()
+{
+  mode = 1;
+  cp5.hide();  
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void goToCalibrationPhase()
+{
+  phase = 3;
+  cp5.hide();
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase1flickr()
+{
+  mode = 7;
+  phase = 1;
+  cp5.hide();  
+  displayButtons = true;
+  flickrSearchQuery = "";
+  showFlickrResults = false;
+}
+
 //__________________________________________________________________________________________________________________________
 public void thresholdSize(int value)
 {
@@ -533,7 +613,7 @@ public void thresholdSize(int value)
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode2phase2Buttons()
 {
 	if(displayButtons)
@@ -561,37 +641,6 @@ public void mode2phase2Buttons()
 }
 
 
-
-//__________________________________________________________________________________________________________________________
-public void takePhoto()
-{
-	Snap.play();
-	try
-	{
-		if(removeBackground)
-			mode2Capture = calibratedFrame.get();
-		else if(changeBackground)
-                        mode2Capture = editedFrame.get();                
-                else
-			mode2Capture = frame.get();
-
-
-	}
-	catch(NullPointerException e)
-	{
-		println("Could not capture frame! Null pointer!");
-	}
-
-	phase = 2;
-	cp5.hide();
-	displayButtons = true;
-	mirror(mode2Capture);
-	Photos[numPhotos] = mode2Capture;
-	numPhotos++;
-}
-
-
-
 //__________________________________________________________________________________________________________________________
 public void mirror(PImage capImg) {
   capImg.loadPixels();
@@ -605,23 +654,6 @@ public void mirror(PImage capImg) {
     }
   }
   capImg.updatePixels();
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void backButton()
-{
-	mode = 1;
-	cp5.hide();  
-	displayButtons = true;
-}
-
-public void goToCalibrationPhase()
-{
-        phase = 3;
-        cp5.hide();
-        displayButtons = true;
 }
 
 
@@ -646,7 +678,8 @@ public void mode2phase2back()
 	numPhotos--;
 }
 
-//_________________________________________________________________
+
+//==========================================================================================================================
 public void calibrationPhase()
 {
   textFont(font);
@@ -663,7 +696,7 @@ public void calibrationPhase()
 }
 
 
-//-----------------------------
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode2phase3buttons()
 {
   if(displayButtons)
@@ -691,7 +724,8 @@ public void mode2phase3buttons()
   
 }
 
-//----------------------------------
+
+//__________________________________________________________________________________________________________________________
 public void takeCalibrationPhoto(){
   Snap.play();
   try
@@ -711,7 +745,9 @@ public void takeCalibrationPhoto(){
   
   
 }
-//-----------------------------
+
+
+//__________________________________________________________________________________________________________________________
 public void mode2phase3back()
 {
   phase = 1;
@@ -719,13 +755,8 @@ public void mode2phase3back()
   displayButtons = true;
 }
 
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
 
+//__________________________________________________________________________________________________________________________
 public void loadStockBackground()
 {
   String path = sketchPath+"/stockbackground/"; //folder of images rename as needed
@@ -737,10 +768,14 @@ public void loadStockBackground()
   }
 }
 
+
+//__________________________________________________________________________________________________________________________
 public void imageResize(PImage img){
   img.resize(640,480);
 }
 
+
+//__________________________________________________________________________________________________________________________
 public void backgroundSelection()
 {
   loadStockBackground();
@@ -748,6 +783,8 @@ public void backgroundSelection()
   removeBackground = false;  
 }
 
+
+//__________________________________________________________________________________________________________________________
 public PImage changeBackground(PImage frame)
 {       
         
@@ -789,7 +826,7 @@ public void displayPhoto(int index)
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode3phase1displayButtons()
 {
   if(displayButtons)
@@ -821,7 +858,7 @@ public void mode3phase1back()
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode3phase2displayButtons()
 {
   if(displayButtons)
@@ -910,7 +947,7 @@ public void mode3phase3display()
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode3phase3displayButtons()
 {
   if(displayButtons)
@@ -999,7 +1036,7 @@ public void mode3mousePressed()
 //	Phase 3 = resize a photo
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode4phase1displayButtons()
 {
   if(displayButtons)
@@ -1130,7 +1167,7 @@ public void mode4phase1layer()
 }
 
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 public void mode4phase2draw()
 {
   fill(0xff909090);
@@ -1174,7 +1211,7 @@ public void displayResizedPhoto(int index, float resize)
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode4phase2displayButtons()
 {
   if(displayButtons)
@@ -1270,7 +1307,7 @@ public void picker(int col)
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode4phase3displayButtons()
 {
   if(displayButtons)
@@ -1345,7 +1382,7 @@ public void imageSize(float value)
 
 
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 public void mode4phase4display()
 {
   textFont(font);
@@ -1372,7 +1409,7 @@ public void mode4phase4display()
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode4phase4displayButtons()
 {
   if(displayButtons)
@@ -1451,7 +1488,7 @@ public void mode4phase4addPhoto()
 }
 
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 public void mode4phase5display()
 {
   textFont(font);
@@ -1464,7 +1501,7 @@ public void mode4phase5display()
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode4phase5displayButtons()
 {
   if(displayButtons)
@@ -1537,7 +1574,7 @@ public void mode4mousePressed()
 
 
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 public void mode4phase6display() // Simple selection and crop mode
 {
   textFont(font);
@@ -1557,7 +1594,7 @@ public void mode4phase6display() // Simple selection and crop mode
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode4phase6displayButtons()
 {
   if(displayButtons)
@@ -1592,8 +1629,6 @@ public void mode4phase6back()
   cp5.hide();
   displayButtons = true;
 }
-
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -1646,7 +1681,7 @@ public void displayPanel(int index)
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode5phase1displayButtons()
 {
 	if(displayButtons)
@@ -1721,6 +1756,7 @@ public void mode5phase1delete()
 
 // Add text bubbles mode
 
+
 //==========================================================================================================================
 public void mode6phase1display()
 {
@@ -1760,7 +1796,7 @@ public void mode6phase1display()
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode6phase1displayButtons()
 {
   if(displayButtons)
@@ -1862,7 +1898,7 @@ public void mode6phase2display()
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode6phase2displayButtons()
 {
   if(displayButtons)
@@ -1929,6 +1965,120 @@ public void mode6phase2save()
 	Photos[numPhotos] = editPhoto;
 	numPhotos++;
 }
+// file: Mode7.pde
+// description: Mode 7 allows the user to search flickr for a photo and add that photo to their project
+
+
+//==========================================================================================================================
+public void mode7phase1display()
+{
+	background(0xff012E4B);
+	mode7phase1displayButtons();
+	text("Search flickr for a photo to add.", 20, 40);
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+public void mode7phase1displayButtons()
+{
+	if(displayButtons)
+	{
+	    cp5 = new ControlP5(this);
+
+	    cp5.setControlFont(buttonFont);
+
+	    cp5.addButton("mode7phase1back")
+			.setPosition((width-800)/2, 677)
+			.setCaptionLabel("<")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
+			;
+
+		cp5.addTextfield("flickrSearchQuery")
+			.setCaptionLabel("Enter Query")
+			.setPosition((width-290)/2, (height-40)/2)
+			.setSize(200, 40)
+			.setFont(smallFont)
+			.setFocus(true)
+			.setColor(color(255,0,0))
+			;
+
+		cp5.addButton("flickrSearchButton")
+			.setPosition((width+200)/2, (height-40)/2)
+			.setCaptionLabel("Search")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(80, 40)
+	      	;
+
+	    displayButtons = false;
+  	}
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void flickrSearchButton()
+{
+	println("button: flickr search button");
+	phase = 2;
+	cp5.hide();
+	displayButtons = true;
+	showFlickrResults = true;
+	flickrSearchQuery = cp5.get(Textfield.class,"flickrSearchQuery").getText();
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode7phase1back()
+{
+	println("button: back to add photo");
+	mode = 4;
+	phase = 1;
+	cp5.hide();
+	displayButtons = true;
+}
+
+
+//==========================================================================================================================
+public void mode7phase2display()
+{
+	background(0xff012E4B);
+	mode7phase2displayButtons();
+	text("Click on a photo to add.", 20, 40);
+	text("Show results for \""+flickrSearchQuery+"\"", 20, 80);
+
+
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+public void mode7phase2displayButtons()
+{
+	if(displayButtons)
+	{
+	    cp5 = new ControlP5(this);
+
+	    cp5.setControlFont(buttonFont);
+
+	    cp5.addButton("mode7phase2back")
+			.setPosition(width-60, 20)
+			.setCaptionLabel("<")
+			.align(CENTER,CENTER,CENTER,CENTER)
+			.setSize(40, 40)
+			;
+
+		displayButtons = false;
+  	}
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode7phase2back()
+{
+	phase = 1;
+	cp5.hide();
+	displayButtons = true;
+	flickrSearchQuery = "";
+}
 // Mode 0: Start Screen
 // Mode 1: Overview
 
@@ -1944,7 +2094,7 @@ public void drawStartScreen()
 
 
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 public void drawOverview()
 {
   background(0xff012E4B);
@@ -2005,7 +2155,7 @@ public void drawOverview()
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void displayStartButton()
 {
   cp5 = new ControlP5(this);
@@ -2022,7 +2172,7 @@ public void displayStartButton()
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void displayAddButtons()
 {
   if(displayButtons)

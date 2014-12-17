@@ -13,8 +13,6 @@ import controlP5.*;
 import ddf.minim.* ;
 
 
-
-
 //__________________________________________________________________________________________________________________________
 Capture webcam;
 PImage [] Photos;
@@ -70,6 +68,10 @@ int cropY1 = 0;
 int cropX2 = 0;
 int cropY2 = 0;
 
+// Variables for Mode 7: Flickr Search
+String flickrSearchQuery = "";
+boolean showFlickrResults = false;
+
 
 
 //__________________________________________________________________________________________________________________________
@@ -99,8 +101,8 @@ void setup()
 	Snap = minim.loadFile("snap.wav");
 	Click = minim.loadFile("click.wav");
 	// sound used is from freesound.org
-  	// https://www.freesound.org/people/stijn/sounds/43680/
-  	// https://www.freesound.org/people/Snapper4298/sounds/178186/
+  	//   https://www.freesound.org/people/stijn/sounds/43680/
+  	//   https://www.freesound.org/people/Snapper4298/sounds/178186/
 }
 
 
@@ -251,6 +253,17 @@ void draw()
 		else if(phase == 2)
 		{
 			mode6phase2display();
+		}
+	}
+	else if(mode == 7)
+	{
+		if(phase == 1)
+		{
+			mode7phase1display();
+		}
+		else if(phase == 2)
+		{
+			mode7phase2display();
 		}
 	}
 }

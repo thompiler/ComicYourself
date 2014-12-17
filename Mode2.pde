@@ -1,4 +1,5 @@
 // Mode 2: Take a picture
+// Author: Jason
 
 //==========================================================================================================================
 void drawCam()
@@ -85,10 +86,10 @@ void mode2phase1Buttons()
       ;
 
     cp5.addButton("mode2phase1flickr")
-      .setPosition(width/2 + 100, 677)
-      .setCaptionLabel("Calibrate")
+      .setPosition((width+800)/2+10, 70)
+      .setCaptionLabel("flickr")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(110, 40)
+      .setSize(100, 40)
       ;  
 
     if(removeBackground){
@@ -156,11 +157,22 @@ public void backButton()
 //__________________________________________________________________________________________________________________________
 public void goToCalibrationPhase()
 {
-        phase = 3;
-        cp5.hide();
-        displayButtons = true;
+  phase = 3;
+  cp5.hide();
+  displayButtons = true;
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase1flickr()
+{
+  mode = 7;
+  phase = 1;
+  cp5.hide();  
+  displayButtons = true;
+  flickrSearchQuery = "";
+  showFlickrResults = false;
+}
 
 //__________________________________________________________________________________________________________________________
 void thresholdSize(int value)
