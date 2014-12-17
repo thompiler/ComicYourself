@@ -1,6 +1,6 @@
 // Mode 2: Take a picture
 
-//__________________________________________________________________________________________________________________________
+//==========================================================================================================================
 void drawCam()
 {  
   textFont(font);
@@ -54,7 +54,7 @@ PImage removeBackground(PImage frame)
 
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void mode2phase1Buttons()
 {
 	if(displayButtons)
@@ -84,6 +84,13 @@ void mode2phase1Buttons()
       .setSize(110, 40)
       ;
 
+    cp5.addButton("mode2phase1flickr")
+      .setPosition(width/2 + 100, 677)
+      .setCaptionLabel("Calibrate")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(110, 40)
+      ;  
+
     if(removeBackground){
       cp5.addButton("backgroundSelection")
         .setPosition(width/2 + 250, 677)
@@ -93,7 +100,7 @@ void mode2phase1Buttons()
         ;
 
       cp5.addSlider("thresholdSize")
-        .setCaptionLabel("")
+        .setCaptionLabel("Replace threshold")
         .setPosition((width - 100)/2 - 30, 20)
         .setSize(100, 20)
         .setRange(20, 150)
@@ -107,6 +114,54 @@ void mode2phase1Buttons()
 }
 
 
+
+//__________________________________________________________________________________________________________________________
+public void takePhoto()
+{
+  Snap.play();
+  try
+  {
+    if(removeBackground)
+      mode2Capture = calibratedFrame.get();
+    else if(changeBackground)
+                        mode2Capture = editedFrame.get();                
+                else
+      mode2Capture = frame.get();
+
+
+  }
+  catch(NullPointerException e)
+  {
+    println("Could not capture frame! Null pointer!");
+  }
+
+  phase = 2;
+  cp5.hide();
+  displayButtons = true;
+  mirror(mode2Capture);
+  Photos[numPhotos] = mode2Capture;
+  numPhotos++;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void backButton()
+{
+  mode = 1;
+  cp5.hide();  
+  displayButtons = true;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void goToCalibrationPhase()
+{
+        phase = 3;
+        cp5.hide();
+        displayButtons = true;
+}
+
+
 //__________________________________________________________________________________________________________________________
 void thresholdSize(int value)
 {
@@ -115,7 +170,7 @@ void thresholdSize(int value)
 }
 
 
-//__________________________________________________________________________________________________________________________
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void mode2phase2Buttons()
 {
 	if(displayButtons)
@@ -143,37 +198,6 @@ void mode2phase2Buttons()
 }
 
 
-
-//__________________________________________________________________________________________________________________________
-public void takePhoto()
-{
-	Snap.play();
-	try
-	{
-		if(removeBackground)
-			mode2Capture = calibratedFrame.get();
-		else if(changeBackground)
-                        mode2Capture = editedFrame.get();                
-                else
-			mode2Capture = frame.get();
-
-
-	}
-	catch(NullPointerException e)
-	{
-		println("Could not capture frame! Null pointer!");
-	}
-
-	phase = 2;
-	cp5.hide();
-	displayButtons = true;
-	mirror(mode2Capture);
-	Photos[numPhotos] = mode2Capture;
-	numPhotos++;
-}
-
-
-
 //__________________________________________________________________________________________________________________________
 void mirror(PImage capImg) {
   capImg.loadPixels();
@@ -187,23 +211,6 @@ void mirror(PImage capImg) {
     }
   }
   capImg.updatePixels();
-}
-
-
-
-//__________________________________________________________________________________________________________________________
-public void backButton()
-{
-	mode = 1;
-	cp5.hide();  
-	displayButtons = true;
-}
-
-public void goToCalibrationPhase()
-{
-        phase = 3;
-        cp5.hide();
-        displayButtons = true;
 }
 
 
@@ -228,7 +235,8 @@ public void mode2phase2back()
 	numPhotos--;
 }
 
-//_________________________________________________________________
+
+//==========================================================================================================================
 public void calibrationPhase()
 {
   textFont(font);
@@ -245,7 +253,7 @@ public void calibrationPhase()
 }
 
 
-//-----------------------------
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode2phase3buttons()
 {
   if(displayButtons)
@@ -273,7 +281,8 @@ public void mode2phase3buttons()
   
 }
 
-//----------------------------------
+
+//__________________________________________________________________________________________________________________________
 public void takeCalibrationPhoto(){
   Snap.play();
   try
@@ -293,7 +302,9 @@ public void takeCalibrationPhoto(){
   
   
 }
-//-----------------------------
+
+
+//__________________________________________________________________________________________________________________________
 public void mode2phase3back()
 {
   phase = 1;
@@ -301,13 +312,8 @@ public void mode2phase3back()
   displayButtons = true;
 }
 
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
-//_________________________________________________________________
 
+//__________________________________________________________________________________________________________________________
 public void loadStockBackground()
 {
   String path = sketchPath+"/stockbackground/"; //folder of images rename as needed
@@ -319,10 +325,14 @@ public void loadStockBackground()
   }
 }
 
+
+//__________________________________________________________________________________________________________________________
 public void imageResize(PImage img){
   img.resize(640,480);
 }
 
+
+//__________________________________________________________________________________________________________________________
 public void backgroundSelection()
 {
   loadStockBackground();
@@ -330,6 +340,8 @@ public void backgroundSelection()
   removeBackground = false;  
 }
 
+
+//__________________________________________________________________________________________________________________________
 PImage changeBackground(PImage frame)
 {       
         
