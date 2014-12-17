@@ -70,8 +70,9 @@ int cropY2 = 0;
 
 // Variables for Mode 7: Flickr Search
 String flickrSearchQuery = "";
-boolean showFlickrResults = false;
-
+ArrayList <PImage> flickrPhotoList;
+JSONObject json;
+int flickrPhotoIndex;
 
 
 //__________________________________________________________________________________________________________________________
@@ -103,6 +104,9 @@ void setup()
 	// sound used is from freesound.org
   	//   https://www.freesound.org/people/stijn/sounds/43680/
   	//   https://www.freesound.org/people/Snapper4298/sounds/178186/
+
+  	// added in mode 7
+  	flickrPhotoList = new ArrayList <PImage> ();
 }
 
 
@@ -247,24 +251,18 @@ void draw()
 	else if(mode == 6)
 	{
 		if(phase == 1)
-		{
 			mode6phase1display();
-		}
 		else if(phase == 2)
-		{
 			mode6phase2display();
-		}
 	}
-	else if(mode == 7)
+	else if(mode == 7) // Flickr image search mode
 	{
 		if(phase == 1)
-		{
 			mode7phase1display();
-		}
 		else if(phase == 2)
-		{
-			mode7phase2display();
-		}
+			mode7phase2display();		
+		else if(phase == 3)
+			mode7phase3display();
 	}
 }
 
@@ -279,14 +277,11 @@ void keyPressed()
 	if (key == ' ')
 	{
 		if( mode == 2 && phase == 1)
-		{
 			takePhoto();
-		}
 		if( mode == 2 && phase == 3)
-		{
 			takeCalibrationPhoto();
-		}
 	}
+	/*
 	if (mode == 4)
 	{
 		switch(key)
@@ -301,6 +296,7 @@ void keyPressed()
 				break;
 		}
 	}
+	*/
 }
 
 
@@ -316,6 +312,8 @@ void mousePressed()
 		case 4: mode4mousePressed();
 				break;
 		case 6: mode6mousePressed();
+				break;
+		case 7: mode7mousePressed();
 				break;
 		default: break;
 	}

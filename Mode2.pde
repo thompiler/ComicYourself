@@ -171,7 +171,6 @@ public void mode2phase1flickr()
   cp5.hide();  
   displayButtons = true;
   flickrSearchQuery = "";
-  showFlickrResults = false;
 }
 
 //__________________________________________________________________________________________________________________________

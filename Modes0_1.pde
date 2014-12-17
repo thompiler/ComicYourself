@@ -5,10 +5,7 @@
 void drawStartScreen()
 {
   PImage startLogo = loadImage("logo.png");
-
-  float x = (width - startLogo.width)/2;
-  float y = (height - startLogo.height)/2;
-  image(startLogo, x, y);  
+  image(startLogo, (width - startLogo.width)/2, (height - startLogo.height)/2);  
 }
 
 
