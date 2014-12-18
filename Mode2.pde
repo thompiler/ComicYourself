@@ -73,23 +73,28 @@ void mode2phase1Buttons()
 		cp5.setControlFont(buttonFont);
 
     int left = (width-800)/2;
+    int offset = 0;
+
+    cp5.addButton("mode2phase1back")
+      .setPosition(left, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    offset += 60;
 
 		cp5.addButton("takePhoto")
-			.setPosition(left + 60, 677)
+			.setPosition(left + offset, 677)
 			.setCaptionLabel("Capture")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(100, 40)
 			;
 
-		cp5.addButton("mode2phase1back")
-			.setPosition(left, 677)
-			.setCaptionLabel("<")
-			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(40, 40)
-			;
+    offset += 110;
                 
     cp5.addButton("goToCalibrationPhase")
-      .setPosition(left + 60 + 110, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Calibrate")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(110, 40)
@@ -102,16 +107,21 @@ void mode2phase1Buttons()
       .setSize(100, 40)
       ;  
 
-    if(removeBackground){
+    if(removeBackground)
+    {
+      offset += 120;
+
       cp5.addButton("backgroundSelection")
-        .setPosition(left + 60 + 110 + 120, 677)
+        .setPosition(left + offset, 677)
         .setCaptionLabel("Background")
         .align(CENTER,CENTER,CENTER,CENTER)
         .setSize(200, 40)
         ;
 
+      offset += 210;
+
       cp5.addButton("pickCustomBackground")
-        .setPosition(left + 60 + 110 + 120 + 210, 677)
+        .setPosition(left + offset, 677)
         .setCaptionLabel("Use Photo")
         .align(CENTER,CENTER,CENTER,CENTER)
         .setSize(200, 40)
@@ -141,11 +151,9 @@ public void takePhoto()
     if(removeBackground)
       mode2Capture = calibratedFrame.get();
     else if(changeBackground)
-                        mode2Capture = editedFrame.get();                
-                else
+      mode2Capture = editedFrame.get();                
+    else
       mode2Capture = frame.get();
-
-
   }
   catch(NullPointerException e)
   {
@@ -219,7 +227,7 @@ void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition(width/2 + 40, 677)
+			.setPosition((width-800)/2 + 20, 677)
 			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(80, 40)
@@ -304,18 +312,18 @@ public void mode2phase3buttons()
 
     int left = (width-800)/2;
 
-    cp5.addButton("takeCalibrationPhoto")
-      .setPosition(left+60, 677)
-      .setCaptionLabel("Capture")
-      .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(100, 40)
-      ;
-
     cp5.addButton("mode2phase3back")
       .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      ;
+
+    cp5.addButton("takeCalibrationPhoto")
+      .setPosition(left+60, 677)
+      .setCaptionLabel("Capture")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(100, 40)
       ;
 
     displayButtons = false;
@@ -325,7 +333,8 @@ public void mode2phase3buttons()
 
 
 //__________________________________________________________________________________________________________________________
-public void takeCalibrationPhoto(){
+public void takeCalibrationPhoto()
+{
   Snap.play();
   try
   {
@@ -359,7 +368,9 @@ public void loadStockBackground()
   String path = sketchPath+"/stockbackground/"; //folder of images rename as needed
   File[] files = listFiles(path);
   stockBackground = new PImage[files.length];
-  for(int i=0; i<files.length; i++){
+
+  for(int i=0; i<files.length; i++)
+  {
     stockBackground[i]=loadImage(files[i].getAbsolutePath());
     imageResize(stockBackground[i]);
   }
@@ -367,7 +378,8 @@ public void loadStockBackground()
 
 
 //__________________________________________________________________________________________________________________________
-public void imageResize(PImage img){
+public void imageResize(PImage img)
+{
   img.resize(640,480);
 }
 
@@ -384,7 +396,6 @@ public void pickCustomBackground()
 //__________________________________________________________________________________________________________________________
 PImage changeBackground(PImage frame)
 {       
-        
     stockBackground[0].loadPixels();
     frame.loadPixels();
     for (int y=0; y<frame.height; y++) {

@@ -247,7 +247,21 @@ public void mode7phase3display()
 {
 	background(#012E4B);
 	mode7phase3displayButtons();
-	image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70);
+
+	float flickrW = (float)flickrPhotoList.get(flickrPhotoIndex).width,
+		flickrH = (float)flickrPhotoList.get(flickrPhotoIndex).height,
+		aspectRatio = flickrW/flickrH,
+		compW = 800,
+		compH = 600,
+		compAspectRatio = compW/compH
+		;
+
+	if(aspectRatio >= compAspectRatio)
+		image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70, 800, 800/aspectRatio);
+	else
+		image(flickrPhotoList.get(flickrPhotoIndex), (width - 600 * aspectRatio)/2, 70, 600 * aspectRatio, 600);
+	println("aspectRatio: "+aspectRatio+"  compAspectRatio: "+compAspectRatio);
+	//image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70);
 }
 
 
@@ -268,7 +282,7 @@ void mode7phase3displayButtons()
 			;
 
 	    cp5.addButton("mode7phase3save")
-			.setPosition(width/2 - 40, 677)
+			.setPosition((width-800)/2 + 60, 677)
 			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(80, 40)
