@@ -1,5 +1,4 @@
 // Mode 2: Take a picture
-// Author: Jason
 
 //==========================================================================================================================
 void drawCam()
@@ -21,7 +20,15 @@ void drawCam()
 		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
 
   else if(changeBackground)
-    image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+  {
+    if(useCustomBackground)
+    {
+      println("yup");
+      image(displayCustomBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+    }
+    else
+      image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+  }
 
 	else
 		image(frame, -(width - 800)/2 -800, 70, 800, 600);	
@@ -29,6 +36,8 @@ void drawCam()
 	popMatrix(); 
 }
 
+
+//__________________________________________________________________________________________________________________________
 PImage removeBackground(PImage frame)
 {       
         
@@ -54,7 +63,6 @@ PImage removeBackground(PImage frame)
 }
 
 
-
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void mode2phase1Buttons()
 {
@@ -64,22 +72,24 @@ void mode2phase1Buttons()
 
 		cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+
 		cp5.addButton("takePhoto")
-			.setPosition(width/2 - 30, 677)
+			.setPosition(left + 60, 677)
 			.setCaptionLabel("Capture")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(100, 40)
 			;
 
-		cp5.addButton("backButton")
-			.setPosition((width-800)/2, 677)
+		cp5.addButton("mode2phase1back")
+			.setPosition(left, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
 			;
                 
     cp5.addButton("goToCalibrationPhase")
-      .setPosition(width/2 + 100, 677)
+      .setPosition(left + 60 + 110, 677)
       .setCaptionLabel("Calibrate")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(110, 40)
@@ -94,8 +104,15 @@ void mode2phase1Buttons()
 
     if(removeBackground){
       cp5.addButton("backgroundSelection")
-        .setPosition(width/2 + 250, 677)
+        .setPosition(left + 60 + 110 + 120, 677)
         .setCaptionLabel("Background")
+        .align(CENTER,CENTER,CENTER,CENTER)
+        .setSize(200, 40)
+        ;
+
+      cp5.addButton("pickCustomBackground")
+        .setPosition(left + 60 + 110 + 120 + 210, 677)
+        .setCaptionLabel("Use Photo")
         .align(CENTER,CENTER,CENTER,CENTER)
         .setSize(200, 40)
         ;
@@ -113,7 +130,6 @@ void mode2phase1Buttons()
 		displayButtons = false;
 	}
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -146,11 +162,14 @@ public void takePhoto()
 
 
 //__________________________________________________________________________________________________________________________
-public void backButton()
+public void mode2phase1back()
 {
   mode = 1;
   cp5.hide();  
   displayButtons = true;
+  removeBackground = false;
+  changeBackground = false;
+  useCustomBackground = false;
 }
 
 
@@ -173,10 +192,19 @@ public void mode2phase1flickr()
   flickrSearchQuery = "";
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void backgroundSelection()
+{
+  loadStockBackground();
+  changeBackground = true;
+  removeBackground = false;  
+}
+
+
 //__________________________________________________________________________________________________________________________
 void thresholdSize(int value)
 {
-  println(value);
   threshold = value;
 }
 
@@ -233,7 +261,8 @@ public void mode2phase2save()
 	cp5.hide();
 	displayButtons = true;
 	removeBackground = false;
-        changeBackground = false;
+  changeBackground = false;
+  useCustomBackground = false;
 }
 
 
@@ -273,15 +302,17 @@ public void mode2phase3buttons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+
     cp5.addButton("takeCalibrationPhoto")
-      .setPosition(width/2 + 10, 677)
-      .setCaptionLabel("C")
+      .setPosition(left+60, 677)
+      .setCaptionLabel("Capture")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(40, 40)
+      .setSize(100, 40)
       ;
 
     cp5.addButton("mode2phase3back")
-      .setPosition((width-800)/20, 677)
+      .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
@@ -310,8 +341,6 @@ public void takeCalibrationPhoto(){
   displayButtons = true;
   //mirror(mode2Calibration);
   removeBackground = true;
-  
-  
 }
 
 
@@ -344,11 +373,11 @@ public void imageResize(PImage img){
 
 
 //__________________________________________________________________________________________________________________________
-public void backgroundSelection()
+public void pickCustomBackground()
 {
-  loadStockBackground();
-  changeBackground = true;
-  removeBackground = false;  
+  phase = 4;
+  cp5.hide();  
+  displayButtons = true;
 }
 
 
@@ -372,4 +401,93 @@ PImage changeBackground(PImage frame)
     frame.updatePixels(); 
     editedFrame = frame.get();       
     return editedFrame;
+}
+
+
+//__________________________________________________________________________________________________________________________
+PImage displayCustomBackground(PImage frame)
+{       
+  PImage resizedBackground = Photos[backgroundIndex];
+  resizedBackground.resize(frame.width, frame.height);
+  resizedBackground.loadPixels();
+  frame.loadPixels();
+
+  for (int y=0; y < frame.height; y++)
+  {
+    for (int x=0; x < frame.width; x++)
+    {
+      int loc = x + y * frame.width;
+      color display = frame.pixels[loc];        
+      
+      if(display == color(255))
+        frame.pixels[loc] = resizedBackground.pixels[loc];
+    }
+  }
+
+  frame.updatePixels(); 
+  editedFrame = frame.get();       
+  return editedFrame;
+}
+
+
+//==========================================================================================================================
+public void mode2phase4display()
+{
+  background(#012E4B);
+  text("Click a photo to use as a background.", 20, 40);
+  mode3displayPhotos();
+  mode2phase4buttons();
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+public void mode2phase4buttons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    int left = (width-800)/2;
+
+    cp5.addButton("mode2phase3back")
+      .setPosition(left, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+void mode2mousePressed()
+{
+  if(phase == 4)
+  {
+    for(int i = 0; i < numPhotos; i++)
+    {
+      int photoX = 80 + i*110;
+      int photoY = height/2;
+
+      if(mouseX >= photoX 
+        && mouseX <= photoX + 100 
+        && mouseY >= photoY 
+        && mouseY <= photoY + 75)
+      {
+        backgroundIndex = i;
+        phase = 1;
+        useCustomBackground = true;
+        changeBackground = true;
+        removeBackground = false;
+        println(" use a custom photo background ");
+
+        cp5.hide();
+        displayButtons = true;
+      }
+    }
+  }
 }

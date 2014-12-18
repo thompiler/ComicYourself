@@ -178,13 +178,6 @@ public void getFlickrData()
 			img.resize(640, 640 * img.height/img.width);
 		else
 			img.resize(480 * img.width/img.height, 480);
-		
-		/*
-		img.resize(width/5, width/5 * img.height/img.width);
-
-		if (img.height > height/4)
-			img.resize(height/4 * img.width/img.height, height/4);
-		*/
 
 		flickrPhotoList.add(img);
 	}
@@ -298,8 +291,10 @@ public void mode7phase3save()
 {
 	mode = 1;
 	phase = 1;
+	flickrSearchQuery = "";
 	cp5.hide();
 	displayButtons = true;
 	Photos[numPhotos] = flickrPhotoList.get(flickrPhotoIndex);
 	numPhotos++;
+	flickrPhotoList = new ArrayList <PImage> ();
 }

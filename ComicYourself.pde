@@ -73,6 +73,8 @@ String flickrSearchQuery = "";
 ArrayList <PImage> flickrPhotoList;
 JSONObject json;
 int flickrPhotoIndex;
+int backgroundIndex;
+boolean useCustomBackground = false;
 
 
 //__________________________________________________________________________________________________________________________
@@ -163,6 +165,8 @@ void draw()
 			calibrationPhase();
 			mode2phase3buttons();
 		}
+		else if(phase == 4)
+			mode2phase4display();
 
 	}
 	else if(mode == 3)
@@ -281,22 +285,6 @@ void keyPressed()
 		if( mode == 2 && phase == 3)
 			takeCalibrationPhoto();
 	}
-	/*
-	if (mode == 4)
-	{
-		switch(key)
-		{
-			case('1'):
-				// method A to change color
-				cp.setArrayValue(new float[] {120, 0, 120, 255});
-				break;
-			case('2'):
-				// method B to change color
-				cp.setColorValue(color(255, 0, 0, 255));
-				break;
-		}
-	}
-	*/
 }
 
 
@@ -306,6 +294,8 @@ void mousePressed()
 	switch (mode) 
 	{
 		case 1: mode1mousePressed();
+				break;
+		case 2: mode2mousePressed();
 				break;
 		case 3: mode3mousePressed(); 
 				break;
@@ -318,7 +308,6 @@ void mousePressed()
 		default: break;
 	}
 }
-
 
 
 //__________________________________________________________________________________________________________________________

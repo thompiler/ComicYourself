@@ -176,7 +176,10 @@ void mode4phase2draw()
 //__________________________________________________________________________________________________________________________
 void displayResizedPhoto(int index, float resize)
 {
-  image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
+  if(resize <= 100)
+    image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
+  else
+    displayPhoto(index);
 }
 
 
@@ -303,7 +306,7 @@ void mode4phase3displayButtons()
       .setCaptionLabel("")
       .setPosition((width - 100)/2 - 30, 20)
       .setSize(100, 20)
-      .setRange(1, 100)
+      .setRange(1, 200)
       //.setDefaultValue(100)
       .setValue(100)
       //.setNumberOfTickMarks(50)
@@ -326,19 +329,24 @@ public void mode4phase3save()
   displayButtons = true; 
             
   // save edited photo to photo list
-  int resizedHeight = (int)(480 * (resizeValue/100));
-  int resizedWidth = (int)(640 * (resizeValue/100));
-  int resizedHeight2 = (int)(600 * (resizeValue/100));
-  int resizedWidth2 = (int)(800 * (resizeValue/100));
-  int resizedX = (int)((width - (800 * (resizeValue/100)))/2);
-  int resizedY = (int)(70 + (300 - (600 * (resizeValue/100)/2)));
-  PImage screenShot = get();
-  println("Created resized photo with dimensions: "+resizedWidth+", "+resizedHeight);
-  editPhoto = createImage(resizedWidth, resizedHeight, RGB);
-  //editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, resizedWidth, resizedHeight);
-  editPhoto.copy(screenShot, resizedX, resizedY, resizedWidth2, resizedHeight2, 0, 0, resizedWidth, resizedHeight);
-  Photos[numPhotos] = editPhoto;
-  numPhotos++;
+  if(resizeValue <= 100)
+  {
+    int resizedHeight = (int)(480 * (resizeValue/100));
+    int resizedWidth = (int)(640 * (resizeValue/100));
+    int resizedHeight2 = (int)(600 * (resizeValue/100));
+    int resizedWidth2 = (int)(800 * (resizeValue/100));
+    int resizedX = (int)((width - (800 * (resizeValue/100)))/2);
+    int resizedY = (int)(70 + (300 - (600 * (resizeValue/100)/2)));
+    PImage screenShot = get();
+    println("Created resized photo with dimensions: "+resizedWidth+", "+resizedHeight);
+    editPhoto = createImage(resizedWidth, resizedHeight, RGB);
+    //editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, resizedWidth, resizedHeight);
+    editPhoto.copy(screenShot, resizedX, resizedY, resizedWidth2, resizedHeight2, 0, 0, resizedWidth, resizedHeight);
+    Photos[numPhotos] = editPhoto;
+    numPhotos++;
+  }
+  else
+    Photos[currentPhotoIndex].resize((int)(Photos[currentPhotoIndex].width*(resizeValue/100)), (int)(Photos[currentPhotoIndex].height*(resizeValue/100)));
 }
 
 
