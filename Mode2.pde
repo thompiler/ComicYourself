@@ -7,29 +7,18 @@ void drawCam()
   text("Capture Mode", 20, 40);
 
   frame = webcam;
-  
-  //if(removeBackground)
-  //	removeBackground(frame);
 	
 	pushMatrix();
 
 	//flip across x axis
 	scale(-1,1);
 
-	if(removeBackground)
-		image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
-
+  if(changeBackground && useCustomBackground)
+    image(displayCustomBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
   else if(changeBackground)
-  {
-    if(useCustomBackground)
-    {
-      println("yup");
-      image(displayCustomBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
-    }
-    else
-      image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
-  }
-
+    image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
+  else if(removeBackground)
+    image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
 	else
 		image(frame, -(width - 800)/2 -800, 70, 800, 600);	
   
@@ -493,7 +482,7 @@ void mode2mousePressed()
         phase = 1;
         useCustomBackground = true;
         changeBackground = true;
-        removeBackground = false;
+        //removeBackground = false;
         println(" use a custom photo background ");
 
         cp5.hide();
