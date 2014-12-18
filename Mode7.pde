@@ -21,8 +21,10 @@ void mode7phase1displayButtons()
 
 	    cp5.setControlFont(buttonFont);
 
+	    int left = (width-800)/2;
+
 	    cp5.addButton("mode7phase1back")
-			.setPosition((width-800)/2, 677)
+			.setPosition(left, 677)
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)

@@ -14,43 +14,56 @@ void mode4phase1displayButtons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+    int offset = 0;
+
     cp5.addButton("mode4phase1back")
-      .setPosition((width-800)/2, 677)
+      .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
+    offset += 40 + 20;
+
     cp5.addButton("mode4phase1draw")
-      .setPosition(width/2 - 100, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Draw")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
 
+    offset += 80 + 10;
+
     cp5.addButton("mode4phase1select")
-      .setPosition(width/2 - 200, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Select")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
 
+    offset += 80 + 10;
+
     cp5.addButton("mode4phase1text")
-      .setPosition(width/2, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Text")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
+
+    offset += 80 + 10;
     
     cp5.addButton("mode4phase1resize")
-      .setPosition(width/2 + 100, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Resize")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(90, 40)
       ;
 
+    offset += 90 + 10;
+
     cp5.addButton("mode4phase1layer")
-      .setPosition(width/2 + 200, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Layer")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(90, 40)
@@ -193,15 +206,20 @@ void mode4phase2displayButtons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+    int offset = 0;
+
     cp5.addButton("mode4phase2back")
-  		.setPosition((width-800)/2, 677)
+  		.setPosition(left, 677)
   		.setCaptionLabel("<")
   		.align(CENTER,CENTER,CENTER,CENTER)
   		.setSize(40, 40)
   		;
 
+    offset += 40 + 20;
+
     cp5.addButton("mode4phase2save")
-  		.setPosition(width/2, 677)
+  		.setPosition(left + offset, 677)
   		.setCaptionLabel("Save")
   		.align(CENTER,CENTER,CENTER,CENTER)
   		.setSize(80, 40)
@@ -288,15 +306,20 @@ void mode4phase3displayButtons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+    int offset = 0;
+
     cp5.addButton("mode4phase2back")
-      .setPosition((width-800)/2, 677)
+      .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
+
+    offset += 40 + 20;
       
-   cp5.addButton("mode4phase3save")
-      .setPosition(width/2, 677)
+    cp5.addButton("mode4phase3save")
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -395,22 +418,29 @@ void mode4phase4displayButtons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+    int offset = 0;
+
     cp5.addButton("mode4phase4back")
-      .setPosition((width-800)/2, 677)
+      .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
+    offset += 40 + 20;
+
     cp5.addButton("mode4phase4addPhoto")
-      .setPosition(width/2, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("+Photo")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
+
+    offset += 40 + 10;
     
     cp5.addButton("mode4phase4save")
-      .setPosition(width/2 + 100, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -588,7 +618,7 @@ void mode4phase6displayButtons()
       ;
 
     cp5.addButton("mode4phase6save")
-      .setPosition((width)/2, 677)
+      .setPosition((width-800)/2+60, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)

@@ -60,22 +60,29 @@ void mode3phase2displayButtons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+    int offset = 0;
+
     cp5.addButton("mode3phase2back")
-      .setPosition((width-800)/2, 677)
+      .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
+    offset += 40 + 20;
+
     cp5.addButton("mode3phase2save")
-      .setPosition(width/2 - 40, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
       ;
 
+    offset += 80 + 10;
+
     cp5.addButton("mode3phase2makeHalf")
-      .setPosition(width/2 + 60, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Make Half")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(120, 40)
@@ -149,15 +156,20 @@ void mode3phase3displayButtons()
 
     cp5.setControlFont(buttonFont);
 
+    int left = (width-800)/2;
+    int offset = 0;
+
     cp5.addButton("mode3phase3back")
-      .setPosition((width-800)/2, 677)
+      .setPosition(left, 677)
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
       ;
 
+    offset += 40 + 20;
+
     cp5.addButton("mode3phase3saveHalf")
-      .setPosition(width/2, 677)
+      .setPosition(left + offset, 677)
       .setCaptionLabel("Save Region")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(140, 40)

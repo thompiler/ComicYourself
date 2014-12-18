@@ -18,29 +18,38 @@ void mode5phase1displayButtons()
 
 	    cp5.setControlFont(buttonFont);
 
+	    int left = (width-800)/2;
+    	int offset = 0;
+
 	    cp5.addButton("mode5phase1back")
-	      .setPosition((width-800)/2, 677)
+	      .setPosition(left, 677)
 	      .setCaptionLabel("<")
 	      .align(CENTER,CENTER,CENTER,CENTER)
 	      .setSize(40, 40)
 	      ;
 
+	    offset += 40 + 20;
+
 	    cp5.addButton("mode5phase1delete")
-	      .setPosition(width/2 - 20, 677)
+	      .setPosition(left + offset, 677)
 	      .setCaptionLabel("Delete")
 	      .align(CENTER,CENTER,CENTER,CENTER)
 	      .setSize(90, 40)
 	      ;
+
+	    offset += 90 + 10;
 	    
 	    cp5.addButton("mode5phase1left")
-	      .setPosition(width/2 + 100, 677)
+	      .setPosition(left + offset, 677)
 	      .setCaptionLabel("Left")
 	      .align(CENTER,CENTER,CENTER,CENTER)
 	      .setSize(80, 40)
 	      ;
 
+	    offset += 80 + 10;
+
 	    cp5.addButton("mode5phase1right")
-	      .setPosition(width/2 + 200, 677)
+	      .setPosition(left + offset, 677)
 	      .setCaptionLabel("Right")
 	      .align(CENTER,CENTER,CENTER,CENTER)
 	      .setSize(80, 40)
