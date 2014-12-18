@@ -645,7 +645,7 @@ public void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition((width-800)/2 + 20, 677)
+			.setPosition((width-800)/2 + 60, 677)
 			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(80, 40)
