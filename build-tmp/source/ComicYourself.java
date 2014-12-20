@@ -3751,7 +3751,6 @@ public void mode4phase2displayButtons()
     	.setSize(100, 20)
     	.setRange(1, 50)
       .setValue(5)
-    	.setNumberOfTickMarks(10)
     	;
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
@@ -5017,6 +5016,7 @@ public void mode1export()
   phase = 2;
   cp5.hide();
   displayButtons = true;
+  displayExportedComic = false;
 }
 
 
@@ -5141,7 +5141,7 @@ public void mode1phase2back()
   phase = 1;
   cp5.hide();  
   displayButtons = true;
-  Photos.remove(numPhotos);
+  //Photos.remove(numPhotos);
   println("button back to overview ");
 }
 
@@ -5239,6 +5239,8 @@ public void mode1exportBlock()
     int totalBlocks = numPanels - numHalfPanels/2;
     int rowBlocks = totalBlocks/3;
 
+    println("totalBlocks: "+totalBlocks+"   rowBlocks: "+rowBlocks);
+
     //PImage comicStrip = createImage(border + (border + 640)*(totalBlocks), 480 + 2 * border, RGB);
 
     PImage comicStrip = createImage(border + (border + 640)*3, border + (480 + border)*rowBlocks, RGB);
@@ -5258,7 +5260,7 @@ public void mode1exportBlock()
     {
       boolean written = false;
       boolean writtenVertical = false;
-      //println(i);
+      println("num: "+i);
       int cX = border + (640 + border) * (numBlocks%3);
       int cY = border + (numBlocks/3)*(480+border);
 /*
@@ -5275,49 +5277,50 @@ public void mode1exportBlock()
 
       if(PanelSizes.get(i) == 1)
       {
-        //println("cX: "+cX+"   cY: "+cY);
+        println("cX: "+cX+"   cY: "+cY);
         comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
       }
       else if(PanelSizes.get(i) == 2) 
       {
-        if(i > 0)
+        if(i > 0 && i%2 == 1)
         {
-          int cX2 = border + (640 + border) * ((numBlocks-1)%3);
+          int cX2 = border + (640 + border) * ((numBlocks)%3);
           // int cY2 = border + 480/2 + 8;
-          int cY2 = cY + 480/2 + 8;
+          int cY2 = border + ((numBlocks-1)/3)*(480+border) + 480/2 + 8;
 
-          if(PanelSizes.get(i-1) == 2)
-          {
+          //if(PanelSizes.get(i-1) == 2)
+          //{
             comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
             numBlocks--;
             written = true;
-            //println("h cX2: "+cX2+"   cY2: "+cY2);
-          }
+            //println("h1 cX2: "+cX2+"   cY2: "+cY2+"  cY: "+cY);
+          //}
         }
-        if(!written)
+        else //if(!written)
         {
           comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
-          //println("h cX: "+cX+"   cY: "+cY);
+          println("h2 cX: "+cX+"   cY: "+cY);
         }
       }
       else if(PanelSizes.get(i) == 3) 
       {
-        if(i > 0)
+        if(i > 0 && i%2 == 1)
         {
           int cX3 = border + (640 + border) * ((numBlocks-1)%3) + 640/2 + 8;
+          int cY3 = border + ((numBlocks-1)/3)*(480+border);
           //int cY3 = border;
-          if(PanelSizes.get(i-1) == 3)
+          if(PanelSizes.get(i-1) == 3 && i%2 == 0)
           {
             comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX3, cY, 640/2-8, 480);
             numBlocks--;
             writtenVertical = true;
-            //println("v cX: "+cX3+"   cY: "+cY);
+            println("v cX: "+cX3+"   cY: "+cY);
           }
         }
-        if(!writtenVertical)
+        else //if(!writtenVertical)
         {
           comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX, cY, 640/2-8, 480);
-          //println("v cX: "+cX+"   cY: "+cY);
+          println("v cX: "+cX+"   cY: "+cY);
         }
       }
       numBlocks++;

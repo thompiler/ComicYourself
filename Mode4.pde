@@ -239,7 +239,6 @@ void mode4phase2displayButtons()
     	.setSize(100, 20)
     	.setRange(1, 50)
       .setValue(5)
-    	.setNumberOfTickMarks(10)
     	;
 
     cp5.getController("brushSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
