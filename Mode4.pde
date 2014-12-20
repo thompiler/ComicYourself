@@ -166,8 +166,8 @@ void mode4phase2draw()
 		displayPhoto = false;
 	}
 
-	stroke(255, 255, 255);
-	fill(255, 255, 255);
+	stroke(backgroundColor);
+	fill(backgroundColor);
 	ellipse((width - 200)/2 - 60, 20, 60, 60);
 
 	fill(paint);
@@ -184,6 +184,12 @@ void mode4phase2draw()
 		&& mouseY <= 70 + 600
     )
 		  line(mouseX, mouseY, pmouseX, pmouseY);
+
+  if(displayPhoto)
+  {
+    displayPhoto(currentPhotoIndex);
+    displayPhoto = false;
+  }
 }
 
 
