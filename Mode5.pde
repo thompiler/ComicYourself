@@ -5,7 +5,7 @@
 //__________________________________________________________________________________________________________________________
 void displayPanel(int index)
 {
-	image(Panels[index], (width - 800)/2, 70, 800, 600);
+	image(Panels.get(index), (width - 800)/2, 70, 800, 600);
 }
 
 
@@ -26,9 +26,10 @@ void mode5phase1displayButtons()
 	      .setCaptionLabel("<")
 	      .align(CENTER,CENTER,CENTER,CENTER)
 	      .setSize(40, 40)
+	      .setColor(backButtonColor)
 	      ;
 
-	    offset += 40 + 20;
+	    offset += 40 + 10;
 
 	    cp5.addButton("mode5phase1delete")
 	      .setPosition(left + offset, 677)
@@ -82,10 +83,12 @@ public void mode5phase1delete()
   	displayButtons = true;
 
   	// delete panel and move panels behind it forward
+  	/*
   	for(int i = currentPanelIndex + 1; i < numPanels; i++)
   	{
   		Panels[i - 1] = Panels[i];
-  	}
+  	}*/
+  	Panels.remove(currentPanelIndex);
   	numPanels--;
 }
 

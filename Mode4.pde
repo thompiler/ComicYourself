@@ -22,9 +22,10 @@ void mode4phase1displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode4phase1draw")
       .setPosition(left + offset, 677)
@@ -190,7 +191,7 @@ void mode4phase2draw()
 void displayResizedPhoto(int index, float resize)
 {
   if(resize <= 100)
-    image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
+    image(Photos.get(index), (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
   else
     displayPhoto(index);
 }
@@ -214,9 +215,10 @@ void mode4phase2displayButtons()
   		.setCaptionLabel("<")
   		.align(CENTER,CENTER,CENTER,CENTER)
   		.setSize(40, 40)
+      .setColor(backButtonColor)
   		;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode4phase2save")
   		.setPosition(left + offset, 677)
@@ -230,7 +232,7 @@ void mode4phase2displayButtons()
     	.setPosition((width - 100)/2 - 30, 20)
     	.setSize(100, 20)
     	.setRange(1, 50)
-        .setValue(5)
+      .setValue(5)
     	.setNumberOfTickMarks(10)
     	;
 
@@ -275,7 +277,7 @@ public void mode4phase2save()
 	PImage screenShot = get();
   editPhoto = createImage(640, 480, RGB);
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
-	Photos[numPhotos] = editPhoto;
+	Photos.add(editPhoto);
 	numPhotos++;
 }
 
@@ -314,9 +316,10 @@ void mode4phase3displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
       
     cp5.addButton("mode4phase3save")
       .setPosition(left + offset, 677)
@@ -330,9 +333,7 @@ void mode4phase3displayButtons()
       .setPosition((width - 100)/2 - 30, 20)
       .setSize(100, 20)
       .setRange(1, 200)
-      //.setDefaultValue(100)
       .setValue(100)
-      //.setNumberOfTickMarks(50)
       ;
 
     cp5.getController("imageSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
@@ -365,11 +366,11 @@ public void mode4phase3save()
     editPhoto = createImage(resizedWidth, resizedHeight, RGB);
     //editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, resizedWidth, resizedHeight);
     editPhoto.copy(screenShot, resizedX, resizedY, resizedWidth2, resizedHeight2, 0, 0, resizedWidth, resizedHeight);
-    Photos[numPhotos] = editPhoto;
+    Photos.add(editPhoto);
     numPhotos++;
   }
   else
-    Photos[currentPhotoIndex].resize((int)(Photos[currentPhotoIndex].width*(resizeValue/100)), (int)(Photos[currentPhotoIndex].height*(resizeValue/100)));
+    Photos.get(currentPhotoIndex).resize((int)(Photos.get(currentPhotoIndex).width*(resizeValue/100)), (int)(Photos.get(currentPhotoIndex).height*(resizeValue/100)));
 }
 
 
@@ -387,19 +388,19 @@ void mode4phase4display()
 {
   textFont(font);
   fill(#817575);
-  background(#012E4B);
+  background(backgroundColor);
   displayPhoto(currentPhotoIndex);
 
   for(int i = 0; i < numLayers; i++)
   {
-    int layerWidth = (int)((1.25)*Photos[Layers[i]].width);
-    int layerHeight = (int)((1.25)*Photos[Layers[i]].height);
+    int layerWidth = (int)((1.25)*Photos.get(Layers[i]).width);
+    int layerHeight = (int)((1.25)*Photos.get(Layers[i]).height);
     println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
-    image(Photos[Layers[i]], LayersX[i], LayersY[i], layerWidth, layerHeight);
+    image(Photos.get(Layers[i]), LayersX[i], LayersY[i], layerWidth, layerHeight);
   }
 
   noStroke();
-  fill(#012E4B);
+  fill(backgroundColor);
   rect(0, 0, width, 70);    //top
   rect(0, 0, (width-800)/2, height); // left
   rect(0, 70+600, width, height-670); // bottom
@@ -426,9 +427,10 @@ void mode4phase4displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode4phase4addPhoto")
       .setPosition(left + offset, 677)
@@ -476,10 +478,9 @@ public void mode4phase4save()
   PImage screenShot = get();
   editPhoto = createImage(640, 480, RGB);
   editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
-  Photos[numPhotos] = editPhoto;
+  Photos.add(editPhoto);
   numPhotos++;
   numLayers = 0;
-
 }
 
 
@@ -500,7 +501,7 @@ void mode4phase5display()
 {
   textFont(font);
   fill(#817575);
-  background(#012E4B);
+  background(backgroundColor);
   mode3displayPhotos();
   text("Pick a photo to add as a layer", 20, 40);
   mode4phase5displayButtons();
@@ -522,6 +523,7 @@ void mode4phase5displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     displayButtons = false;
@@ -586,7 +588,7 @@ void mode4phase6display() // Simple selection and crop mode
 {
   textFont(font);
   fill(#817575);
-  background(#012E4B);
+  background(backgroundColor);
   displayPhoto(currentPhotoIndex);
   text("Click and drag crop selection", 20, 40);
   mode4phase6displayButtons();
@@ -615,10 +617,11 @@ void mode4phase6displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     cp5.addButton("mode4phase6save")
-      .setPosition((width-800)/2+60, 677)
+      .setPosition((width-800)/2 + 50, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -674,6 +677,6 @@ public void mode4phase6save()
 
   editPhoto = createImage(cropWidth, cropHeight, RGB);
   editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropWidth, cropHeight);
-  Photos[numPhotos] = editPhoto;
+  Photos.add(editPhoto);
   numPhotos++;
 }

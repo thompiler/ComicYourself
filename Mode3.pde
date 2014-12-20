@@ -6,16 +6,16 @@
 //__________________________________________________________________________________________________________________________
 void mode3displayPhotos()
 {
-	background(#012E4B);
+	background(backgroundColor);
 	for(int i = 0; i < numPhotos; i++)
-		image(Photos[i], 80 + i*110, height/2, 100, 75);
+		image(Photos.get(i), 80 + i*110, height/2, 100, 75);
 }
 
 
 //__________________________________________________________________________________________________________________________
 void displayPhoto(int index)
 {
-	image(Photos[index], (width - 800)/2, 70, 800, 600);
+	image(Photos.get(index), (width - 800)/2, 70, 800, 600);
 }
 
 
@@ -33,6 +33,7 @@ void mode3phase1displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     displayButtons = false;
@@ -68,9 +69,10 @@ void mode3phase2displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode3phase2save")
       .setPosition(left + offset, 677)
@@ -114,8 +116,8 @@ public void mode3phase2save()
   displayButtons = true;
 
   // Save copy of selected photo in panel array
-  PImage newPanel = Photos[currentPhotoIndex];
-  Panels[numPanels] = newPanel;
+  PImage newPanel = Photos.get(currentPhotoIndex);
+  Panels.add(newPanel);
   PanelSizes[numPanels] = 1;
   numPanels++;
 }
@@ -136,7 +138,7 @@ public void mode3phase2makeHalf()
 //===========================================================================================================================
 public void mode3phase3display()
 {
-  background(#012E4B);
+  background(backgroundColor);
   text("Move the rectangle to pick region to save", 20, 40);
   mode3phase3displayButtons();
   displayPhoto(currentPhotoIndex);
@@ -164,9 +166,10 @@ void mode3phase3displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode3phase3saveHalf")
       .setPosition(left + offset, 677)
@@ -202,8 +205,8 @@ public void mode3phase3saveHalf()
 
   // Save copy of selected photo in panel array
   PImage newHalfPanel = createImage(640, 480/2, RGB); 
-  newHalfPanel.copy(Photos[currentPhotoIndex], 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
-  Panels[numPanels] = newHalfPanel;
+  newHalfPanel.copy(Photos.get(currentPhotoIndex), 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
+  Panels.add(newHalfPanel);
   PanelSizes[numPanels] = 2;
   numPanels++;
   numHalfPanels++;

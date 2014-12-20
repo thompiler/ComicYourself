@@ -15,10 +15,10 @@ import ddf.minim.* ;
 
 //__________________________________________________________________________________________________________________________
 Capture webcam;
-PImage [] Photos;
+ArrayList <PImage> Photos;
+ArrayList <PImage> Panels;
 PImage [] stockBackground;
 boolean changeBackground = false;
-PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
 int currentPanelIndex = 0;
@@ -42,12 +42,13 @@ int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
 ColorPicker cp;
+ColorPicker cp2;
 PFont smallFont;
 float resizeValue = 100;
 
 //Jason edits for mode 2
 boolean removeBackground = false;
-int threshold = 70;
+int threshold = 70, hueThreshold = 70, satThreshold = 70, brtThreshold = 70;
 
 // Thom's variables for Milestone 3
 int [] Layers;
@@ -75,6 +76,9 @@ JSONObject json;
 int flickrPhotoIndex;
 int backgroundIndex;
 boolean useCustomBackground = false;
+boolean inHSBmode = false;
+int backgroundColor = #464646;
+CColor backButtonColor = new CColor(#9B1919, #D86262, #FFFFFF, #FFFFFF, #FFFFFF);
 
 
 //__________________________________________________________________________________________________________________________
@@ -90,8 +94,8 @@ void setup()
 	webcam.start();
 
 	displayStartButton();
-	Photos = new PImage[20];
-	Panels = new PImage[20];
+	Photos = new ArrayList <PImage> ();
+	Panels = new ArrayList <PImage> ();
 	Layers = new int[10];
 	LayersX = new int[10];
 	LayersY = new int[10];
@@ -139,12 +143,13 @@ void draw()
 	else if(mode == 1)
 	{
 		// OVERVIEW mode
-		background(255);	
+		//background(255);	
 		drawOverview();
 	}
 	else if(mode == 2)
 	{
-		background(255);
+		//background(255);
+		background(backgroundColor);
 		// TAKE A PHOTO mode
 		if(phase == 1)
 		{
@@ -172,7 +177,8 @@ void draw()
 	else if(mode == 3)
 	{
 		// MAKE A PANEL mode
-		background(255);
+		//background(255);
+		background(backgroundColor);
 		if(phase == 1)
 		{
 			// show list of taken photos
@@ -201,7 +207,7 @@ void draw()
 			// edit photo hub
 			textFont(font);
   			fill(#817575);
-  			background(#012E4B);
+  			background(backgroundColor);
   			text("Edit Photo", 20, 40);
 			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
@@ -219,7 +225,7 @@ void draw()
 			// Simple resize of full photo
 			textFont(font);
   			fill(#817575);
-            background(#012E4B);
+            background(backgroundColor);
             text("Resize", 20, 40);
             displayResizedPhoto(currentPhotoIndex, resizeValue);
             mode4phase3displayButtons();
@@ -247,7 +253,8 @@ void draw()
 		// -simple functions eg: delete a panel
 		if(phase == 1)
 		{
-			background(255);
+			//background(255);
+			background(backgroundColor);
 			displayPanel(currentPanelIndex);
 		    mode5phase1displayButtons();	
 		}
@@ -371,6 +378,15 @@ public void controlEvent(ControlEvent c)
 	// For use in Mode 4: Edit Photo
 	// This function sends the values from the color slider into the paint variable
   	if(mode == 4 && c.isFrom(cp))
+    {
+		int r = int(c.getArrayValue(0));
+		int g = int(c.getArrayValue(1));
+		int b = int(c.getArrayValue(2));
+		int a = int(c.getArrayValue(3));
+		paint = color(r, g, b, a);
+		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
+  	}
+  	else if(mode == 6 && c.isFrom(cp))
     {
 		int r = int(c.getArrayValue(0));
 		int g = int(c.getArrayValue(1));

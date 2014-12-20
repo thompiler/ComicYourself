@@ -36,10 +36,10 @@ public class ComicYourself extends PApplet {
 
 //__________________________________________________________________________________________________________________________
 Capture webcam;
-PImage [] Photos;
+ArrayList <PImage> Photos;
+ArrayList <PImage> Panels;
 PImage [] stockBackground;
 boolean changeBackground = false;
-PImage [] Panels;
 int numPhotos = 0;
 int numPanels = 0;
 int currentPanelIndex = 0;
@@ -63,12 +63,13 @@ int flag = 0;
 PImage editPhoto;
 boolean displayPhoto = true;
 ColorPicker cp;
+ColorPicker cp2;
 PFont smallFont;
 float resizeValue = 100;
 
 //Jason edits for mode 2
 boolean removeBackground = false;
-int threshold = 70;
+int threshold = 70, hueThreshold = 70, satThreshold = 70, brtThreshold = 70;
 
 // Thom's variables for Milestone 3
 int [] Layers;
@@ -96,6 +97,9 @@ JSONObject json;
 int flickrPhotoIndex;
 int backgroundIndex;
 boolean useCustomBackground = false;
+boolean inHSBmode = false;
+int backgroundColor = 0xff464646;
+CColor backButtonColor = new CColor(0xff9B1919, 0xffD86262, 0xffFFFFFF, 0xffFFFFFF, 0xffFFFFFF);
 
 
 //__________________________________________________________________________________________________________________________
@@ -111,8 +115,8 @@ public void setup()
 	webcam.start();
 
 	displayStartButton();
-	Photos = new PImage[20];
-	Panels = new PImage[20];
+	Photos = new ArrayList <PImage> ();
+	Panels = new ArrayList <PImage> ();
 	Layers = new int[10];
 	LayersX = new int[10];
 	LayersY = new int[10];
@@ -160,12 +164,13 @@ public void draw()
 	else if(mode == 1)
 	{
 		// OVERVIEW mode
-		background(255);	
+		//background(255);	
 		drawOverview();
 	}
 	else if(mode == 2)
 	{
-		background(255);
+		//background(255);
+		background(backgroundColor);
 		// TAKE A PHOTO mode
 		if(phase == 1)
 		{
@@ -193,7 +198,8 @@ public void draw()
 	else if(mode == 3)
 	{
 		// MAKE A PANEL mode
-		background(255);
+		//background(255);
+		background(backgroundColor);
 		if(phase == 1)
 		{
 			// show list of taken photos
@@ -222,7 +228,7 @@ public void draw()
 			// edit photo hub
 			textFont(font);
   			fill(0xff817575);
-  			background(0xff012E4B);
+  			background(backgroundColor);
   			text("Edit Photo", 20, 40);
 			displayPhoto(currentPhotoIndex);
 			mode4phase1displayButtons();
@@ -240,7 +246,7 @@ public void draw()
 			// Simple resize of full photo
 			textFont(font);
   			fill(0xff817575);
-            background(0xff012E4B);
+            background(backgroundColor);
             text("Resize", 20, 40);
             displayResizedPhoto(currentPhotoIndex, resizeValue);
             mode4phase3displayButtons();
@@ -268,7 +274,8 @@ public void draw()
 		// -simple functions eg: delete a panel
 		if(phase == 1)
 		{
-			background(255);
+			//background(255);
+			background(backgroundColor);
 			displayPanel(currentPanelIndex);
 		    mode5phase1displayButtons();	
 		}
@@ -400,6 +407,15 @@ public void controlEvent(ControlEvent c)
 		paint = color(r, g, b, a);
 		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
   	}
+  	else if(mode == 6 && c.isFrom(cp))
+    {
+		int r = PApplet.parseInt(c.getArrayValue(0));
+		int g = PApplet.parseInt(c.getArrayValue(1));
+		int b = PApplet.parseInt(c.getArrayValue(2));
+		int a = PApplet.parseInt(c.getArrayValue(3));
+		paint = color(r, g, b, a);
+		println("event\talpha:"+a+"\tred:"+r+"\tgreen:"+g+"\tblue:"+b+"\tcol"+paint);
+  	}
   	else if( mode == 6 && c.isAssignableFrom(Textfield.class)) 
   	{
     	println("controlEvent: accessing a string from controller '"
@@ -431,14 +447,12 @@ public void drawCam()
 	//flip across x axis
 	scale(-1,1);
 
-	
-
   if(changeBackground && useCustomBackground)
     image(displayCustomBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
   else if(changeBackground)
     image(changeBackground(removeBackground(frame.get())), -(width - 800)/2 -800, 70, 800, 600);
-  //else if(removeBackground)
-    //image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
+  else if(removeBackground)
+    image(removeBackground(frame.get()), -(width - 800)/2 -800, 70, 800, 600);
 	else
 		image(frame, -(width - 800)/2 -800, 70, 800, 600);	
   
@@ -454,16 +468,47 @@ public PImage removeBackground(PImage frame)
     frame.loadPixels();
     for (int y=0; y<frame.height; y++) {
       for (int x=0; x<frame.width; x++) {
-        int loc = x + y * frame.width;
-        int display = frame.pixels[loc];
-        int comparison = mode2Calibration.pixels[loc];
         
-        float r1 = red(display); float g1 = green(display); float b1 = blue(display);
-        float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
-        float diff = dist(r1,g1,b1,r2,g2,b2);
-        
-        if(diff < threshold)
-              frame.pixels[loc] = color(255);
+
+        if(inHSBmode)
+        {
+          colorMode(HSB, 255);
+          
+          int loc = x + y * frame.width;
+          int display = frame.pixels[loc];
+          int comparison = mode2Calibration.pixels[loc];
+          
+          float h1 = hue(display),
+            s1 = saturation(display),
+            b1 = brightness(display),
+            h2 = hue(comparison),
+            s2 = saturation(comparison), 
+            b2 = brightness(comparison)
+            ;
+
+          float hueDiff = abs(h1-h2),
+            satDiff = abs(s1-s2),
+            brtDiff = abs(b1-b2)
+            ;
+
+          if(hueDiff < hueThreshold && satDiff < satThreshold && brtDiff < brtThreshold)
+            frame.pixels[loc] = color(255);
+        }
+        else
+        {
+          colorMode(RGB, 255);
+
+          int loc = x + y * frame.width;
+          int display = frame.pixels[loc];
+          int comparison = mode2Calibration.pixels[loc];
+
+          float r1 = red(display); float g1 = green(display); float b1 = blue(display);
+          float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
+          float diff = dist(r1,g1,b1,r2,g2,b2);
+
+          if(diff < threshold)
+                frame.pixels[loc] = color(255);
+        }
       }
     }
     frame.updatePixels(); 
@@ -489,9 +534,10 @@ public void mode2phase1Buttons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 60;
+    offset += 50;
 
 		cp5.addButton("takePhoto")
 			.setPosition(left + offset, 677)
@@ -504,10 +550,12 @@ public void mode2phase1Buttons()
                 
     cp5.addButton("goToCalibrationPhase")
       .setPosition(left + offset, 677)
-      .setCaptionLabel("Calibrate")
+      .setCaptionLabel("Replace Background")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(110, 40)
+      .setSize(250, 40)
       ;
+
+    offset += 260;
 
     cp5.addButton("mode2phase1flickr")
       .setPosition((width+800)/2+10, 70)
@@ -518,31 +566,60 @@ public void mode2phase1Buttons()
 
     if(removeBackground)
     {
-      offset += 120;
-
       cp5.addButton("backgroundSelection")
         .setPosition(left + offset, 677)
         .setCaptionLabel("Background")
         .align(CENTER,CENTER,CENTER,CENTER)
-        .setSize(200, 40)
+        .setSize(180, 40)
         ;
 
-      offset += 210;
+      offset += 190;
 
       cp5.addButton("pickCustomBackground")
         .setPosition(left + offset, 677)
         .setCaptionLabel("Use Photo")
         .align(CENTER,CENTER,CENTER,CENTER)
-        .setSize(200, 40)
+        .setSize(150, 40)
         ;
 
       cp5.addSlider("thresholdSize")
-        .setCaptionLabel("Replace threshold")
-        .setPosition((width - 100)/2 - 30, 20)
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60)
         .setSize(100, 20)
-        .setRange(20, 150)
+        .setRange(1, 250)
         .setValue(70)
         ;
+
+      cp5.addSlider("hueThresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60 + 40)
+        .setSize(100, 20)
+        .setRange(1, 250)
+        .setValue(70)
+        ;
+
+      cp5.addSlider("satThresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60 + 40 + 30)
+        .setSize(100, 20)
+        .setRange(1, 250)
+        .setValue(70)
+        ;
+
+      cp5.addSlider("brtThresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60 + 40 + 30 + 30)
+        .setSize(100, 20)
+        .setRange(1, 250)
+        .setValue(70)
+        ;
+
+      cp5.addButton("mode2phase1hsbMode")
+        .setPosition((width+800)/2+10, 170)
+        .setCaptionLabel("HSB")
+        .align(CENTER,CENTER,CENTER,CENTER)
+        .setSize(80, 40)
+        ; 
 
       cp5.getController("thresholdSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);        
     }
@@ -573,7 +650,7 @@ public void takePhoto()
   cp5.hide();
   displayButtons = true;
   mirror(mode2Capture);
-  Photos[numPhotos] = mode2Capture;
+  Photos.add(mode2Capture);
   numPhotos++;
 }
 
@@ -625,6 +702,32 @@ public void thresholdSize(int value)
   threshold = value;
 }
 
+//__________________________________________________________________________________________________________________________
+public void hueThresholdSize(int value)
+{
+  hueThreshold = value;
+}
+
+//__________________________________________________________________________________________________________________________
+public void satThresholdSize(int value)
+{
+  satThreshold = value;
+}
+
+//__________________________________________________________________________________________________________________________
+public void brtThresholdSize(int value)
+{
+  brtThreshold = value;
+}
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase1hsbMode()
+{
+  if(!inHSBmode)
+    inHSBmode = true;
+  else
+    inHSBmode = false;
+}
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public void mode2phase2Buttons()
@@ -636,7 +739,7 @@ public void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition((width-800)/2 + 60, 677)
+			.setPosition((width-800)/2 + 50, 677)
 			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(80, 40)
@@ -647,6 +750,7 @@ public void mode2phase2Buttons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+      .setColor(backButtonColor)
 			;
 
 		displayButtons = false;
@@ -726,10 +830,11 @@ public void mode2phase3buttons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     cp5.addButton("takeCalibrationPhoto")
-      .setPosition(left+60, 677)
+      .setPosition(left + 50, 677)
       .setCaptionLabel("Capture")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)
@@ -827,7 +932,7 @@ public PImage changeBackground(PImage frame)
 //__________________________________________________________________________________________________________________________
 public PImage displayCustomBackground(PImage frame)
 {       
-  PImage resizedBackground = Photos[backgroundIndex];
+  PImage resizedBackground = Photos.get(backgroundIndex);
   resizedBackground.resize(frame.width, frame.height);
   resizedBackground.loadPixels();
   frame.loadPixels();
@@ -853,7 +958,7 @@ public PImage displayCustomBackground(PImage frame)
 //==========================================================================================================================
 public void mode2phase4display()
 {
-  background(0xff012E4B);
+  background(backgroundColor);
   text("Click a photo to use as a background.", 20, 40);
   mode3displayPhotos();
   mode2phase4buttons();
@@ -876,6 +981,7 @@ public void mode2phase4buttons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     displayButtons = false;
@@ -919,16 +1025,16 @@ public void mode2mousePressed()
 //__________________________________________________________________________________________________________________________
 public void mode3displayPhotos()
 {
-	background(0xff012E4B);
+	background(backgroundColor);
 	for(int i = 0; i < numPhotos; i++)
-		image(Photos[i], 80 + i*110, height/2, 100, 75);
+		image(Photos.get(i), 80 + i*110, height/2, 100, 75);
 }
 
 
 //__________________________________________________________________________________________________________________________
 public void displayPhoto(int index)
 {
-	image(Photos[index], (width - 800)/2, 70, 800, 600);
+	image(Photos.get(index), (width - 800)/2, 70, 800, 600);
 }
 
 
@@ -946,6 +1052,7 @@ public void mode3phase1displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     displayButtons = false;
@@ -981,9 +1088,10 @@ public void mode3phase2displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode3phase2save")
       .setPosition(left + offset, 677)
@@ -1027,8 +1135,8 @@ public void mode3phase2save()
   displayButtons = true;
 
   // Save copy of selected photo in panel array
-  PImage newPanel = Photos[currentPhotoIndex];
-  Panels[numPanels] = newPanel;
+  PImage newPanel = Photos.get(currentPhotoIndex);
+  Panels.add(newPanel);
   PanelSizes[numPanels] = 1;
   numPanels++;
 }
@@ -1049,7 +1157,7 @@ public void mode3phase2makeHalf()
 //===========================================================================================================================
 public void mode3phase3display()
 {
-  background(0xff012E4B);
+  background(backgroundColor);
   text("Move the rectangle to pick region to save", 20, 40);
   mode3phase3displayButtons();
   displayPhoto(currentPhotoIndex);
@@ -1077,9 +1185,10 @@ public void mode3phase3displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode3phase3saveHalf")
       .setPosition(left + offset, 677)
@@ -1115,8 +1224,8 @@ public void mode3phase3saveHalf()
 
   // Save copy of selected photo in panel array
   PImage newHalfPanel = createImage(640, 480/2, RGB); 
-  newHalfPanel.copy(Photos[currentPhotoIndex], 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
-  Panels[numPanels] = newHalfPanel;
+  newHalfPanel.copy(Photos.get(currentPhotoIndex), 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
+  Panels.add(newHalfPanel);
   PanelSizes[numPanels] = 2;
   numPanels++;
   numHalfPanels++;
@@ -1171,9 +1280,10 @@ public void mode4phase1displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode4phase1draw")
       .setPosition(left + offset, 677)
@@ -1339,7 +1449,7 @@ public void mode4phase2draw()
 public void displayResizedPhoto(int index, float resize)
 {
   if(resize <= 100)
-    image(Photos[index], (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
+    image(Photos.get(index), (width - (800 * (resize/100)))/2, 70 + (300 - (600 * (resize/100)/2)), 800 * (resize/100), 600 * (resize/100));
   else
     displayPhoto(index);
 }
@@ -1363,9 +1473,10 @@ public void mode4phase2displayButtons()
   		.setCaptionLabel("<")
   		.align(CENTER,CENTER,CENTER,CENTER)
   		.setSize(40, 40)
+      .setColor(backButtonColor)
   		;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode4phase2save")
   		.setPosition(left + offset, 677)
@@ -1379,7 +1490,7 @@ public void mode4phase2displayButtons()
     	.setPosition((width - 100)/2 - 30, 20)
     	.setSize(100, 20)
     	.setRange(1, 50)
-        .setValue(5)
+      .setValue(5)
     	.setNumberOfTickMarks(10)
     	;
 
@@ -1424,7 +1535,7 @@ public void mode4phase2save()
 	PImage screenShot = get();
   editPhoto = createImage(640, 480, RGB);
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
-	Photos[numPhotos] = editPhoto;
+	Photos.add(editPhoto);
 	numPhotos++;
 }
 
@@ -1463,9 +1574,10 @@ public void mode4phase3displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
       
     cp5.addButton("mode4phase3save")
       .setPosition(left + offset, 677)
@@ -1479,9 +1591,7 @@ public void mode4phase3displayButtons()
       .setPosition((width - 100)/2 - 30, 20)
       .setSize(100, 20)
       .setRange(1, 200)
-      //.setDefaultValue(100)
       .setValue(100)
-      //.setNumberOfTickMarks(50)
       ;
 
     cp5.getController("imageSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
@@ -1514,11 +1624,11 @@ public void mode4phase3save()
     editPhoto = createImage(resizedWidth, resizedHeight, RGB);
     //editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, resizedWidth, resizedHeight);
     editPhoto.copy(screenShot, resizedX, resizedY, resizedWidth2, resizedHeight2, 0, 0, resizedWidth, resizedHeight);
-    Photos[numPhotos] = editPhoto;
+    Photos.add(editPhoto);
     numPhotos++;
   }
   else
-    Photos[currentPhotoIndex].resize((int)(Photos[currentPhotoIndex].width*(resizeValue/100)), (int)(Photos[currentPhotoIndex].height*(resizeValue/100)));
+    Photos.get(currentPhotoIndex).resize((int)(Photos.get(currentPhotoIndex).width*(resizeValue/100)), (int)(Photos.get(currentPhotoIndex).height*(resizeValue/100)));
 }
 
 
@@ -1536,19 +1646,19 @@ public void mode4phase4display()
 {
   textFont(font);
   fill(0xff817575);
-  background(0xff012E4B);
+  background(backgroundColor);
   displayPhoto(currentPhotoIndex);
 
   for(int i = 0; i < numLayers; i++)
   {
-    int layerWidth = (int)((1.25f)*Photos[Layers[i]].width);
-    int layerHeight = (int)((1.25f)*Photos[Layers[i]].height);
+    int layerWidth = (int)((1.25f)*Photos.get(Layers[i]).width);
+    int layerHeight = (int)((1.25f)*Photos.get(Layers[i]).height);
     println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
-    image(Photos[Layers[i]], LayersX[i], LayersY[i], layerWidth, layerHeight);
+    image(Photos.get(Layers[i]), LayersX[i], LayersY[i], layerWidth, layerHeight);
   }
 
   noStroke();
-  fill(0xff012E4B);
+  fill(backgroundColor);
   rect(0, 0, width, 70);    //top
   rect(0, 0, (width-800)/2, height); // left
   rect(0, 70+600, width, height-670); // bottom
@@ -1575,9 +1685,10 @@ public void mode4phase4displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 40 + 20;
+    offset += 40 + 10;
 
     cp5.addButton("mode4phase4addPhoto")
       .setPosition(left + offset, 677)
@@ -1625,10 +1736,9 @@ public void mode4phase4save()
   PImage screenShot = get();
   editPhoto = createImage(640, 480, RGB);
   editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
-  Photos[numPhotos] = editPhoto;
+  Photos.add(editPhoto);
   numPhotos++;
   numLayers = 0;
-
 }
 
 
@@ -1649,7 +1759,7 @@ public void mode4phase5display()
 {
   textFont(font);
   fill(0xff817575);
-  background(0xff012E4B);
+  background(backgroundColor);
   mode3displayPhotos();
   text("Pick a photo to add as a layer", 20, 40);
   mode4phase5displayButtons();
@@ -1671,6 +1781,7 @@ public void mode4phase5displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     displayButtons = false;
@@ -1735,7 +1846,7 @@ public void mode4phase6display() // Simple selection and crop mode
 {
   textFont(font);
   fill(0xff817575);
-  background(0xff012E4B);
+  background(backgroundColor);
   displayPhoto(currentPhotoIndex);
   text("Click and drag crop selection", 20, 40);
   mode4phase6displayButtons();
@@ -1764,10 +1875,11 @@ public void mode4phase6displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     cp5.addButton("mode4phase6save")
-      .setPosition((width-800)/2+60, 677)
+      .setPosition((width-800)/2 + 50, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -1823,7 +1935,7 @@ public void mode4phase6save()
 
   editPhoto = createImage(cropWidth, cropHeight, RGB);
   editPhoto.copy(screenShot, cropX1, cropY1, cropX2 - cropX1, cropY2 - cropY1, 0, 0, cropWidth, cropHeight);
-  Photos[numPhotos] = editPhoto;
+  Photos.add(editPhoto);
   numPhotos++;
 }
 // Edit Panel mode
@@ -1833,7 +1945,7 @@ public void mode4phase6save()
 //__________________________________________________________________________________________________________________________
 public void displayPanel(int index)
 {
-	image(Panels[index], (width - 800)/2, 70, 800, 600);
+	image(Panels.get(index), (width - 800)/2, 70, 800, 600);
 }
 
 
@@ -1854,9 +1966,10 @@ public void mode5phase1displayButtons()
 	      .setCaptionLabel("<")
 	      .align(CENTER,CENTER,CENTER,CENTER)
 	      .setSize(40, 40)
+	      .setColor(backButtonColor)
 	      ;
 
-	    offset += 40 + 20;
+	    offset += 40 + 10;
 
 	    cp5.addButton("mode5phase1delete")
 	      .setPosition(left + offset, 677)
@@ -1910,10 +2023,12 @@ public void mode5phase1delete()
   	displayButtons = true;
 
   	// delete panel and move panels behind it forward
+  	/*
   	for(int i = currentPanelIndex + 1; i < numPanels; i++)
   	{
   		Panels[i - 1] = Panels[i];
-  	}
+  	}*/
+  	Panels.remove(currentPanelIndex);
   	numPanels--;
 }
 
@@ -1925,7 +2040,7 @@ public void mode5phase1delete()
 //==========================================================================================================================
 public void mode6phase1display()
 {
-	background(0xff012E4B);
+	background(backgroundColor);
 	mode6phase1displayButtons();
 	displayPhoto(currentPhotoIndex);
 	textFont(font);
@@ -1941,19 +2056,6 @@ public void mode6phase1display()
 		int triX = rectX1 + (rectX2 - rectX1)/2;
 		int triY = rectY2;
 		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
-		
-
-		/*
-		int tri1 = rectX1 + (rectX2 - rectX1)/3;
-		int tri2 = rectX1 + (rectX2 - rectX1)/4;
-		int tri3 = rectY2 + (rectY2 - rectY1)/6;
-
-		beginShape();
-			vertex(tri1, rectY2);
-			vertex(tri2, tri3);
-			vertex(tri2, rectY2);
-		endShape();
-		*/
 
 		noStroke();
 	}
@@ -1975,10 +2077,11 @@ public void mode6phase1displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
       
    cp5.addButton("mode6phase1save")
-      .setPosition(width/2, 677)
+      .setPosition((width-800)/2 + 50, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -2011,6 +2114,7 @@ public void mode6phase1save()
 	  	phase = 2;
 	  	cp5.hide();
 	  	displayButtons = true;
+	  	paint = color(255, 255, 255, 255);
 	}
 	else
 		text("Please make a rectangle first.", 200, 40);
@@ -2036,7 +2140,7 @@ public void mode6mousePressed()
 //==========================================================================================================================
 public void mode6phase2display()
 {
-	background(0xff012E4B);
+	background(backgroundColor);
 	mode6phase2displayButtons();
 	displayPhoto(currentPhotoIndex);
 	textFont(font);
@@ -2045,10 +2149,11 @@ public void mode6phase2display()
 	if(rectX1 != 0 && rectX2 != 0)
 	{
 		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
-		fill(255);
-		stroke(255);
-		strokeWeight(10);
+		fill(paint);
+		noStroke();
+		
 		rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1, 7);
+		strokeWeight(10);
 		int triX = rectX1 + (rectX2 - rectX1)/2;
 		int triY = rectY2;
 		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
@@ -2077,10 +2182,11 @@ public void mode6phase2displayButtons()
 		.setCaptionLabel("<")
 		.align(CENTER,CENTER,CENTER,CENTER)
 		.setSize(40, 40)
+		.setColor(backButtonColor)
 		;
       
    	cp5.addButton("mode6phase2save")
-		.setPosition(width/2, 677)
+		.setPosition((width-800)/2 + 50, 677)
 		.setCaptionLabel("Save")
 		.align(CENTER,CENTER,CENTER,CENTER)
 		.setSize(80, 40)
@@ -2094,6 +2200,11 @@ public void mode6phase2displayButtons()
 		.setFocus(true)
 		.setColor(color(255,0,0))
 		;
+
+	cp = cp5.addColorPicker("colorPicker2")
+  		.setPosition((width + 100)/2 + 220, 5)
+  		.setColorValue(color(255, 255, 255, 255))
+  		;
 
     displayButtons = false;
   }
@@ -2127,7 +2238,7 @@ public void mode6phase2save()
 	PImage screenShot = get();
   	editPhoto = createImage(640, 480, RGB);
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
-	Photos[numPhotos] = editPhoto;
+	Photos.add(editPhoto);
 	numPhotos++;
 }
 // file: Mode7.pde
@@ -2137,7 +2248,7 @@ public void mode6phase2save()
 //==========================================================================================================================
 public void mode7phase1display()
 {
-	background(0xff012E4B);
+	background(backgroundColor);
 	mode7phase1displayButtons();
 	text("Search flickr for a photo to add.", 20, 40);
 	text("Use '+' to separate tags.", 20, 80);
@@ -2160,6 +2271,7 @@ public void mode7phase1displayButtons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+			.setColor(backButtonColor)
 			;
 
 		cp5.addTextfield("flickrSearchQuery")
@@ -2172,10 +2284,10 @@ public void mode7phase1displayButtons()
 			;
 
 		cp5.addButton("flickrSearchButton")
-			.setPosition((width+200)/2, (height-40)/2)
+			.setPosition((width+200)/2 - 20, (height-40)/2)
 			.setCaptionLabel("Search")
 			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(80, 40)
+			.setSize(90, 40)
 	      	;
 
 	    displayButtons = false;
@@ -2209,7 +2321,7 @@ public void mode7phase1back()
 //==========================================================================================================================
 public void mode7phase2display()
 {
-	background(0xff012E4B);
+	background(backgroundColor);
 	mode7phase2displayButtons();
 	text("Click on a photo to add.", 20, 40);
 	text("Showing results for \""+flickrSearchQuery+"\"", 20, 80);
@@ -2252,6 +2364,7 @@ public void mode7phase2displayButtons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+			.setColor(backButtonColor)
 			;
 
 		displayButtons = false;
@@ -2377,7 +2490,7 @@ public void mode7mousePressed()
 //==========================================================================================================================
 public void mode7phase3display()
 {
-	background(0xff012E4B);
+	background(backgroundColor);
 	mode7phase3displayButtons();
 
 	float flickrW = (float)flickrPhotoList.get(flickrPhotoIndex).width,
@@ -2392,7 +2505,7 @@ public void mode7phase3display()
 		image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70, 800, 800/aspectRatio);
 	else
 		image(flickrPhotoList.get(flickrPhotoIndex), (width - 600 * aspectRatio)/2, 70, 600 * aspectRatio, 600);
-	println("aspectRatio: "+aspectRatio+"  compAspectRatio: "+compAspectRatio);
+	//println("aspectRatio: "+aspectRatio+"  compAspectRatio: "+compAspectRatio);
 	//image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70);
 }
 
@@ -2411,6 +2524,7 @@ public void mode7phase3displayButtons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+			.setColor(backButtonColor)
 			;
 
 	    cp5.addButton("mode7phase3save")
@@ -2442,7 +2556,7 @@ public void mode7phase3save()
 	flickrSearchQuery = "";
 	cp5.hide();
 	displayButtons = true;
-	Photos[numPhotos] = flickrPhotoList.get(flickrPhotoIndex);
+	Photos.add(flickrPhotoList.get(flickrPhotoIndex));
 	numPhotos++;
 	flickrPhotoList = new ArrayList <PImage> ();
 }
@@ -2461,7 +2575,7 @@ public void drawStartScreen()
 //==========================================================================================================================
 public void drawOverview()
 {
-  background(0xff012E4B);
+  background(backgroundColor);
   fill(0xffEAA3A3);
   font = loadFont("ArialMT-40.vlw");
 
@@ -2487,7 +2601,7 @@ public void drawOverview()
   fill(0xffCE235F);
   for(int i = 0; i < numPhotos; i++)
   {
-    image(Photos[i], 80 + i*90, 140, 80, 60);
+    image(Photos.get(i), 80 + i*90, 140, 80, 60);
 
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -2498,9 +2612,9 @@ public void drawOverview()
   for(int i = 0; i < numPanels; i++) 
   {
     if(PanelSizes[i] == 1)
-      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+      image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 60);
     else if(PanelSizes[i] == 2)
-      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 30);
+      image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 30);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -2580,7 +2694,7 @@ public void displayPhotos()
 {
   for(int i = 0; i < numPhotos - currentPhotoIndex; i++)
   {
-    image(Photos[currentPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
+    image(Photos.get(currentPhotoIndex + i), 80, (height/2 + 40) + i*70, 80, 60);
   }
 }
 
@@ -2635,11 +2749,11 @@ public void mode1export()
       println(i);
       int cX = border + (640 + border) * numBlocks;
       int cY = border;
-      Panels[i].loadPixels();
+      Panels.get(i).loadPixels();
 
       if(PanelSizes[i] == 1)
       {
-        comicStrip.copy(Panels[i], 0, 0, 640, 480, cX, cY, 640, 480);
+        comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
       }
       else if(PanelSizes[i] == 2) 
       {
@@ -2649,13 +2763,13 @@ public void mode1export()
           int cY2 = border + 480/2;
           if(PanelSizes[i-1] == 2)
           {
-            comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
+            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
             numBlocks--;
             written = true;
           }
         }
         if(!written)
-          comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX, cY, 640, 480/2);
+          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX, cY, 640, 480/2);
       }
       numBlocks++;
     }

@@ -4,7 +4,7 @@
 //==========================================================================================================================
 public void mode6phase1display()
 {
-	background(#012E4B);
+	background(backgroundColor);
 	mode6phase1displayButtons();
 	displayPhoto(currentPhotoIndex);
 	textFont(font);
@@ -20,19 +20,6 @@ public void mode6phase1display()
 		int triX = rectX1 + (rectX2 - rectX1)/2;
 		int triY = rectY2;
 		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
-		
-
-		/*
-		int tri1 = rectX1 + (rectX2 - rectX1)/3;
-		int tri2 = rectX1 + (rectX2 - rectX1)/4;
-		int tri3 = rectY2 + (rectY2 - rectY1)/6;
-
-		beginShape();
-			vertex(tri1, rectY2);
-			vertex(tri2, tri3);
-			vertex(tri2, rectY2);
-		endShape();
-		*/
 
 		noStroke();
 	}
@@ -54,10 +41,11 @@ void mode6phase1displayButtons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
       
    cp5.addButton("mode6phase1save")
-      .setPosition(width/2, 677)
+      .setPosition((width-800)/2 + 50, 677)
       .setCaptionLabel("Save")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(80, 40)
@@ -90,6 +78,7 @@ public void mode6phase1save()
 	  	phase = 2;
 	  	cp5.hide();
 	  	displayButtons = true;
+	  	paint = color(255, 255, 255, 255);
 	}
 	else
 		text("Please make a rectangle first.", 200, 40);
@@ -115,7 +104,7 @@ public void mode6mousePressed()
 //==========================================================================================================================
 public void mode6phase2display()
 {
-	background(#012E4B);
+	background(backgroundColor);
 	mode6phase2displayButtons();
 	displayPhoto(currentPhotoIndex);
 	textFont(font);
@@ -124,10 +113,11 @@ public void mode6phase2display()
 	if(rectX1 != 0 && rectX2 != 0)
 	{
 		println("rectX1: "+rectX1+",  rectY1: "+rectY1+", rectX2: "+rectX2+", rectY2: "+rectY2);
-		fill(255);
-		stroke(255);
-		strokeWeight(10);
+		fill(paint);
+		noStroke();
+		
 		rect(rectX1, rectY1, rectX2 - rectX1, rectY2 - rectY1, 7);
+		strokeWeight(10);
 		int triX = rectX1 + (rectX2 - rectX1)/2;
 		int triY = rectY2;
 		triangle(triX, triY, triX - 15, triY + 25, triX  - 10, triY);
@@ -156,10 +146,11 @@ void mode6phase2displayButtons()
 		.setCaptionLabel("<")
 		.align(CENTER,CENTER,CENTER,CENTER)
 		.setSize(40, 40)
+		.setColor(backButtonColor)
 		;
       
    	cp5.addButton("mode6phase2save")
-		.setPosition(width/2, 677)
+		.setPosition((width-800)/2 + 50, 677)
 		.setCaptionLabel("Save")
 		.align(CENTER,CENTER,CENTER,CENTER)
 		.setSize(80, 40)
@@ -173,6 +164,11 @@ void mode6phase2displayButtons()
 		.setFocus(true)
 		.setColor(color(255,0,0))
 		;
+
+	cp = cp5.addColorPicker("colorPicker2")
+  		.setPosition((width + 100)/2 + 220, 5)
+  		.setColorValue(color(255, 255, 255, 255))
+  		;
 
     displayButtons = false;
   }
@@ -206,6 +202,6 @@ public void mode6phase2save()
 	PImage screenShot = get();
   	editPhoto = createImage(640, 480, RGB);
 	editPhoto.copy(screenShot, (width - 800)/2, 70, 800, 600, 0, 0, 640, 480);
-	Photos[numPhotos] = editPhoto;
+	Photos.add(editPhoto);
 	numPhotos++;
 }

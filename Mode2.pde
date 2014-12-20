@@ -34,16 +34,47 @@ PImage removeBackground(PImage frame)
     frame.loadPixels();
     for (int y=0; y<frame.height; y++) {
       for (int x=0; x<frame.width; x++) {
-        int loc = x + y * frame.width;
-        color display = frame.pixels[loc];
-        color comparison = mode2Calibration.pixels[loc];
         
-        float r1 = red(display); float g1 = green(display); float b1 = blue(display);
-        float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
-        float diff = dist(r1,g1,b1,r2,g2,b2);
-        
-        if(diff < threshold)
-              frame.pixels[loc] = color(255);
+
+        if(inHSBmode)
+        {
+          colorMode(HSB, 255);
+          
+          int loc = x + y * frame.width;
+          color display = frame.pixels[loc];
+          color comparison = mode2Calibration.pixels[loc];
+          
+          float h1 = hue(display),
+            s1 = saturation(display),
+            b1 = brightness(display),
+            h2 = hue(comparison),
+            s2 = saturation(comparison), 
+            b2 = brightness(comparison)
+            ;
+
+          float hueDiff = abs(h1-h2),
+            satDiff = abs(s1-s2),
+            brtDiff = abs(b1-b2)
+            ;
+
+          if(hueDiff < hueThreshold && satDiff < satThreshold && brtDiff < brtThreshold)
+            frame.pixels[loc] = color(255);
+        }
+        else
+        {
+          colorMode(RGB, 255);
+
+          int loc = x + y * frame.width;
+          color display = frame.pixels[loc];
+          color comparison = mode2Calibration.pixels[loc];
+
+          float r1 = red(display); float g1 = green(display); float b1 = blue(display);
+          float r2 = red(comparison); float g2 = green(comparison); float b2 = blue(comparison);
+          float diff = dist(r1,g1,b1,r2,g2,b2);
+
+          if(diff < threshold)
+                frame.pixels[loc] = color(255);
+        }
       }
     }
     frame.updatePixels(); 
@@ -69,9 +100,10 @@ void mode2phase1Buttons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
-    offset += 60;
+    offset += 50;
 
 		cp5.addButton("takePhoto")
 			.setPosition(left + offset, 677)
@@ -84,10 +116,12 @@ void mode2phase1Buttons()
                 
     cp5.addButton("goToCalibrationPhase")
       .setPosition(left + offset, 677)
-      .setCaptionLabel("Calibrate")
+      .setCaptionLabel("Replace Background")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(110, 40)
+      .setSize(250, 40)
       ;
+
+    offset += 260;
 
     cp5.addButton("mode2phase1flickr")
       .setPosition((width+800)/2+10, 70)
@@ -98,31 +132,60 @@ void mode2phase1Buttons()
 
     if(removeBackground)
     {
-      offset += 120;
-
       cp5.addButton("backgroundSelection")
         .setPosition(left + offset, 677)
         .setCaptionLabel("Background")
         .align(CENTER,CENTER,CENTER,CENTER)
-        .setSize(200, 40)
+        .setSize(180, 40)
         ;
 
-      offset += 210;
+      offset += 190;
 
       cp5.addButton("pickCustomBackground")
         .setPosition(left + offset, 677)
         .setCaptionLabel("Use Photo")
         .align(CENTER,CENTER,CENTER,CENTER)
-        .setSize(200, 40)
+        .setSize(150, 40)
         ;
 
       cp5.addSlider("thresholdSize")
-        .setCaptionLabel("Replace threshold")
-        .setPosition((width - 100)/2 - 30, 20)
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60)
         .setSize(100, 20)
-        .setRange(20, 150)
+        .setRange(1, 250)
         .setValue(70)
         ;
+
+      cp5.addSlider("hueThresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60 + 40)
+        .setSize(100, 20)
+        .setRange(1, 250)
+        .setValue(70)
+        ;
+
+      cp5.addSlider("satThresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60 + 40 + 30)
+        .setSize(100, 20)
+        .setRange(1, 250)
+        .setValue(70)
+        ;
+
+      cp5.addSlider("brtThresholdSize")
+        .setCaptionLabel("")
+        .setPosition((width+800)/2+10, 170 + 60 + 40 + 30 + 30)
+        .setSize(100, 20)
+        .setRange(1, 250)
+        .setValue(70)
+        ;
+
+      cp5.addButton("mode2phase1hsbMode")
+        .setPosition((width+800)/2+10, 170)
+        .setCaptionLabel("HSB")
+        .align(CENTER,CENTER,CENTER,CENTER)
+        .setSize(80, 40)
+        ; 
 
       cp5.getController("thresholdSize").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);        
     }
@@ -153,7 +216,7 @@ public void takePhoto()
   cp5.hide();
   displayButtons = true;
   mirror(mode2Capture);
-  Photos[numPhotos] = mode2Capture;
+  Photos.add(mode2Capture);
   numPhotos++;
 }
 
@@ -205,6 +268,32 @@ void thresholdSize(int value)
   threshold = value;
 }
 
+//__________________________________________________________________________________________________________________________
+void hueThresholdSize(int value)
+{
+  hueThreshold = value;
+}
+
+//__________________________________________________________________________________________________________________________
+void satThresholdSize(int value)
+{
+  satThreshold = value;
+}
+
+//__________________________________________________________________________________________________________________________
+void brtThresholdSize(int value)
+{
+  brtThreshold = value;
+}
+
+//__________________________________________________________________________________________________________________________
+public void mode2phase1hsbMode()
+{
+  if(!inHSBmode)
+    inHSBmode = true;
+  else
+    inHSBmode = false;
+}
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void mode2phase2Buttons()
@@ -216,7 +305,7 @@ void mode2phase2Buttons()
 		cp5.setControlFont(buttonFont);
 
 		cp5.addButton("mode2phase2save")
-			.setPosition((width-800)/2 + 60, 677)
+			.setPosition((width-800)/2 + 50, 677)
 			.setCaptionLabel("Save")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(80, 40)
@@ -227,6 +316,7 @@ void mode2phase2Buttons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+      .setColor(backButtonColor)
 			;
 
 		displayButtons = false;
@@ -306,10 +396,11 @@ public void mode2phase3buttons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     cp5.addButton("takeCalibrationPhoto")
-      .setPosition(left+60, 677)
+      .setPosition(left + 50, 677)
       .setCaptionLabel("Capture")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)
@@ -407,7 +498,7 @@ PImage changeBackground(PImage frame)
 //__________________________________________________________________________________________________________________________
 PImage displayCustomBackground(PImage frame)
 {       
-  PImage resizedBackground = Photos[backgroundIndex];
+  PImage resizedBackground = Photos.get(backgroundIndex);
   resizedBackground.resize(frame.width, frame.height);
   resizedBackground.loadPixels();
   frame.loadPixels();
@@ -433,7 +524,7 @@ PImage displayCustomBackground(PImage frame)
 //==========================================================================================================================
 public void mode2phase4display()
 {
-  background(#012E4B);
+  background(backgroundColor);
   text("Click a photo to use as a background.", 20, 40);
   mode3displayPhotos();
   mode2phase4buttons();
@@ -456,6 +547,7 @@ public void mode2phase4buttons()
       .setCaptionLabel("<")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(40, 40)
+      .setColor(backButtonColor)
       ;
 
     displayButtons = false;

@@ -13,7 +13,7 @@ void drawStartScreen()
 //==========================================================================================================================
 void drawOverview()
 {
-  background(#012E4B);
+  background(backgroundColor);
   fill(#EAA3A3);
   font = loadFont("ArialMT-40.vlw");
 
@@ -39,7 +39,7 @@ void drawOverview()
   fill(#CE235F);
   for(int i = 0; i < numPhotos; i++)
   {
-    image(Photos[i], 80 + i*90, 140, 80, 60);
+    image(Photos.get(i), 80 + i*90, 140, 80, 60);
 
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -50,9 +50,9 @@ void drawOverview()
   for(int i = 0; i < numPanels; i++) 
   {
     if(PanelSizes[i] == 1)
-      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 60);
+      image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 60);
     else if(PanelSizes[i] == 2)
-      image(Panels[i], 80 + i*90, (height/2 + 40), 80, 30);
+      image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 30);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -132,7 +132,7 @@ void displayPhotos()
 {
   for(int i = 0; i < numPhotos - currentPhotoIndex; i++)
   {
-    image(Photos[currentPhotoIndex + i], 80, (height/2 + 40) + i*70, 80, 60);
+    image(Photos.get(currentPhotoIndex + i), 80, (height/2 + 40) + i*70, 80, 60);
   }
 }
 
@@ -187,11 +187,11 @@ public void mode1export()
       println(i);
       int cX = border + (640 + border) * numBlocks;
       int cY = border;
-      Panels[i].loadPixels();
+      Panels.get(i).loadPixels();
 
       if(PanelSizes[i] == 1)
       {
-        comicStrip.copy(Panels[i], 0, 0, 640, 480, cX, cY, 640, 480);
+        comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
       }
       else if(PanelSizes[i] == 2) 
       {
@@ -201,13 +201,13 @@ public void mode1export()
           int cY2 = border + 480/2;
           if(PanelSizes[i-1] == 2)
           {
-            comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
+            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
             numBlocks--;
             written = true;
           }
         }
         if(!written)
-          comicStrip.copy(Panels[i], 0, 0, 640, 480/2, cX, cY, 640, 480/2);
+          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX, cY, 640, 480/2);
       }
       numBlocks++;
     }

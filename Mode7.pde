@@ -5,7 +5,7 @@
 //==========================================================================================================================
 public void mode7phase1display()
 {
-	background(#012E4B);
+	background(backgroundColor);
 	mode7phase1displayButtons();
 	text("Search flickr for a photo to add.", 20, 40);
 	text("Use '+' to separate tags.", 20, 80);
@@ -28,6 +28,7 @@ void mode7phase1displayButtons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+			.setColor(backButtonColor)
 			;
 
 		cp5.addTextfield("flickrSearchQuery")
@@ -40,10 +41,10 @@ void mode7phase1displayButtons()
 			;
 
 		cp5.addButton("flickrSearchButton")
-			.setPosition((width+200)/2, (height-40)/2)
+			.setPosition((width+200)/2 - 20, (height-40)/2)
 			.setCaptionLabel("Search")
 			.align(CENTER,CENTER,CENTER,CENTER)
-			.setSize(80, 40)
+			.setSize(90, 40)
 	      	;
 
 	    displayButtons = false;
@@ -77,7 +78,7 @@ public void mode7phase1back()
 //==========================================================================================================================
 public void mode7phase2display()
 {
-	background(#012E4B);
+	background(backgroundColor);
 	mode7phase2displayButtons();
 	text("Click on a photo to add.", 20, 40);
 	text("Showing results for \""+flickrSearchQuery+"\"", 20, 80);
@@ -120,6 +121,7 @@ void mode7phase2displayButtons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+			.setColor(backButtonColor)
 			;
 
 		displayButtons = false;
@@ -245,7 +247,7 @@ public void mode7mousePressed()
 //==========================================================================================================================
 public void mode7phase3display()
 {
-	background(#012E4B);
+	background(backgroundColor);
 	mode7phase3displayButtons();
 
 	float flickrW = (float)flickrPhotoList.get(flickrPhotoIndex).width,
@@ -260,7 +262,7 @@ public void mode7phase3display()
 		image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70, 800, 800/aspectRatio);
 	else
 		image(flickrPhotoList.get(flickrPhotoIndex), (width - 600 * aspectRatio)/2, 70, 600 * aspectRatio, 600);
-	println("aspectRatio: "+aspectRatio+"  compAspectRatio: "+compAspectRatio);
+	//println("aspectRatio: "+aspectRatio+"  compAspectRatio: "+compAspectRatio);
 	//image(flickrPhotoList.get(flickrPhotoIndex), (width - 800)/2, 70);
 }
 
@@ -279,6 +281,7 @@ void mode7phase3displayButtons()
 			.setCaptionLabel("<")
 			.align(CENTER,CENTER,CENTER,CENTER)
 			.setSize(40, 40)
+			.setColor(backButtonColor)
 			;
 
 	    cp5.addButton("mode7phase3save")
@@ -310,7 +313,7 @@ public void mode7phase3save()
 	flickrSearchQuery = "";
 	cp5.hide();
 	displayButtons = true;
-	Photos[numPhotos] = flickrPhotoList.get(flickrPhotoIndex);
+	Photos.add(flickrPhotoList.get(flickrPhotoIndex));
 	numPhotos++;
 	flickrPhotoList = new ArrayList <PImage> ();
 }
