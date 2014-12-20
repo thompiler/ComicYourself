@@ -201,11 +201,20 @@ public void takePhoto()
   try
   {
     if(removeBackground)
+    {
+      println("removeBackground");
       mode2Capture = calibratedFrame.get();
+    }
     else if(changeBackground)
+    {
+      println("changeBackground");
       mode2Capture = editedFrame.get();                
+    }
     else
+    {
+      println("regularBackground");
       mode2Capture = frame.get();
+    }
   }
   catch(NullPointerException e)
   {
@@ -360,6 +369,7 @@ public void mode2phase2back()
 	cp5.hide();  
 	displayButtons = true;
 	numPhotos--;
+  Photos.remove(numPhotos);
 }
 
 

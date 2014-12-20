@@ -143,8 +143,10 @@ void draw()
 	else if(mode == 1)
 	{
 		// OVERVIEW mode
-		//background(255);	
-		drawOverview();
+		if(phase == 1)
+			drawOverview();
+		else if(phase == 2)
+			mode1phase2display();
 	}
 	else if(mode == 2)
 	{
@@ -163,6 +165,7 @@ void draw()
 			textFont(font);
 	       	text("Do you want to keep this picture?", 20, 40);
 			displayPhoto(numPhotos - 1);
+			println("numPhotos: "+numPhotos);
 			mode2phase2Buttons();
 		}
 		else if(phase == 3)

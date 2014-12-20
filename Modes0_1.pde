@@ -62,13 +62,6 @@ void drawOverview()
       && mouseY <= height/2 + 40 + 60)
       text("Edit", 80 + i*90, (height/2 + 40 + 35));
   }
-  if(displayExportedComic)
-  {
-    fill(#817575);
-    float ratio = (exportedComic.width/exportedComic.height);
-    image(exportedComic, 80, (height/2 + 190), 100*ratio, 100);
-    text("Exported Comic: ", 80, (height/2 + 150));
-  }
 }
 
 
@@ -121,13 +114,6 @@ void displayAddButtons()
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)
       ;
-      
-    cp5.addButton("mode1customExport")
-      .setPosition(400, 7)
-      .setCaptionLabel("Cusom Export")
-      .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(200, 40)
-      ;
 
     displayButtons = false;
   }
@@ -168,85 +154,13 @@ public void addPhoto()
 }
 
 
-
 //__________________________________________________________________________________________________________________________
 public void mode1export()
 {
-  println("Export button pressed ");
-
-  if(numPanels > 0)
-  {
-    // export panels as one combined pimage
-    // 1. create white pimage with dimensions to fit all panels
-
-    int border = 15;
-    PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
-    comicStrip.loadPixels();
-    int Max = (border + (border + 640)*(numPanels - numHalfPanels/2));
-    for (int i = 0; i < Max; i++)
-      for (int j = 0; j < 480 + 2 * border; j++)
-        comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
-
-    // 2. loop through panels and write them to output pimage
-    int numBlocks = 0;
-
-    for(int i = 0; i < numPanels; i++)
-    {
-      boolean written = false;
-      boolean writtenVertical = false;
-      println(i);
-      int cX = border + (640 + border) * numBlocks;
-      int cY = border;
-      Panels.get(i).loadPixels();
-
-      if(PanelSizes.get(i) == 1)
-      {
-        comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
-      }
-      else if(PanelSizes.get(i) == 2) 
-      {
-        if(i > 0)
-        {
-          int cX2 = border + (640 + border) * (numBlocks-1);
-          int cY2 = border + 480/2;
-          if(PanelSizes.get(i-1) == 2)
-          {
-            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
-            numBlocks--;
-            written = true;
-          }
-        }
-        if(!written)
-          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX, cY, 640, 480/2);
-      }
-      else if(PanelSizes.get(i) == 3) 
-      {
-        if(i > 0)
-        {
-          int cX3 = border + (640 + border) * (numBlocks-1) + 640/2;
-          int cY3 = border;
-          if(PanelSizes.get(i-1) == 3)
-          {
-            comicStrip.copy(Panels.get(i), 0, 0, 640/2, 480, cX3, cY3, 640/2, 480);
-            numBlocks--;
-            writtenVertical = true;
-          }
-        }
-        if(!writtenVertical)
-          comicStrip.copy(Panels.get(i), 0, 0, 640/2, 480, cX, cY, 640/2, 480);
-      }
-      numBlocks++;
-    }
-
-
-    displayExportedComic = true;
-    comicStrip.updatePixels();
-    exportedComic = comicStrip;
-    println("Comic Strip Exported to File");
-    comicStrip.save("comicStrip.png");
-  }
+  phase = 2;
+  cp5.hide();
+  displayButtons = true;
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -258,7 +172,6 @@ public void addPanel()
   cp5.hide();
   displayButtons = true;
 }
-
 
 
 //__________________________________________________________________________________________________________________________
@@ -298,6 +211,230 @@ void mode1mousePressed()
     }
   }
 }
+
+
+
+//==========================================================================================================================
+public void mode1phase2display()
+{
+  background(backgroundColor);
+  text("Pick your export preference", 20, 40);
+  mode1phase2buttons();
+
+  if(displayExportedComic)
+  {
+    fill(#817575);
+    float comicH = exportedComic.height,
+      comicW = exportedComic.width,
+      ratio = (comicH/comicW)
+      ;
+    image(exportedComic, (width-800)/2, 80, 800, 800*ratio);
+    //text("Exported Comic: ", 80, (height/2 + 150));
+  }
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void mode1phase2buttons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    cp5.addButton("mode2phase2back")
+      .setPosition(60, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      .setColor(backButtonColor)
+      ;
+
+    cp5.addButton("mode1exportLong")
+      .setPosition(width - 230, 10)
+      .setCaptionLabel("Export as Strip")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(210, 40)
+      ;
+      
+    cp5.addButton("mode1exportBlock")
+      .setPosition(width - 230, 60)
+      .setCaptionLabel("Export as Block")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(210, 40)
+      ;
+
+    cp5.addButton("mode1customExport")
+      .setPosition(width - 220, 110)
+      .setCaptionLabel("Custom Export")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(200, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode1exportLong()
+{
+  println("Export button pressed ");
+
+  if(numPanels > 0)
+  {
+    // export panels as one combined pimage
+    // 1. create white pimage with dimensions to fit all panels
+
+    int border = 16;
+    PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
+    comicStrip.loadPixels();
+    int Max = (border + (border + 640)*(numPanels - numHalfPanels/2));
+    for (int i = 0; i < Max; i++)
+      for (int j = 0; j < 480 + 2 * border; j++)
+        comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
+
+    // 2. loop through panels and write them to output pimage
+    int numBlocks = 0;
+
+    for(int i = 0; i < numPanels; i++)
+    {
+      boolean written = false;
+      boolean writtenVertical = false;
+      println(i);
+      int cX = border + (640 + border) * numBlocks;
+      int cY = border;
+      Panels.get(i).loadPixels();
+
+      if(PanelSizes.get(i) == 1)
+      {
+        comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
+      }
+      else if(PanelSizes.get(i) == 2) 
+      {
+        if(i > 0)
+        {
+          int cX2 = border + (640 + border) * (numBlocks-1);
+          int cY2 = border + 480/2 + 8;
+          if(PanelSizes.get(i-1) == 2)
+          {
+            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
+            numBlocks--;
+            written = true;
+          }
+        }
+        if(!written)
+          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
+      }
+      else if(PanelSizes.get(i) == 3) 
+      {
+        if(i > 0)
+        {
+          int cX3 = border + (640 + border) * (numBlocks-1) + 640/2 + 8;
+          int cY3 = border;
+          if(PanelSizes.get(i-1) == 3)
+          {
+            comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX3, cY3, 640/2-8, 480);
+            numBlocks--;
+            writtenVertical = true;
+          }
+        }
+        if(!writtenVertical)
+          comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX, cY, 640/2-8, 480);
+      }
+      numBlocks++;
+    }
+
+
+    displayExportedComic = true;
+    comicStrip.updatePixels();
+    exportedComic = comicStrip;
+    println("Comic Strip Exported to File");
+    comicStrip.save("comicStrip.png");
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode1exportBlock()
+{
+  println("Export button pressed ");
+
+  if(numPanels > 0)
+  {
+    // export panels as one combined pimage
+    // 1. create white pimage with dimensions to fit all panels
+
+    int border = 16;
+    PImage comicStrip = createImage(border + (border + 640)*(numPanels - numHalfPanels/2), 480 + 2 * border, RGB);
+    comicStrip.loadPixels();
+    int Max = (border + (border + 640)*(numPanels - numHalfPanels/2));
+    for (int i = 0; i < Max; i++)
+      for (int j = 0; j < 480 + 2 * border; j++)
+        comicStrip.pixels[j*(border + (border + 640)*(numPanels - numHalfPanels/2)) + i] = color(255, 255, 255);
+
+    // 2. loop through panels and write them to output pimage
+    int numBlocks = 0;
+
+    for(int i = 0; i < numPanels; i++)
+    {
+      boolean written = false;
+      boolean writtenVertical = false;
+      println(i);
+      int cX = border + (640 + border) * numBlocks;
+      int cY = border;
+      Panels.get(i).loadPixels();
+
+      if(PanelSizes.get(i) == 1)
+      {
+        comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
+      }
+      else if(PanelSizes.get(i) == 2) 
+      {
+        if(i > 0)
+        {
+          int cX2 = border + (640 + border) * (numBlocks-1);
+          int cY2 = border + 480/2 + 8;
+          if(PanelSizes.get(i-1) == 2)
+          {
+            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
+            numBlocks--;
+            written = true;
+          }
+        }
+        if(!written)
+          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
+      }
+      else if(PanelSizes.get(i) == 3) 
+      {
+        if(i > 0)
+        {
+          int cX3 = border + (640 + border) * (numBlocks-1) + 640/2 + 8;
+          int cY3 = border;
+          if(PanelSizes.get(i-1) == 3)
+          {
+            comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX3, cY3, 640/2-8, 480);
+            numBlocks--;
+            writtenVertical = true;
+          }
+        }
+        if(!writtenVertical)
+          comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX, cY, 640/2-8, 480);
+      }
+      numBlocks++;
+    }
+
+
+    displayExportedComic = true;
+    comicStrip.updatePixels();
+    exportedComic = comicStrip;
+    println("Comic Strip Exported to File");
+    comicStrip.save("comicStrip.png");
+  }
+}
+
 
 public void mode1customExport(){
   mode = 8;
