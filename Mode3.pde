@@ -80,18 +80,24 @@ public void mode3phase1back()
 //__________________________________________________________________________________________________________________________
 public void mode3phase1left()
 {
-  displayIndex--;
-  if(displayIndex < 0)
-    displayIndex = 0;
+  if(numPhotos > 8)
+  {
+    displayIndex--;
+    if(displayIndex < 0)
+      displayIndex = 0;
+  }
 }
 
 
 //__________________________________________________________________________________________________________________________
 public void mode3phase1right()
 {
-  displayIndex++;
-  if(displayIndex > numPhotos-4)
-    displayIndex = numPhotos-4;
+  if(numPhotos > 8)
+  {
+    displayIndex++;
+    if(displayIndex > numPhotos-4)
+      displayIndex = numPhotos-4;
+  }
 }
 
 
