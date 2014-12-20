@@ -5282,15 +5282,18 @@ public void mode1exportBlock()
       }
       else if(PanelSizes.get(i) == 2) 
       {
-        if(i > 0 && i%2 == 1)
-        {
           int cX2 = border + (640 + border) * ((numBlocks)%3);
           // int cY2 = border + 480/2 + 8;
           int cY2 = border + ((numBlocks-1)/3)*(480+border) + 480/2 + 8;
+        if(i > 0 && i%2 == 1)
+        {
+          //int cX2 = border + (640 + border) * ((numBlocks)%3);
+          // int cY2 = border + 480/2 + 8;
+          //int cY2 = border + ((numBlocks-1)/3)*(480+border) + 480/2 + 8;
 
           //if(PanelSizes.get(i-1) == 2)
           //{
-            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
+            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
             numBlocks--;
             written = true;
             //println("h1 cX2: "+cX2+"   cY2: "+cY2+"  cY: "+cY);
@@ -5298,7 +5301,7 @@ public void mode1exportBlock()
         }
         else //if(!written)
         {
-          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
+          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
           println("h2 cX: "+cX+"   cY: "+cY);
         }
       }
