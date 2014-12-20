@@ -3619,7 +3619,7 @@ public void mode4phase1draw()
   cp5.hide();
   displayButtons = true;
   displayPhoto = true;
-  background(255);
+  background(backgroundColor);
   paint = color(255, 128, 0, 255);
 }
 
@@ -3644,7 +3644,7 @@ public void mode4phase1resize()
   cp5.hide();
   displayButtons = true;
   displayPhoto = true;
-  background(255);
+  background(backgroundColor);
   //displayResizePhoto = true;
   resizeValue = 100;
 }
@@ -3658,7 +3658,7 @@ public void mode4phase1layer()
   cp5.hide();
   displayButtons = true;
   displayPhoto = true;
-  background(255);
+  background(backgroundColor);
 }
 
 
