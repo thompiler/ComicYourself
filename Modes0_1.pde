@@ -193,6 +193,7 @@ public void mode1export()
     for(int i = 0; i < numPanels; i++)
     {
       boolean written = false;
+      boolean writtenVertical = false;
       println(i);
       int cX = border + (640 + border) * numBlocks;
       int cY = border;
@@ -217,6 +218,22 @@ public void mode1export()
         }
         if(!written)
           comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX, cY, 640, 480/2);
+      }
+      else if(PanelSizes.get(i) == 3) 
+      {
+        if(i > 0)
+        {
+          int cX3 = border + (640 + border) * (numBlocks-1) + 640/2;
+          int cY3 = border;
+          if(PanelSizes.get(i-1) == 3)
+          {
+            comicStrip.copy(Panels.get(i), 0, 0, 640/2, 480, cX3, cY3, 640/2, 480);
+            numBlocks--;
+            writtenVertical = true;
+          }
+        }
+        if(!writtenVertical)
+          comicStrip.copy(Panels.get(i), 0, 0, 640/2, 480, cX, cY, 640/2, 480);
       }
       numBlocks++;
     }
