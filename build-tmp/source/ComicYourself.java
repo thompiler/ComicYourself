@@ -1697,7 +1697,7 @@ public void mode4phase4displayButtons()
       .setSize(80, 40)
       ;
 
-    offset += 40 + 10;
+    offset += 80 + 10;
     
     cp5.addButton("mode4phase4save")
       .setPosition(left + offset, 677)
