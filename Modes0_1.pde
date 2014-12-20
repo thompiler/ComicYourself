@@ -49,9 +49,9 @@ void drawOverview()
   }
   for(int i = 0; i < numPanels; i++) 
   {
-    if(PanelSizes[i] == 1)
+    if(PanelSizes.get(i) == 1)
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 60);
-    else if(PanelSizes[i] == 2)
+    else if(PanelSizes.get(i) == 2)
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 30);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
@@ -189,17 +189,17 @@ public void mode1export()
       int cY = border;
       Panels.get(i).loadPixels();
 
-      if(PanelSizes[i] == 1)
+      if(PanelSizes.get(i) == 1)
       {
         comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
       }
-      else if(PanelSizes[i] == 2) 
+      else if(PanelSizes.get(i) == 2) 
       {
         if(i > 0)
         {
           int cX2 = border + (640 + border) * (numBlocks-1);
           int cY2 = border + 480/2;
-          if(PanelSizes[i-1] == 2)
+          if(PanelSizes.get(i-1) == 2)
           {
             comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
             numBlocks--;

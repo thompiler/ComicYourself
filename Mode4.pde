@@ -393,10 +393,10 @@ void mode4phase4display()
 
   for(int i = 0; i < numLayers; i++)
   {
-    int layerWidth = (int)((1.25)*Photos.get(Layers[i]).width);
-    int layerHeight = (int)((1.25)*Photos.get(Layers[i]).height);
-    println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
-    image(Photos.get(Layers[i]), LayersX[i], LayersY[i], layerWidth, layerHeight);
+    int layerWidth = (int)((1.25)*Photos.get(Layers.get(i)).width);
+    int layerHeight = (int)((1.25)*Photos.get(Layers.get(i)).height);
+    println("("+LayersX.get(i)+", "+LayersY.get(i)+") dims: "+layerWidth+", "+layerHeight);
+    image(Photos.get(Layers.get(i)), LayersX.get(i), LayersY.get(i), layerWidth, layerHeight);
   }
 
   noStroke();
@@ -439,7 +439,7 @@ void mode4phase4displayButtons()
       .setSize(80, 40)
       ;
 
-    offset += 40 + 10;
+    offset += 80 + 10;
     
     cp5.addButton("mode4phase4save")
       .setPosition(left + offset, 677)
@@ -558,9 +558,9 @@ void mode4mousePressed()
         && mouseY >= photoY 
         && mouseY <= photoY + 75)
       {
-        Layers[numLayers] = i;
-        LayersX[numLayers] = (width - 800)/2;
-        LayersY[numLayers] = 70;
+        Layers.add(i);
+        LayersX.add((width - 800)/2);
+        LayersY.add(70);
         numLayers++;
         phase = 4;
         println("-- added photo as layer");

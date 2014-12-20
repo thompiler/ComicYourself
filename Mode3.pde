@@ -118,7 +118,7 @@ public void mode3phase2save()
   // Save copy of selected photo in panel array
   PImage newPanel = Photos.get(currentPhotoIndex);
   Panels.add(newPanel);
-  PanelSizes[numPanels] = 1;
+  PanelSizes.add(1);
   numPanels++;
 }
 
@@ -207,7 +207,7 @@ public void mode3phase3saveHalf()
   PImage newHalfPanel = createImage(640, 480/2, RGB); 
   newHalfPanel.copy(Photos.get(currentPhotoIndex), 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
   Panels.add(newHalfPanel);
-  PanelSizes[numPanels] = 2;
+  PanelSizes.add(2);
   numPanels++;
   numHalfPanels++;
 }

@@ -72,11 +72,11 @@ boolean removeBackground = false;
 int threshold = 70, hueThreshold = 70, satThreshold = 70, brtThreshold = 70;
 
 // Thom's variables for Milestone 3
-int [] Layers;
-int [] LayersX;
-int [] LayersY;
+ArrayList <Integer> Layers;
+ArrayList <Integer> LayersX;
+ArrayList <Integer> LayersY;
 int numLayers = 0;
-int [] PanelSizes;
+ArrayList <Integer> PanelSizes;
 int numHalfPanels = 0;
 int halfX = (width - 800)/2;
 int halfY = 70;
@@ -117,10 +117,10 @@ public void setup()
 	displayStartButton();
 	Photos = new ArrayList <PImage> ();
 	Panels = new ArrayList <PImage> ();
-	Layers = new int[10];
-	LayersX = new int[10];
-	LayersY = new int[10];
-	PanelSizes = new int[20];
+	Layers = new ArrayList <Integer> ();
+	LayersX = new ArrayList <Integer> ();
+	LayersY = new ArrayList <Integer> ();
+	PanelSizes = new ArrayList <Integer> ();
 
 	//added by Jason
 	mode2Calibration = webcam.get();
@@ -350,8 +350,8 @@ public void mouseDragged()
  		}
  		if(phase == 4 && numLayers > 0)
  		{
- 			LayersX[numLayers-1] = mouseX;
- 			LayersY[numLayers-1] = mouseY;
+ 			LayersX.add(mouseX);
+ 			LayersY.add(mouseY);
  		}
  		if(phase == 6)
  		{
@@ -1137,7 +1137,7 @@ public void mode3phase2save()
   // Save copy of selected photo in panel array
   PImage newPanel = Photos.get(currentPhotoIndex);
   Panels.add(newPanel);
-  PanelSizes[numPanels] = 1;
+  PanelSizes.add(1);
   numPanels++;
 }
 
@@ -1226,7 +1226,7 @@ public void mode3phase3saveHalf()
   PImage newHalfPanel = createImage(640, 480/2, RGB); 
   newHalfPanel.copy(Photos.get(currentPhotoIndex), 0, halfY-70, 640, 480/2, 0, 0, 640, 480/2);
   Panels.add(newHalfPanel);
-  PanelSizes[numPanels] = 2;
+  PanelSizes.add(2);
   numPanels++;
   numHalfPanels++;
 }
@@ -1651,10 +1651,10 @@ public void mode4phase4display()
 
   for(int i = 0; i < numLayers; i++)
   {
-    int layerWidth = (int)((1.25f)*Photos.get(Layers[i]).width);
-    int layerHeight = (int)((1.25f)*Photos.get(Layers[i]).height);
-    println("("+LayersX[i]+", "+LayersY[i]+") dims: "+layerWidth+", "+layerHeight);
-    image(Photos.get(Layers[i]), LayersX[i], LayersY[i], layerWidth, layerHeight);
+    int layerWidth = (int)((1.25f)*Photos.get(Layers.get(i)).width);
+    int layerHeight = (int)((1.25f)*Photos.get(Layers.get(i)).height);
+    println("("+LayersX.get(i)+", "+LayersY.get(i)+") dims: "+layerWidth+", "+layerHeight);
+    image(Photos.get(Layers.get(i)), LayersX.get(i), LayersY.get(i), layerWidth, layerHeight);
   }
 
   noStroke();
@@ -1816,9 +1816,9 @@ public void mode4mousePressed()
         && mouseY >= photoY 
         && mouseY <= photoY + 75)
       {
-        Layers[numLayers] = i;
-        LayersX[numLayers] = (width - 800)/2;
-        LayersY[numLayers] = 70;
+        Layers.add(i);
+        LayersX.add((width - 800)/2);
+        LayersY.add(70);
         numLayers++;
         phase = 4;
         println("-- added photo as layer");
@@ -2029,6 +2029,7 @@ public void mode5phase1delete()
   		Panels[i - 1] = Panels[i];
   	}*/
   	Panels.remove(currentPanelIndex);
+  	PanelSizes.remove(currentPanelIndex);
   	numPanels--;
 }
 
@@ -2611,9 +2612,9 @@ public void drawOverview()
   }
   for(int i = 0; i < numPanels; i++) 
   {
-    if(PanelSizes[i] == 1)
+    if(PanelSizes.get(i) == 1)
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 60);
-    else if(PanelSizes[i] == 2)
+    else if(PanelSizes.get(i) == 2)
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 30);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
@@ -2751,17 +2752,17 @@ public void mode1export()
       int cY = border;
       Panels.get(i).loadPixels();
 
-      if(PanelSizes[i] == 1)
+      if(PanelSizes.get(i) == 1)
       {
         comicStrip.copy(Panels.get(i), 0, 0, 640, 480, cX, cY, 640, 480);
       }
-      else if(PanelSizes[i] == 2) 
+      else if(PanelSizes.get(i) == 2) 
       {
         if(i > 0)
         {
           int cX2 = border + (640 + border) * (numBlocks-1);
           int cY2 = border + 480/2;
-          if(PanelSizes[i-1] == 2)
+          if(PanelSizes.get(i-1) == 2)
           {
             comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2, cX2, cY2, 640, 480/2);
             numBlocks--;

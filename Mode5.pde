@@ -89,6 +89,7 @@ public void mode5phase1delete()
   		Panels[i - 1] = Panels[i];
   	}*/
   	Panels.remove(currentPanelIndex);
+  	PanelSizes.remove(currentPanelIndex);
   	numPanels--;
 }
 

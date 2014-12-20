@@ -51,11 +51,11 @@ boolean removeBackground = false;
 int threshold = 70, hueThreshold = 70, satThreshold = 70, brtThreshold = 70;
 
 // Thom's variables for Milestone 3
-int [] Layers;
-int [] LayersX;
-int [] LayersY;
+ArrayList <Integer> Layers;
+ArrayList <Integer> LayersX;
+ArrayList <Integer> LayersY;
 int numLayers = 0;
-int [] PanelSizes;
+ArrayList <Integer> PanelSizes;
 int numHalfPanels = 0;
 int halfX = (width - 800)/2;
 int halfY = 70;
@@ -96,10 +96,10 @@ void setup()
 	displayStartButton();
 	Photos = new ArrayList <PImage> ();
 	Panels = new ArrayList <PImage> ();
-	Layers = new int[10];
-	LayersX = new int[10];
-	LayersY = new int[10];
-	PanelSizes = new int[20];
+	Layers = new ArrayList <Integer> ();
+	LayersX = new ArrayList <Integer> ();
+	LayersY = new ArrayList <Integer> ();
+	PanelSizes = new ArrayList <Integer> ();
 
 	//added by Jason
 	mode2Calibration = webcam.get();
@@ -329,8 +329,8 @@ void mouseDragged()
  		}
  		if(phase == 4 && numLayers > 0)
  		{
- 			LayersX[numLayers-1] = mouseX;
- 			LayersY[numLayers-1] = mouseY;
+ 			LayersX.add(mouseX);
+ 			LayersY.add(mouseY);
  		}
  		if(phase == 6)
  		{
