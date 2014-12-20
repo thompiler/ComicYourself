@@ -165,7 +165,7 @@ void draw()
 			textFont(font);
 	       	text("Do you want to keep this picture?", 20, 40);
 			displayPhoto(numPhotos - 1);
-			println("numPhotos: "+numPhotos);
+			//println("numPhotos: "+numPhotos);
 			mode2phase2Buttons();
 		}
 		else if(phase == 3)

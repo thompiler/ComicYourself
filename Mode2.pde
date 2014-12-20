@@ -202,17 +202,17 @@ public void takePhoto()
   {
     if(removeBackground)
     {
-      println("removeBackground");
+      //println("removeBackground");
       mode2Capture = calibratedFrame.get();
     }
     else if(changeBackground)
     {
-      println("changeBackground");
+      //println("changeBackground");
       mode2Capture = editedFrame.get();                
     }
     else
     {
-      println("regularBackground");
+      //println("regularBackground");
       mode2Capture = frame.get();
     }
   }
@@ -370,6 +370,7 @@ public void mode2phase2back()
 	displayButtons = true;
 	numPhotos--;
   Photos.remove(numPhotos);
+  //println("button back to overview ");
 }
 
 
@@ -487,6 +488,7 @@ public void pickCustomBackground()
 PImage changeBackground(PImage frame)
 {       
     stockBackground[0].loadPixels();
+    image(stockBackground[0], -(width - 800)/2 -800, 70, 800, 600);
     frame.loadPixels();
     for (int y=0; y<frame.height; y++) {
       for (int x=0; x<frame.width; x++) {
@@ -512,6 +514,8 @@ PImage displayCustomBackground(PImage frame)
   resizedBackground.resize(frame.width, frame.height);
   resizedBackground.loadPixels();
   frame.loadPixels();
+
+  image(resizedBackground, -(width - 800)/2 -800, 70, 800, 600);
 
   for (int y=0; y < frame.height; y++)
   {
