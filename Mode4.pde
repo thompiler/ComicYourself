@@ -493,6 +493,7 @@ public void mode4phase4addPhoto()
   phase = 5;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
 }
 
 
@@ -553,6 +554,7 @@ public void mode4phase5back()
   phase = 4;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
 }
 
 
@@ -595,7 +597,7 @@ void mode4mousePressed()
         numLayers++;
         phase = 4;
         println("-- added photo as layer");
-
+        displayIndex = 0;
 
         cp5.hide();
         displayButtons = true;

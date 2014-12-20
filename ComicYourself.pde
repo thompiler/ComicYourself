@@ -185,7 +185,7 @@ void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			mode3displayPhotos();
+			mode3displayPhotos(displayIndex);
 			mode3phase1displayButtons();
 			textFont(font);
   			fill(#817575);

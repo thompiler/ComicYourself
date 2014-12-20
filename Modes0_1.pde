@@ -171,6 +171,7 @@ public void addPanel()
   phase = 1;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
 }
 
 

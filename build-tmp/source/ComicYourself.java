@@ -206,7 +206,7 @@ public void draw()
 		if(phase == 1)
 		{
 			// show list of taken photos
-			mode3displayPhotos();
+			mode3displayPhotos(displayIndex);
 			mode3phase1displayButtons();
 			textFont(font);
   			fill(0xff817575);
@@ -3178,6 +3178,19 @@ public void mode3phase1displayButtons()
       .setColor(backButtonColor)
       ;
 
+    cp5.addButton("mode3phase1left")
+      .setPosition((width-800)/2+50, 677)
+      .setCaptionLabel("left")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    cp5.addButton("mode3phase1right")
+      .setPosition((width-800)/2+50+90, 677)
+      .setCaptionLabel("right")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
     displayButtons = false;
   }
 }
@@ -3191,6 +3204,26 @@ public void mode3phase1back()
   phase = 1;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
+}
+
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase1left()
+{
+  displayIndex--;
+  if(displayIndex < 0)
+    displayIndex = 0;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase1right()
+{
+  displayIndex++;
+  if(displayIndex > numPhotos-4)
+    displayIndex = numPhotos-4;
 }
 
 
@@ -3962,6 +3995,7 @@ public void mode4phase4addPhoto()
   phase = 5;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
 }
 
 
@@ -4022,6 +4056,7 @@ public void mode4phase5back()
   phase = 4;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
 }
 
 
@@ -4064,7 +4099,7 @@ public void mode4mousePressed()
         numLayers++;
         phase = 4;
         println("-- added photo as layer");
-
+        displayIndex = 0;
 
         cp5.hide();
         displayButtons = true;
@@ -4977,6 +5012,7 @@ public void addPanel()
   phase = 1;
   cp5.hide();
   displayButtons = true;
+  displayIndex = 0;
 }
 
 
