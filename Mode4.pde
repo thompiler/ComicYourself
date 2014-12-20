@@ -497,12 +497,12 @@ public void mode4phase4addPhoto()
 
 
 //==========================================================================================================================
-void mode4phase5display()
+void mode4phase5display() // add photo as layer mode
 {
   textFont(font);
   fill(#817575);
   background(backgroundColor);
-  mode3displayPhotos();
+  mode3displayPhotos(displayIndex);
   text("Pick a photo to add as a layer", 20, 40);
   mode4phase5displayButtons();
 }
@@ -526,6 +526,20 @@ void mode4phase5displayButtons()
       .setColor(backButtonColor)
       ;
 
+    cp5.addButton("mode4phase5left")
+      .setPosition((width-800)/2+50, 677)
+      .setCaptionLabel("left")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
+    cp5.addButton("mode4phase5right")
+      .setPosition((width-800)/2+50+90, 677)
+      .setCaptionLabel("right")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(80, 40)
+      ;
+
     displayButtons = false;
   }
 }
@@ -541,6 +555,23 @@ public void mode4phase5back()
   displayButtons = true;
 }
 
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase5left()
+{
+  displayIndex--;
+  if(displayIndex < 0)
+    displayIndex = 0;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode4phase5right()
+{
+  displayIndex++;
+  if(displayIndex > numPhotos-4)
+    displayIndex = numPhotos-4;
+}
 
 
 //__________________________________________________________________________________________________________________________
@@ -575,6 +606,7 @@ void mode4mousePressed()
   {
     if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
     {
+      println("y: "+mouseY+"  x: "+mouseX);
       cropX1 = mouseX;
       cropY1 = mouseY;
     }

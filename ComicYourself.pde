@@ -79,7 +79,7 @@ boolean useCustomBackground = false;
 boolean inHSBmode = false;
 int backgroundColor = #464646;
 CColor backButtonColor = new CColor(#9B1919, #D86262, #FFFFFF, #FFFFFF, #FFFFFF);
-
+int displayIndex = 0;
 
 //__________________________________________________________________________________________________________________________
 void setup()
@@ -345,13 +345,14 @@ void mouseDragged()
 	{
 		if(phase == 2)
 		{
-			println("mouseDragged");
+			//println("mouseDragged");
  			flag = 1;
  		}
  		if(phase == 4 && numLayers > 0)
  		{
- 			LayersX.add(mouseX);
- 			LayersY.add(mouseY);
+ 			println("x: "+mouseX+" y:"+mouseY);
+ 			LayersX.set(numLayers-1, mouseX);
+ 			LayersY.set(numLayers-1, mouseY);
  		}
  		if(phase == 6)
  		{

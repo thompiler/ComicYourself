@@ -12,6 +12,16 @@ void mode3displayPhotos()
 }
 
 
+
+//__________________________________________________________________________________________________________________________
+void mode3displayPhotos(int index)
+{
+  background(backgroundColor);
+  for(int i = index; i < numPhotos; i++)
+    image(Photos.get(i), 80 + (i-index)*110, height/2, 100, 75);
+}
+
+
 //__________________________________________________________________________________________________________________________
 void displayPhoto(int index)
 {
