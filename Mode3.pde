@@ -85,9 +85,18 @@ void mode3phase2displayButtons()
 
     cp5.addButton("mode3phase2makeHalf")
       .setPosition(left + offset, 677)
-      .setCaptionLabel("Make Half")
+      .setCaptionLabel("Horizontal Half")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(120, 40)
+      .setSize(220, 40)
+      ;
+
+    offset += 220 + 10;
+
+    cp5.addButton("mode3phase2makeHalfVertical")
+      .setPosition(left + offset, 677)
+      .setCaptionLabel("Vertical Half")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(170, 40)
       ;
 
     displayButtons = false;
@@ -128,6 +137,18 @@ public void mode3phase2makeHalf()
 {
   println("button: display half photo");
   phase = 3;
+  cp5.hide();
+  displayButtons = true;
+  halfX = (width - 800)/2;
+  halfY = 70;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase2makeHalfVertical()
+{
+  println("button: display vertical half photo");
+  phase = 4;
   cp5.hide();
   displayButtons = true;
   halfX = (width - 800)/2;
@@ -236,4 +257,71 @@ void mode3mousePressed()
 			}
 		}
 	}
+}
+
+
+//===========================================================================================================================
+public void mode3phase4display()
+{
+  background(backgroundColor);
+  text("Move the rectangle to pick region to save", 20, 40);
+  mode3phase4displayButtons();
+  displayPhoto(currentPhotoIndex);
+  stroke(255);
+  noFill();
+  strokeWeight(3);
+  rect(halfX, halfY, 400, 600);
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void mode3phase4displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    int left = (width-800)/2;
+    int offset = 0;
+
+    cp5.addButton("mode3phase3back")
+      .setPosition(left, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      .setColor(backButtonColor)
+      ;
+
+    offset += 40 + 10;
+
+    cp5.addButton("mode3phase4saveHalf")
+      .setPosition(left + offset, 677)
+      .setCaptionLabel("Save Region")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(140, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase4saveHalf()
+{
+  println("button: save half panel");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // Save copy of selected photo in panel array
+  PImage newHalfPanel = createImage(640/2, 480, RGB); 
+  newHalfPanel.copy(Photos.get(currentPhotoIndex), halfX-(width-800)/2, halfY-70, 640/2, 480, 0, 0, 640/2, 480);
+  Panels.add(newHalfPanel);
+  PanelSizes.add(3);
+  numPanels++;
+  numHalfPanels++;
 }

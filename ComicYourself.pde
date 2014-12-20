@@ -199,6 +199,10 @@ void draw()
 		{
 			mode3phase3display();
 		}
+		else if(phase == 4)
+		{
+			mode3phase4display();
+		}
 	}
 	else if(mode == 4) // edit photo mode
 	{
@@ -275,13 +279,12 @@ void draw()
 		else if(phase == 3)
 			mode7phase3display();
 	}
-        
-        else if (mode==8)
-        {
-          mode8draw();
-          mode8dispayButon();
-        
-        }
+    else if (mode==8)
+    {
+      mode8draw();
+      mode8dispayButon();
+    
+    }
 }
 
 
@@ -364,6 +367,15 @@ void mouseDragged()
  			halfY = 70+300;
  		else
  			halfY = mouseY;
+ 	}
+ 	else if(mode == 3 && phase == 4)
+ 	{
+ 		if(mouseX < (width-800)/2)
+ 			halfX = (width-800)/2; 
+ 		else if(mouseX > width/2)
+ 			halfX = width/2;
+ 		else
+ 			halfX = mouseX;
  	}
  	else if(mode == 6 && phase ==1)
 	{

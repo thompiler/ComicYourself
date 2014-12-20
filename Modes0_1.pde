@@ -53,6 +53,8 @@ void drawOverview()
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 60);
     else if(PanelSizes.get(i) == 2)
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 30);
+    else if(PanelSizes.get(i) == 3)
+      image(Panels.get(i), 80 + i*90, (height/2 + 40), 40, 60);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80

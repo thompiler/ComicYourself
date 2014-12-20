@@ -220,6 +220,10 @@ public void draw()
 		{
 			mode3phase3display();
 		}
+		else if(phase == 4)
+		{
+			mode3phase4display();
+		}
 	}
 	else if(mode == 4) // edit photo mode
 	{
@@ -296,6 +300,12 @@ public void draw()
 		else if(phase == 3)
 			mode7phase3display();
 	}
+    else if (mode==8)
+    {
+      mode8draw();
+      mode8dispayButon();
+    
+    }
 }
 
 
@@ -333,8 +343,16 @@ public void mousePressed()
 				break;
 		case 7: mode7mousePressed();
 				break;
-		default: break;
+		case 8: mode8mousePressed();
+                                break;
+                default: break;
 	}
+}
+
+public void mouseClicked(){
+  if(mode==8){
+    mode8mouseClicked();
+  }
 }
 
 
@@ -371,6 +389,15 @@ public void mouseDragged()
  		else
  			halfY = mouseY;
  	}
+ 	else if(mode == 3 && phase == 4)
+ 	{
+ 		if(mouseX < (width-800)/2)
+ 			halfX = (width-800)/2; 
+ 		else if(mouseX > width/2)
+ 			halfX = width/2;
+ 		else
+ 			halfX = mouseX;
+ 	}
  	else if(mode == 6 && phase ==1)
 	{
 		if(mouseY < 670 && mouseY > 70 && mouseX > (width-800)/2 && mouseX < (width+800)/2)
@@ -379,6 +406,9 @@ public void mouseDragged()
 			rectY2 = mouseY;
 		}	
 	}
+        else if(mode == 8){
+          mode8mouseDragged();
+        }
 }
 
 
@@ -390,6 +420,9 @@ public void mouseReleased()
 		flag = 0;
 		println("mouse released");
 	}
+        if(mode == 8){
+            mode8mouseReleased();
+        }
 }
 
 
@@ -432,6 +465,2072 @@ public void input(String theText)
   // automatically receives results from controller input
   println("a textfield event for controller 'input' : "+theText);
 }
+PImage[] photos;
+PImage[] gallery;
+PImage draggedImage;
+PImage[] boxImage;
+PImage[] hboxImage;
+PImage[] vboxImage;
+int selectedPicture;
+int imageX, imageY;
+boolean drawDragImage;
+boolean drawBoxImage;
+boolean vb1, vb2, vb3, vb4, vb5, vb6, vb7, vb8, vb9; 
+boolean hb1, hb2, hb3, hb4, hb5, hb6, hb7, hb8, hb9; 
+boolean box1, box2, box3, box4, box5, box6, box7, box8, box9;
+//half horizontal boxes //half vertical boxes
+boolean b1h1, b1h2, b1v1, b1v2, 
+        b2h1, b2h2, b2v1, b2v2, 
+        b3h1, b3h2, b3v1, b3v2, 
+        b4h1, b4h2, b4v1, b4v2, 
+        b5h1, b5h2, b5v1, b5v2, 
+        b6h1, b6h2, b6v1, b6v2, 
+        b7h1, b7h2, b7v1, b7v2, 
+        b8h1, b8h2, b8v1, b8v2, 
+        b9h1, b9h2, b9v1, b9v2;
+        
+int b1h1y, b1h2y, b1v1x, b1v2x, 
+    b2h1y, b2h2y, b2v1x, b2v2x, 
+    b3h1y, b3h2y, b3v1x, b3v2x, 
+    b4h1y, b4h2y, b4v1x, b4v2x, 
+    b5h1y, b5h2y, b5v1x, b5v2x, 
+    b6h1y, b6h2y, b6v1x, b6v2x, 
+    b7h1y, b7h2y, b7v1x, b7v2x, 
+    b8h1y, b8h2y, b8v1x, b8v2x, 
+    b9h1y, b9h2y, b9v1x, b9v2x;
+    
+int fb1h1y, fb1h2y, fb1v1x, fb1v2x, 
+    fb2h1y, fb2h2y, fb2v1x, fb2v2x, 
+    fb3h1y, fb3h2y, fb3v1x, fb3v2x, 
+    fb4h1y, fb4h2y, fb4v1x, fb4v2x, 
+    fb5h1y, fb5h2y, fb5v1x, fb5v2x, 
+    fb6h1y, fb6h2y, fb6v1x, fb6v2x, 
+    fb7h1y, fb7h2y, fb7v1x, fb7v2x, 
+    fb8h1y, fb8h2y, fb8v1x, fb8v2x, 
+    fb9h1y, fb9h2y, fb9v1x, fb9v2x;
+        
+boolean drawBox1Image, drawBox2Image, drawBox3Image,
+        drawBox4Image, drawBox5Image, drawBox6Image, 
+        drawBox7Image, drawBox8Image, drawBox9Image;
+        
+boolean db1h1, db1h2, db1v1, db1v2, 
+        db2h1, db2h2, db2v1, db2v2, 
+        db3h1, db3h2, db3v1, db3v2, 
+        db4h1, db4h2, db4v1, db4v2, 
+        db5h1, db5h2, db5v1, db5v2, 
+        db6h1, db6h2, db6v1, db6v2, 
+        db7h1, db7h2, db7v1, db7v2, 
+        db8h1, db8h2, db8v1, db8v2, 
+        db9h1, db9h2, db9v1, db9v2;
+        
+boolean imageSelected;
+
+boolean b2l,b3l,b4l,b5l,b6l,b7l,b8l,b9l;
+
+
+public void Jassetup()
+{
+  
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  background(200);
+  strokeCap(SQUARE);
+
+  vb1=false; vb2=false; vb3=false;
+  vb4=false; vb5=false; vb6=false;
+  vb7=false; vb8=false; vb9=false;
+  
+  hb1=false; hb2=false; hb3=false;
+  hb4=false; hb5=false; hb6=false;
+  hb7=false; hb8=false; hb9=false;
+
+  drawDragImage=false;
+  imageX=0;
+  imageY=0;
+  
+  boxImage = new PImage[9];
+  hboxImage = new PImage[18];
+  vboxImage = new PImage[18];
+  
+/*  
+  String path = sketchPath+"/data/"; //folder of images rename as needed
+  File[] files = listFiles(path);
+  photos = new PImage[files.length];
+  for(int i=0; i<files.length; i++){
+    photos[i]=loadImage(files[i].getAbsolutePath());
+  }
+  */
+}
+
+public void mode8dispayButon(){
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+  
+  cp5.addButton("mode2phase1back")
+      .setPosition(10, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      .setColor(backButtonColor)
+      ;
+      
+      displayButtons = false;
+  }
+
+}
+/*
+File[] listFiles(String directory){
+  File file = new File(directory);
+  if(file.isDirectory()){
+    File[] files = file.listFiles();
+    return files;
+  } else {
+    return null;
+  }
+}
+
+void drawImageGallery(){
+  //loading and resizing gallery
+  PImage[] gallery = new PImage[photos.length];
+  for(int i=0; i<photos.length; i++){
+    gallery[i] = photos[i].get();
+    if(gallery[i].height > 50)
+      gallery[i].resize(0,50);
+    if(gallery[i].width > 50)
+      gallery[i].resize(50,0);
+  }
+  
+  
+  //gallery display on
+  int i = 0;
+  for(int col = 0; col < 6; col++){
+    for(int row = 0; row < 2; row++){      
+      imageMode(CORNER);
+      image(gallery[i], (750+(row*75)), (50+(col*75)));
+      i++;
+    }
+  }
+  
+}
+*/
+
+
+
+public void mode8draw()
+{  
+  background(200);
+  drawBoxImage();
+  comicPage();
+  //drawImageGallery();
+  drawImageDragging();
+  
+}
+
+public void comicPage(){
+  
+  
+  //topline
+  //left line                       1_________2
+  strokeWeight(4);
+  stroke(255);
+  line(50,52,258,52);
+  //center line                               2_________3
+  strokeWeight(4);
+  stroke(255);
+  line(254,52,462,52);
+  //right line                                          3_________4
+  strokeWeight(4);
+  stroke(255);
+  line(458,52,666,52);
+  
+/////////////////////////////////////////////////////////////////// 
+//1
+///////////////////////////////////////////////////////////////////
+  //left first line               //|                                        
+  strokeWeight(4);                //|                                        
+  stroke(255);                    //|                                        
+  line(52,50,52,208);             //|                                        
+  //first row vertical
+  //left second line                        //|                              
+  strokeWeight(4);                          //|                               
+  stroke(255);                              //|                              
+  line(256,50,256,208);                     //|                              
+  //first row vertical
+  //left third line                                    //|                    
+//  if(b2l){
+  strokeWeight(4);                                     //|                    
+  stroke(255);                                         //|                    
+  line(460,50,460,208);                                //|                    
+//  } else {
+  
+//  }
+  //first row vertical
+  //left fourth line                                             //|          
+//  if(b3l){
+  strokeWeight(4);                                               //|        
+  stroke(255);                                                   //|        
+  line(664,50,664,208);                                          //|        
+//  } else {
+  
+//  }
+  
+  //first row horizontal
+  //left line                       1_________2
+  strokeWeight(4);
+  stroke(255);
+  line(50,206,258,206);
+  //center line                               2_________3
+//  if(b2l){
+  strokeWeight(4);
+  stroke(255);
+  line(254,206,462,206);
+//  } else {
+  
+//  }
+  //right line                                          3_________4
+//  if(b3l){
+  strokeWeight(4);
+  stroke(255);
+  line(458,206,666,206);
+//  } else {
+//  }
+/////////////////////////////////////////////////////////////////// 
+//2
+///////////////////////////////////////////////////////////////////
+  //second row vertical           //|
+  strokeWeight(4);                //|                                        
+  stroke(255);                    //|                                        
+  line(52,204,52,362);            //|                                        
+  
+  //first row vertical
+  //left second line                        //|                              
+  strokeWeight(4);                          //|                               
+  stroke(255);                              //|                              
+  line(256,204,256,362);                    //|                              
+  //first row vertical
+  //left third line                                    //|                    
+  strokeWeight(4);                                     //|                    
+  stroke(255);                                         //|                    
+  line(460,204,460,362);                               //|                    
+  //first row vertical
+  //left fourth line                                             //|          
+  strokeWeight(4);                                               //|        
+  stroke(255);                                                   //|        
+  line(664,204,664,362);                                         //|        
+  
+  //second row horizontal
+  //left line                       1_________2
+  strokeWeight(4);
+  stroke(255);
+  line(50,360,258,360);
+  //center line                               2_________3
+  strokeWeight(4);
+  stroke(255);
+  line(254,360,462,360);
+  //right line                                          3_________4
+  strokeWeight(4);
+  stroke(255);
+  line(458,360,666,360);
+  
+/////////////////////////////////////////////////////////////////// 
+//3
+///////////////////////////////////////////////////////////////////
+  //third row vertical            //|
+  strokeWeight(4);                //|                                        
+  stroke(255);                    //|                                        
+  line(52,358,52,516);            //|                                        
+  //first row vertical
+  //left second line                        //|                              
+  strokeWeight(4);                          //|                               
+  stroke(255);                              //|                              
+  line(256,358,256,516);                    //|                              
+  //first row vertical
+  //left third line                                    //|                    
+  strokeWeight(4);                                     //|                    
+  stroke(255);                                         //|                    
+  line(460,358,460,516);                               //|                    
+  //first row vertical
+  //left fourth line                                             //|          
+  strokeWeight(4);                                               //|        
+  stroke(255);                                                   //|        
+  line(664,358,664,516);                                         //|        
+  
+  //third row horizontal
+  //left line                       1_________2
+  strokeWeight(4);
+  stroke(255);
+  line(50,514,258,514);
+  //center line                               2_________3
+  strokeWeight(4);
+  stroke(255);
+  line(254,514,462,514);
+  //right line                                          3_________4
+  strokeWeight(4);
+  stroke(255);
+  line(458,514,666,514);
+  
+/////////////////////////////////////////////////////////////////// 
+//1
+///////////////////////////////////////////////////////////////////  
+  //vertical half row1 box1
+  //left first line               //|                                        
+  strokeWeight(4);                //|                                        
+  if(vb1){
+    stroke(255);
+  } else {  
+    stroke(210);                 //|                                        
+  }
+  line(154,50,154,208);           //|                                          
+  
+  //vertical half row1 box2
+  //left second line                        //|                              
+  strokeWeight(4);                          //|                               
+  if(vb2){
+    stroke(255);
+  } else {
+    stroke(210);                           //|                              
+  }
+  line(358,50,358,208);                     //|                                
+  
+  //vertical half row1 box3
+  //left third line                                    //|                    
+  strokeWeight(4);                                     //|                    
+  if(vb3){
+    stroke(255);
+  } else {
+    stroke(210);                                      //|                    
+  }
+  line(562,50,562,208);                                //|                    
+  
+  //horizontal half row1 box1
+  //left line                       1_________2
+  strokeWeight(4);
+  if(hb1){
+    stroke(255);
+  } else { 
+    stroke(210);
+  }
+  line(50,129,258,129);
+  //horizontal half row1 box2
+  //center line                               2_________3
+  strokeWeight(4);
+  if(hb2){
+    stroke(255);
+  } else { 
+    stroke(210);
+  }
+  line(254,129,462,129);
+  //horizontal half row1 box3
+  //right line                                          3_________4
+  strokeWeight(4);
+  if(hb3){
+    stroke(255);
+  } else { 
+    stroke(210);
+  }
+  line(458,129,666,129);
+
+/////////////////////////////////////////////////////////////////// 
+//2
+///////////////////////////////////////////////////////////////////  
+  //vertical half row2 box1
+  //left first line               //|                                        
+  strokeWeight(4);                //|                                        
+  if(vb4){
+    stroke(255);
+  } else {
+    stroke(210);                 //|                                        
+  }
+  line(154,204,154,362);          //|                                          
+  
+  //vertical half row2 box2
+  //left second line                        //|                              
+  strokeWeight(4);                          //|                               
+  if(vb5){
+    stroke(255);
+  } else {
+    stroke(210);                           //|                              
+  }
+  line(358,204,358,362);                    //|                                
+  
+  //vertical half row2 box3
+  //left third line                                    //|                    
+  strokeWeight(4);                                     //|                    
+  if(vb6){
+    stroke(255);
+  } else {
+    stroke(210);                                      //|                    
+  }
+  line(562,204,562,362);                               //|                    
+  
+  //horizontal half row2 box1
+  //left line                       1_________2
+  strokeWeight(4);
+  if(hb4){
+    stroke(255);
+  } else {
+    stroke(210);
+  }
+  line(50,283,258,283);
+  //horizontal half row2 box2
+  //center line                               2_________3
+  strokeWeight(4);
+  if(hb5){
+    stroke(255);
+  } else {
+    stroke(210);
+  }
+  line(254,283,462,283);
+  //horizontal half row2 box3
+  //right line                                          3_________4
+  strokeWeight(4);
+  if(hb6){
+    stroke(255);
+  } else {
+    stroke(210);
+  }
+  line(458,283,666,283);
+
+/////////////////////////////////////////////////////////////////// 
+//3
+///////////////////////////////////////////////////////////////////
+  //vertical half row3 box1
+  //left first line               //|                                        
+  strokeWeight(4);                //|                                        
+  if(vb7){
+    stroke(255);
+  } else {
+    stroke(210);                 //|                                        
+  }
+  line(154,358,154,516);          //|                                          
+  
+  //vertical half row3 box2
+  //left second line                        //|                              
+  strokeWeight(4);                          //|                               
+  if(vb8){
+    stroke(255);
+  } else {
+    stroke(210);                           //|                              
+  }
+  line(358,358,358,516);                    //|                                
+  
+  //vertical half row3 box3
+  //left third line                                    //|                    
+  strokeWeight(4);                                     //|                    
+  if(vb9){
+    stroke(255);
+  } else {
+    stroke(210);                                      //|                    
+  }
+  line(562,358,562,516);                               //|                    
+  
+  //horizontal half row3 box1
+  //left line                       1_________2
+  strokeWeight(4);
+  if(hb7){
+    stroke(255);
+  } else {
+    stroke(210);
+  }
+  line(50,437,258,437);
+  //horizontal half row3 box2
+  //center line                               2_________3
+  strokeWeight(4);
+  if(hb8){
+    stroke(255);
+  } else {
+    stroke(210);
+  }
+  line(254,437,462,437);
+  //horizontal half row3 box3
+  //right line                                          3_________4
+  strokeWeight(4);
+  if(hb9){
+    stroke(255);
+  } else {
+    stroke(210);
+  }
+  line(458,437,666,437);  
+}
+
+
+
+
+
+
+
+public void drawImageDragging(){
+  if(imageSelected){
+  if(drawDragImage){
+    imageMode(CENTER);
+    image(draggedImage, imageX, imageY);
+  }
+  
+  if(drawBoxImage){
+  if(box1){
+    imageMode(CENTER);
+    image(draggedImage, 154, 129);
+  }
+  if(b1v1){
+    imageMode(CENTER);
+    image(draggedImage.get((154-b1v1x),0,98,150), 103, 129);
+  }
+  if(b1v2){
+    imageMode(CENTER);
+    image(draggedImage.get((256-b1v2x),0,98,150), 205, 129);
+  }
+  if(b1h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,129-b1h1y,200,73), 154, 90);
+  }
+  if(b1h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,206-b1h2y,200,73), 154, 167);
+  }
+  
+  if(box2){
+    imageMode(CENTER);
+    image(draggedImage, 358, 129);
+  }
+  if(b2v1){
+    imageMode(CENTER);
+    image(draggedImage.get((358-b2v1x),0,98,150), 307, 129);
+  }
+  if(b2v2){
+    imageMode(CENTER);
+    image(draggedImage.get((460-b2v2x),0,98,150), 409, 129);
+  }
+  if(b2h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,129-b2h1y,200,73), 358, 90);
+  }
+  if(b2h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,206-b2h2y,200,73), 358, 167);
+  }
+  
+  if(box3){
+    imageMode(CENTER);
+    image(draggedImage, 562, 129);
+  }
+  if(b3v1){
+    imageMode(CENTER);
+    image(draggedImage.get((562-b3v1x),0,98,150), 511, 129);
+  }
+  if(b3v2){
+    imageMode(CENTER);
+    image(draggedImage.get((664-b3v2x),0,98,150), 613, 129);
+  }
+  if(b3h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,129-b3h1y,200,73), 562, 90);
+  }
+  if(b3h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,206-b3h2y,200,73), 562, 167);
+  }
+  
+  
+  
+  if(box4){
+    imageMode(CENTER);
+    image(draggedImage, 154, 283);
+  }
+  if(b4v1){
+    imageMode(CENTER);
+    image(draggedImage.get((154-b4v1x),0,98,150), 103, 283);
+  }
+  if(b4v2){
+    imageMode(CENTER);
+    image(draggedImage.get((256-b4v2x),0,98,150), 205, 283);
+  }
+  if(b4h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,283-b4h1y,200,73), 154, 244);
+  }
+  if(b4h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,360-b4h2y,200,73), 154, 321);
+  }
+  
+  
+  
+  if(box5){
+    imageMode(CENTER);
+    image(draggedImage, 358, 283);
+  }
+  if(b5v1){
+    imageMode(CENTER);
+    image(draggedImage.get((358-b5v1x),0,98,150), 307, 283);
+  }
+  if(b5v2){
+    imageMode(CENTER);
+    image(draggedImage.get((458-b5v2x),0,98,150), 409, 283);
+  }
+  if(b5h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,283-b5h1y,200,73), 358, 244);
+  }
+  if(b5h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,360-b5h2y,200,73), 358, 321);
+  }
+  
+  
+  
+  if(box6){
+    imageMode(CENTER);
+    image(draggedImage, 562, 283);
+  }
+  if(b6v1){
+    imageMode(CENTER);
+    image(draggedImage.get((562-b6v1x),0,98,150), 511, 283);
+  }
+  if(b6v2){
+    imageMode(CENTER);
+    image(draggedImage.get((664-b6v2x),0,98,150), 613, 283);
+  }
+  if(b6h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,283-b6h1y,200,73), 562, 244);
+  }
+  if(b6h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,360-b6h2y,200,73), 562, 321);
+  }
+  
+  
+  if(box7){
+    imageMode(CENTER);
+    image(draggedImage, 154, 437);
+  }
+  if(b7v1){
+    imageMode(CENTER);
+    image(draggedImage.get((154-b7v1x),0,98,150), 103, 437);
+  }
+  if(b7v2){
+    imageMode(CENTER);
+    image(draggedImage.get((256-b7v2x),0,98,150), 205, 437);
+  }
+  if(b7h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,437-b7h1y,200,73), 154, 398);
+  }
+  if(b7h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,514-b7h2y,200,73), 154, 475);
+  }
+  
+  
+  
+  if(box8){
+    imageMode(CENTER);
+    image(draggedImage, 358, 437);
+  }
+  if(b8v1){
+    imageMode(CENTER);
+    image(draggedImage.get((358-b8v1x),0,98,150), 307, 437);
+  }
+  if(b8v2){
+    imageMode(CENTER);
+    image(draggedImage.get((460-b8v2x),0,98,150), 409, 437);
+  }
+  if(b8h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,437-b8h1y,200,73), 358, 398);
+  }
+  if(b8h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,514-b8h2y,200,73), 358, 475);
+  }
+  
+  
+  if(box9){
+    imageMode(CENTER);
+    image(draggedImage, 562, 437);
+  }
+  if(b9v1){
+    imageMode(CENTER);
+    image(draggedImage.get((562-b9v1x),0,98,150), 511, 437);
+  }
+  if(b9v2){
+    imageMode(CENTER);
+    image(draggedImage.get((664-b9v2x),0,98,150), 613, 437);
+  }
+  if(b9h1){
+    imageMode(CENTER);
+    image(draggedImage.get(0,437-b9h1y,200,73), 562, 398);
+  }
+  if(b9h2){
+    imageMode(CENTER);
+    image(draggedImage.get(0,514-b9h2y,200,73), 562, 475);
+  }
+    
+  }
+  }
+}
+
+
+
+public void drawBoxImage(){
+  //box1
+  if(drawBox1Image && !(vb1||hb1)){
+    imageMode(CENTER);
+    image(boxImage[0], 154, 129);
+  }
+  if(db1v1 && vb1){
+    imageMode(CENTER);
+    image(vboxImage[0].get((fb1v1x),0,98,150), 103, 129);
+  }
+  if(db1v2 && vb1){
+    imageMode(CENTER);
+    image(vboxImage[1].get((fb1v2x),0,98,150), 205, 129);
+  }
+  if(db1h1 && hb1){
+    imageMode(CENTER);
+    image(hboxImage[0].get(0,fb1h1y,200,73), 154, 90);
+  }
+  if(db1h2 && hb1){
+    imageMode(CENTER);
+    image(hboxImage[1].get(0,fb1h2y,200,73), 154, 167);
+  }
+  
+  //box2
+  if(drawBox2Image && !(vb2||hb2)){
+    imageMode(CENTER);
+    image(boxImage[1], 358, 129);
+  }
+  if(db2v1 && vb2){
+    imageMode(CENTER);
+    image(vboxImage[2].get((fb2v1x),0,98,150), 307, 129);
+  }
+  if(db2v2 && vb2){
+    imageMode(CENTER);
+    image(vboxImage[3].get((fb2v2x),0,98,150), 409, 129);
+  }
+  if(db2h1 && hb2){
+    imageMode(CENTER);
+    image(hboxImage[2].get(0,fb2h1y,200,73), 358, 90);
+  }
+  if(db2h2 && hb2){
+    imageMode(CENTER);
+    image(hboxImage[3].get(0,fb2h2y,200,73), 358, 167);
+  }
+  
+  //box3
+  if(drawBox3Image && !(vb3||hb3)){
+    imageMode(CENTER);
+    image(boxImage[2], 562, 129);
+  }
+  if(db3v1 && vb3){
+    imageMode(CENTER);
+    image(vboxImage[4].get((fb3v1x),0,98,150), 511, 129);
+  }
+  if(db3v2 && vb3){
+    imageMode(CENTER);
+    image(vboxImage[5].get((fb3v2x),0,98,150), 613, 129);
+  }
+  if(db3h1 && hb3){
+    imageMode(CENTER);
+    image(hboxImage[4].get(0,fb3h1y,200,73), 562, 90);
+  }
+  if(db3h2 && hb3){
+    imageMode(CENTER);
+    image(hboxImage[5].get(0,fb3h2y,200,73), 562, 167);
+  }
+  
+  
+  
+  //box4
+  if(drawBox4Image && !(vb4||hb4)){
+    imageMode(CENTER);
+    image(boxImage[3], 154, 283);
+  }
+  if(db4v1 && vb4){
+    imageMode(CENTER);
+    image(vboxImage[6].get((fb4v1x),0,98,150), 103, 283);
+  }
+  if(db4v2 && vb4){
+    imageMode(CENTER);
+    image(vboxImage[7].get((fb4v2x),0,98,150), 205, 283);
+  }
+  if(db4h1 && hb4){
+    imageMode(CENTER);
+    image(hboxImage[6].get(0,fb4h1y,200,73), 154, 244);
+  }
+  if(db4h2 && hb4){
+    imageMode(CENTER);
+    image(hboxImage[7].get(0,fb4h2y,200,73), 154, 321);
+  }
+  
+  
+  //box5
+  if(drawBox5Image && !(vb5||hb5)){
+    imageMode(CENTER);
+    image(boxImage[4], 358, 283);
+  }
+  if(db5v1 && vb5){
+    imageMode(CENTER);
+    image(vboxImage[8].get((fb5v1x),0,98,150), 307, 283);
+  }
+  if(db5v2 && vb5){
+    imageMode(CENTER);
+    image(vboxImage[9].get((fb5v2x),0,98,150), 409, 283);
+  }
+  if(db5h1 && hb5){
+    imageMode(CENTER);
+    image(hboxImage[8].get(0,fb5h1y,200,73), 358, 244);
+  }
+  if(db5h2 && hb5){
+    imageMode(CENTER);
+    image(hboxImage[9].get(0,fb5h2y,200,73), 358, 321);
+  }
+  
+  
+  
+  
+  //box6
+  if(drawBox6Image && !(vb6||hb6)){
+    imageMode(CENTER);
+    image(boxImage[5], 562, 283);
+  }
+  if(db6v1 && vb6){
+    imageMode(CENTER);
+    image(vboxImage[10].get((fb6v1x),0,98,150), 511, 283);
+  }
+  if(db6v2 && vb6){
+    imageMode(CENTER);
+    image(vboxImage[11].get((fb6v2x),0,98,150), 613, 283);
+  }
+  if(db6h1 && hb6){
+    imageMode(CENTER);
+    image(hboxImage[10].get(0,fb6h1y,200,73), 562, 244);
+  }
+  if(db6h2 && hb6){
+    imageMode(CENTER);
+    image(hboxImage[11].get(0,fb6h2y,200,73), 562, 321);
+  }
+  
+  
+  
+  
+  //box7
+  if(drawBox7Image && !(vb7||hb7)){
+    imageMode(CENTER);
+    image(boxImage[6], 154, 437);
+  }
+  if(db7v1 && vb7){
+    imageMode(CENTER);
+    image(vboxImage[12].get((fb7v1x),0,98,150), 103, 437);
+  }
+  if(db7v2 && vb7){
+    imageMode(CENTER);
+    image(vboxImage[13].get((fb7v2x),0,98,150), 205, 437);
+  }
+  if(db7h1 && hb7){
+    imageMode(CENTER);
+    image(hboxImage[12].get(0,fb7h1y,200,73), 154, 398);
+  }
+  if(db7h2 & hb7){
+    imageMode(CENTER);
+    image(hboxImage[13].get(0,fb7h2y,200,73), 154, 475);
+  }
+  
+  
+  
+  //box8
+  if(drawBox8Image && !(vb8||hb8)){
+    imageMode(CENTER);
+    image(boxImage[7], 358, 437);
+  }
+  if(db8v1 && vb8){
+    imageMode(CENTER);
+    image(vboxImage[14].get((fb8v1x),0,98,150), 307, 437);
+  }
+  if(db8v2 && vb8){
+    imageMode(CENTER);
+    image(vboxImage[15].get((fb8v2x),0,98,150), 409, 437);
+  }
+  if(db8h1 && hb8){
+    imageMode(CENTER);
+    image(hboxImage[14].get(0,fb8h1y,200,73), 358, 398);
+  }
+  if(db8h2 && hb8){
+    imageMode(CENTER);
+    image(hboxImage[15].get(0,fb8h2y,200,73), 358, 475);
+  }
+  
+  
+  
+  //box9
+  if(drawBox9Image && !(vb9||hb9)){
+    imageMode(CENTER);
+    image(boxImage[8], 562, 437);
+  }
+  if(db9v1 && vb9){
+    imageMode(CENTER);
+    image(vboxImage[16].get((fb9v1x),0,98,150), 511, 437);
+  }
+  if(db9v2 && vb9){
+    imageMode(CENTER);
+    image(vboxImage[17].get((fb9v2x),0,98,150), 613, 437);
+  }
+  if(db9h1 && hb9){
+    imageMode(CENTER);
+    image(hboxImage[16].get(0,fb9h1y,200,73), 562, 398);
+  }
+  if(db9h2 && hb9){
+    imageMode(CENTER);
+    image(hboxImage[17].get(0,fb9h2y,200,73), 562, 475);
+  }
+  
+  
+}
+
+public void mode8export()
+{
+  println("Export button pressed ");
+    int wide = 0;
+    int heigh = 0;
+    // export panels as one combined pimage
+    // 1. create white pimage with dimensions to fit all panels
+    if(drawBox1Image || db1v1 || db1v2 || db1h1 || db1h2){
+      wide = 672;
+      heigh = 512;
+    }
+    
+    if(drawBox2Image || db2v1 || db2v2 || db2h1 || db2h2){
+      wide = 1328;
+      heigh = 512;
+    }
+    
+    if(drawBox3Image || db3v1 || db3v2 || db3h1 || db3h2){
+      wide = 1984;
+      heigh = 512;
+    }
+    
+    if(drawBox4Image || db4v1 || db4v2 || db4h1 || db4h2){
+      wide = 672;
+      heigh = 1008;
+    }
+    
+    if(drawBox5Image || db5v1 || db5v2 || db5h1 || db5h2){
+      wide = 1328;
+      heigh = 1008;
+    }
+    
+    if(drawBox6Image || db6v1 || db6v2 || db6h1 || db6h2){
+      wide = 1984;
+      heigh = 1008;
+    }
+    
+    if(drawBox7Image || db7v1 || db7v2 || db7h1 || db7h2){
+      wide = 672;
+      heigh = 1504;
+    }
+    
+    if(drawBox8Image || db8v1 || db8v2 || db8h1 || db8h2){
+      wide = 1328;
+      heigh = 1504;
+    }
+    
+    if(drawBox9Image || db9v1 || db9v2 || db9h1 || db9h2){
+      wide = 1984;
+      heigh = 1504;
+    }
+    
+    
+    
+    int border = 16;
+    
+    PImage comicStrip = createImage(wide, heigh, RGB);
+    
+    comicStrip.loadPixels();
+    
+    for (int y = 0; y < heigh; y++){
+      for (int x = 0; x < wide; x++){
+        int loc = x + y * wide;
+        comicStrip.pixels[loc] = color(255, 255, 255);
+      }
+    }
+    // 2. loop through panels and write them to output pimage
+    if(drawBox1Image || db1v1 || db1v2 || db1h1 || db1h2){
+      if(drawBox1Image && !(vb1||hb1)){
+        comicStrip.copy(boxImage[0], 0, 0, 640, 480, 16, 16, 640, 480);
+      }
+      if(db1v1 && vb1){
+        comicStrip.copy(vboxImage[0], 0, 0, 312, 480, 16, 16, 312, 480);
+      }
+      if(db1v2 && vb1){
+        comicStrip.copy(vboxImage[1], 0, 0, 312, 480, 336, 16, 312, 480);
+      }
+      if(db1h1 && hb1){
+        comicStrip.copy(hboxImage[0], 0, 0, 480, 232, 16, 16, 640, 232);
+      }
+      if(db1h2 && hb1){
+        comicStrip.copy(hboxImage[1], 0, 0, 480, 232, 264, 16, 640, 232);
+      }
+    }
+    
+    if(drawBox2Image || db2v1 || db2v2 || db2h1 || db2h2){
+      if(drawBox2Image && !(vb2||hb2)){
+        comicStrip.copy(boxImage[1], 0, 0, 640, 480, 672, 16, 640, 480);
+      }
+      if(db1v1 && vb1){
+        comicStrip.copy(vboxImage[2], 0, 0, 312, 480, 672, 16, 312, 480);
+      }
+      if(db1v2 && vb1){
+        comicStrip.copy(vboxImage[3], 0, 0, 312, 480, 1000, 16, 312, 480);
+      }
+      if(db1h1 && hb1){
+        comicStrip.copy(hboxImage[2], 0, 0, 480, 232, 672, 16, 640, 232);
+      }
+      if(db1h2 && hb1){
+        comicStrip.copy(hboxImage[3], 0, 0, 480, 232, 672, 264, 640, 232);
+      }
+      
+    }
+    
+    if(drawBox3Image || db3v1 || db3v2 || db3h1 || db3h2){
+      comicStrip.copy(boxImage[2], 0, 0, 640, 480, 1328, 16, 640, 480);
+    }
+    
+    if(drawBox4Image || db4v1 || db4v2 || db4h1 || db4h2){
+      comicStrip.copy(boxImage[3], 0, 0, 640, 480, 16, 512, 640, 480);
+    }
+    
+    if(drawBox5Image || db5v1 || db5v2 || db5h1 || db5h2){
+      comicStrip.copy(boxImage[4], 0, 0, 640, 480, 672, 512, 640, 480);
+    }
+    
+    if(drawBox6Image || db6v1 || db6v2 || db6h1 || db6h2){
+      comicStrip.copy(boxImage[5], 0, 0, 640, 480, 1328, 512, 640, 480);
+    }
+    
+    if(drawBox7Image || db7v1 || db7v2 || db7h1 || db7h2){
+      comicStrip.copy(boxImage[6], 0, 0, 640, 480, 16, 1008, 640, 480);
+    }
+    
+    if(drawBox8Image || db8v1 || db8v2 || db8h1 || db8h2){
+      comicStrip.copy(boxImage[7], 0, 0, 640, 480, 672, 1008, 640, 480);
+    }
+    
+    if(drawBox9Image || db9v1 || db9v2 || db9h1 || db9h2){
+      comicStrip.copy(boxImage[8], 0, 0, 640, 480, 1328, 1008, 640, 480);
+    }
+    
+
+
+    comicStrip.updatePixels();
+    println("Comic Strip Exported to File");
+    comicStrip.save("comicStrip.png");
+  }
+
+public void mode8mouseClicked(){
+  if(mouseX>=458 && mouseX<=462 && mouseY>=54 && mouseY<=204){
+    if(b2l==false){
+      b2l=true;
+    }
+    b2l=false;
+  }
+  
+  if(mouseX>=662 && mouseX<=666 && mouseY>=54 && mouseY<=204){
+    if(b3l==false){
+      b3l=true;
+    }
+    b3l=false;
+  }
+  
+  if(mouseX>=254 && mouseX<=258 && mouseY>=208 && mouseY<=358){
+    if(b4l==false){
+      b4l=true;
+    }
+    b4l=false;
+  }
+  
+  if(mouseX>=458 && mouseX<=462 && mouseY>=208 && mouseY<=358){
+    if(b5l==false){
+      b5l=true;
+    }
+    b5l=false;
+  }
+  
+  if(mouseX>=662 && mouseX<=666 && mouseY>=208 && mouseY<=358){
+    if(b6l==false){
+      b6l=true;
+    }
+    b6l=false;
+  }
+  
+  if(mouseX>=254 && mouseX<=258 && mouseY>=362 && mouseY<=512){
+    if(b7l==false){
+      b7l=true;
+    }
+    b7l=false;
+  }
+  
+  if(mouseX>=458 && mouseX<=462 && mouseY>=362 && mouseY<=512){
+    if(b8l==false){
+      b8l=true;
+    }
+    b8l=false;
+  }
+  
+  if(mouseX>=662 && mouseX<=666 && mouseY>=362 && mouseY<=512){
+    if(b9l==false){
+      b9l=true;
+    }
+    b9l=false;
+  }
+  
+  
+  
+/////////////////////////////////////////////////////////////////// 
+//1
+///////////////////////////////////////////////////////////////////
+  if(mouseX>=152 && mouseX<=156 && mouseY>=54 && mouseY<=204 && hb1 == false){
+     if(vb1){
+       vb1 = false;
+       b1v1 = false;
+       b1v2 = false;       
+     } else {
+       vb1 = true;
+       b1v1 = true;
+       b1v2 = true;
+     }    
+  }
+  if(mouseX>=356 && mouseX<=360 && mouseY>=54 && mouseY<=204 && hb2 == false){
+     if(vb2){
+       vb2 = false;
+       b2v1 = false;
+       b2v2 = false;
+     } else {
+       vb2 = true;
+       b2v1 = true;
+       b2v2 = true;
+     }    
+  }
+  if(mouseX>=560 && mouseX<=564 && mouseY>=54 && mouseY<=204 && hb3 == false){
+     if(vb3){
+       vb3 = false;
+       b3v1 = false;
+       b3v2 = false;
+     } else {
+       vb3 = true;
+       b3v1 = true;
+       b3v2 = true;
+     }    
+  }
+///////////////////////////////////////////////////////////////////
+  if(mouseX>=54 && mouseX<=254 && mouseY>=129 && mouseY<=133 && vb1 == false){
+     if(hb1){
+       hb1 = false;
+       b1h1 = false;
+       b1h2 = false;       
+     } else {
+       hb1 = true;
+       b1h1 = true;
+       b1h2 = true;;
+     }    
+  }
+  if(mouseX>=258 && mouseX<=458 && mouseY>=129 && mouseY<=133 && vb2 == false){
+     if(hb2){
+       hb2 = false;
+       b2h1 = false;
+       b2h2 = false;
+     } else {
+       hb2 = true;
+       b2h1 = true;
+       b2h2 = true;
+     }    
+  }
+  if(mouseX>=462 && mouseX<=662 && mouseY>=129 && mouseY<=133 && vb3 == false){
+     if(hb3){
+       hb3 = false;
+       b3h1 = false;
+       b3h2 = false;
+     } else {
+       hb3 = true;
+       b3h1 = true;
+       b3h2 = true;
+     }    
+  }
+  
+/////////////////////////////////////////////////////////////////// 
+//2
+///////////////////////////////////////////////////////////////////
+  if(mouseX>=152 && mouseX<=156 && mouseY>=208 && mouseY<=358 && hb4 == false){
+     if(vb4){
+       vb4 = false;
+       b4v1 = false;
+       b4v2 = false;
+     } else {
+       vb4 = true;
+       b4v1 = true;
+       b4v2 = true;
+     }    
+  }
+  if(mouseX>=356 && mouseX<=360 && mouseY>=208 && mouseY<=358 && hb5 == false){
+     if(vb5){
+       vb5 = false;
+       b5v1 = false;
+       b5v2 = false;
+     } else {
+       vb5 = true;
+       b5v1 = true;
+       b5v2 = true;
+     }    
+  }
+  if(mouseX>=560 && mouseX<=564 && mouseY>=208 && mouseY<=358 && hb6 == false){
+     if(vb6){
+       vb6 = false;
+       b6v1 = false;
+       b6v2 = false;
+     } else {
+       vb6 = true;
+       b6v1 = true;
+       b6v2 = true;
+     }    
+  }
+///////////////////////////////////////////////////////////////////
+  if(mouseX>=54 && mouseX<=254 && mouseY>=283 && mouseY<=287 && vb4 == false){
+     if(hb4){
+       hb4 = false;
+       b4h1 = false;
+       b4h2 = false;
+     } else {
+       hb4 = true;
+       b4h1 = true;
+       b4h2 = true;
+     }    
+  }
+  if(mouseX>=258 && mouseX<=458 && mouseY>=283 && mouseY<=287 && vb5 == false){
+     if(hb5){
+       hb5 = false;
+       b5h1 = false;
+       b5h2 = false;
+     } else {
+       hb5 = true;
+       b5h1 = true;
+       b5h2 = true;
+     }    
+  }
+  if(mouseX>=462 && mouseX<=662 && mouseY>=283 && mouseY<=287 && vb6 == false){
+     if(hb6){
+       hb6 = false;
+       b6h1 = false;
+       b6h2 = false;
+     } else {
+       hb6 = true;
+       b6h1 = true;
+       b6h2 = true;
+     }    
+  }
+
+/////////////////////////////////////////////////////////////////// 
+//3
+///////////////////////////////////////////////////////////////////
+  if(mouseX>=152 && mouseX<=156 && mouseY>=362 && mouseY<=512 && hb7 == false){
+     if(vb7){
+       vb7 = false;
+       b7v1 = false;
+       b7v2 = false;
+     } else {
+       vb7 = true;
+       b7v1 = true;
+       b7v2 = true;
+     }    
+  }
+  if(mouseX>=356 && mouseX<=360 && mouseY>=362 && mouseY<=512 && hb8 == false){
+     if(vb8){
+       vb8 = false;
+       b8v1 = false;
+       b8v2 = false;
+     } else {
+       vb8 = true;
+       b8v1 = true;
+       b8v2 = true;
+     }    
+  }
+  if(mouseX>=560 && mouseX<=564 && mouseY>=362 && mouseY<=512 && hb9 == false){
+     if(vb9){
+       vb9 = false;
+       b9v1 = false;
+       b9v2 = false;
+     } else {
+       vb9 = true;
+       b9v1 = true;
+       b9v2 = true;
+     }    
+  }
+///////////////////////////////////////////////////////////////////
+  if(mouseX>=54 && mouseX<=254 && mouseY>=437 && mouseY<=441 && vb7 == false){
+     if(hb7){
+       hb7 = false;
+       b7h1 = false;
+       b7h2 = false;
+     } else {
+       hb7 = true;
+       b7h1 = true;
+       b7h2 = true;
+     }    
+  }
+  if(mouseX>=258 && mouseX<=458 && mouseY>=437 && mouseY<=441 && vb8 == false){
+     if(hb8){
+       hb8 = false;
+       b8h1 = false;
+       b8h2 = false;
+     } else {
+       hb8 = true;
+       b8h1 = true;
+       b8h2 = true;
+     }    
+  }
+  if(mouseX>=462 && mouseX<=662 && mouseY>=437 && mouseY<=441 && vb9 == false){
+     if(hb9){
+       hb9 = false;
+       b9h1 = false;
+       b9h2 = false;
+     } else {
+       hb9 = true;
+       b9h1 = true;
+       b9h2 = true;
+     }    
+  }
+  
+  if(mouseX>= 1030 && mouseX<=1080 && mouseY>=670 && mouseY<=720){
+    mode1export();
+  }
+}
+
+public void mode8mouseDragged(){  
+  imageX = mouseX;
+  imageY = mouseY;
+  
+  //box1  
+  if(mouseX>=54 && mouseX<=254 && mouseY>=54 && mouseY<=204 && !(vb1||hb1)){
+    box1=true;
+    
+  }else{
+    box1=false;
+  }
+  //////////////vb1
+  if(mouseX>=54 && mouseX<=152 && mouseY>=54 && mouseY<=204 && vb1){
+    b1v1=true;
+    b1v1x=mouseX;
+  }else{b1v1=false;}
+  if(mouseX>=156 && mouseX<=254 && mouseY>=54 && mouseY<=204 && vb1){
+    b1v2=true;
+    b1v2x=mouseX;
+  }else{b1v2=false;}
+  //////////////hb1
+  if(mouseX>=54 && mouseX<=254 && mouseY>=54 && mouseY<=127 && hb1){
+    b1h1=true;
+    b1h1y=mouseY;
+  }else{b1h1=false;}
+  if(mouseX>=54 && mouseX<=254 && mouseY>=131 && mouseY<=204 && hb1){
+    b1h2=true;
+    b1h2y=mouseY;
+  }else{b1h2=false;}
+  //box2
+  if(mouseX>=258 && mouseX<=458 && mouseY>=54 && mouseY<=204 && !(vb2||hb2)){
+    box2=true;
+  }else{
+    box2=false;
+  }
+  //vb2
+  if(mouseX>=258 && mouseX<=356 && mouseY>=54 && mouseY<=204 && vb2){
+    b2v1=true;
+    b2v1x=mouseX;
+  }else{b2v1=false;}
+  if(mouseX>=360 && mouseX<=458 && mouseY>=54 && mouseY<=204 && vb2){
+    b2v2=true;
+    b2v2x=mouseX;
+  }else{b2v2=false;}
+  //hb2
+  if(mouseX>=258 && mouseX<=458 && mouseY>=54 && mouseY<=127 && hb2){
+    b2h1=true;
+    b2h1y=mouseY;
+  }else{b2h1=false;}
+  if(mouseX>=258 && mouseX<=458 && mouseY>=131 && mouseY<=204 && hb2){
+    b2h2=true;
+    b2h2y=mouseY;
+  }else{b2h2=false;}
+  //box3
+  if(mouseX>=462 && mouseX<=662 && mouseY>=54 && mouseY<=204 && !(vb3||hb3)){
+    box3=true;
+  }else{
+    box3=false;
+  }
+  //vb3
+  if(mouseX>=462 && mouseX<=560 && mouseY>=54 && mouseY<=204 && vb3){
+    b3v1=true;
+    b3v1x=mouseX;
+  }else{b3v1=false;}
+  if(mouseX>=564 && mouseX<=662 && mouseY>=54 && mouseY<=204 && vb3){
+    b3v2=true;
+    b3v2x=mouseX;
+  }else{b3v2=false;}
+  //hb3
+  if(mouseX>=462 && mouseX<=662 && mouseY>=54 && mouseY<=127 && hb3){
+    b3h1=true;
+    b3h1y=mouseY;
+  }else{b3h1=false;}
+  if(mouseX>=462 && mouseX<=662 && mouseY>=131 && mouseY<=204 && hb3){
+    b3h2=true;
+    b3h2y=mouseY;
+  }else{b3h2=false;}
+  //box4
+  if(mouseX>=54 && mouseX<=254 && mouseY>=208 && mouseY<=358 && !(vb4||hb4)){
+    box4=true;
+  }else{
+    box4=false;
+  }
+  //vb4
+  if(mouseX>=54 && mouseX<=152 && mouseY>=208 && mouseY<=358 && vb4){
+    b4v1=true;
+    b4v1x=mouseX;
+  }else{b4v1=false;}
+  if(mouseX>=156 && mouseX<=254 && mouseY>=208 && mouseY<=358 && vb4){
+    b4v2=true;
+    b4v2x=mouseX;
+  }else{b4v2=false;}
+  //hb4
+  if(mouseX>=54 && mouseX<=254 && mouseY>=208 && mouseY<=281 && hb4){
+    b4h1=true;
+    b4h1y=mouseY;
+  }else{b4h1=false;}
+  if(mouseX>=54 && mouseX<=254 && mouseY>=285 && mouseY<=358 && hb4){
+    b4h2=true;
+    b4h2y=mouseY;
+  }else{b4h2=false;}
+  //box5
+  if(mouseX>=258 && mouseX<=458 && mouseY>=208 && mouseY<=358 && !(vb5||hb5)){
+    box5=true;
+  }else{
+    box5=false;
+  }
+  //vb5
+  if(mouseX>=258 && mouseX<=356 && mouseY>=208 && mouseY<=358 && vb5){
+    b5v1=true;
+    b5v1x=mouseX;
+  }else{b5v1=false;}
+  if(mouseX>=360 && mouseX<=458 && mouseY>=208 && mouseY<=358 && vb5){
+    b5v2=true;
+    b5v2x=mouseX;
+  }else{b5v2=false;}
+  //hb5
+  if(mouseX>=258 && mouseX<=458 && mouseY>=208 && mouseY<=281 && hb5){
+    b5h1=true;
+    b5h1y=mouseY;
+  }else{b5h1=false;}
+  if(mouseX>=258 && mouseX<=458 && mouseY>=285 && mouseY<=358 && hb5){
+    b5h2=true;
+    b5h2y=mouseY;
+  }else{b5h2=false;}
+  //box6
+  if(mouseX>=462 && mouseX<=662 && mouseY>=208 && mouseY<=358 && !(vb6||hb6)){
+    box6=true;
+  }else{
+    box6=false;
+  }
+  //vb6
+  if(mouseX>=462 && mouseX<=560 && mouseY>=208 && mouseY<=358 && vb6){
+    b6v1=true;
+    b6v1x=mouseX;
+  }else{b6v1=false;}
+  if(mouseX>=564 && mouseX<=662 && mouseY>=208 && mouseY<=358 && vb6){
+    b6v2=true;
+    b6v2x=mouseX;
+  }else{b6v2=false;}
+  //hb6
+  if(mouseX>=462 && mouseX<=662 && mouseY>=208 && mouseY<=281 && hb6){
+    b6h1=true;
+    b6h1y=mouseY;
+  }else{b6h1=false;}
+  if(mouseX>=462 && mouseX<=662 && mouseY>=285 && mouseY<=358 && hb6){
+    b6h2=true;
+    b6h2y=mouseY;
+  }else{b6h2=false;}
+  //box7
+  if(mouseX>=54 && mouseX<=254 && mouseY>=362 && mouseY<=512 && !(vb7||hb7)){
+    box7=true;
+  }else{
+    box7=false;
+  }
+  //vb7
+  if(mouseX>=54 && mouseX<=152 && mouseY>=362 && mouseY<=512 && vb7){
+    b7v1=true;
+    b7v1x=mouseX;
+  }else{b7v1=false;}
+  if(mouseX>=156 && mouseX<=254 && mouseY>=362 && mouseY<=512 && vb7){
+    b7v2=true;
+    b7v2x=mouseX;
+  }else{b7v2=false;}
+  //hb7
+  if(mouseX>=54 && mouseX<=254 && mouseY>=362 && mouseY<=435 && hb7){
+    b7h1=true;
+    b7h1y=mouseY;
+  }else{b7h1=false;}
+  if(mouseX>=54 && mouseX<=254 && mouseY>=439 && mouseY<=512 && hb7){
+    b7h2=true;
+    b7h2y=mouseY;
+  }else{b7h2=false;}
+  //box8
+  if(mouseX>=258 && mouseX<=458 && mouseY>=362 && mouseY<=512 && !(vb8||hb8)){
+    box8=true;
+  }else{
+    box8=false;
+  }
+  //vb8
+  if(mouseX>=258 && mouseX<=356 && mouseY>=362 && mouseY<=512 && vb8){
+    b8v1=true;
+    b8v1x=mouseX;
+  }else{b8v1=false;}
+  if(mouseX>=360 && mouseX<=458 && mouseY>=362 && mouseY<=512 && vb8){
+    b8v2=true;
+    b8v2x=mouseX;
+  }else{b8v2=false;}
+  //hb8
+  if(mouseX>=258 && mouseX<=458 && mouseY>=362 && mouseY<=435 && hb8){
+    b8h1=true;
+    b8h1y=mouseY;
+  }else{b8h1=false;}
+  if(mouseX>=258 && mouseX<=458 && mouseY>=439 && mouseY<=512 && hb8){
+    b8h2=true;
+    b8h2y=mouseY;
+  }else{b8h2=false;}
+  //box9
+  if(mouseX>=462 && mouseX<=662 && mouseY>=362 && mouseY<=512 && !(vb9||hb9)){
+    box9=true;
+  }else{
+    box9=false;
+  }
+  //vb9
+  if(mouseX>=462 && mouseX<=560 && mouseY>=362 && mouseY<=512 && vb9){
+    b9v1=true;
+    b9v1x=mouseX;
+  }else{b9v1=false;}
+  if(mouseX>=564 && mouseX<=662 && mouseY>=362 && mouseY<=512 && vb9){
+    b9v2=true;
+    b9v2x=mouseX;
+  }else{b9v2=false;}
+  //hb9
+  if(mouseX>=462 && mouseX<=662 && mouseY>=362 && mouseY<=435 && hb9){
+    b9h1=true;
+    b9h1y=mouseY;
+  }else{b9h1=false;}
+  if(mouseX>=462 && mouseX<=662 && mouseY>=439 && mouseY<=512 && hb9){
+    b9h2=true;
+    b9h2y=mouseY;
+  }else{b9h2=false;}
+  ////////////////////////////////////////////////////////////
+  if(mouseX<=666 && mouseX>=50 && mouseY<=516 && mouseY>=50){
+    drawDragImage=false;
+  } else {
+    drawDragImage=true;
+  }
+  
+}
+
+public void mode8mousePressed(){
+  
+  if(mouseX>=750 && mouseX<=800 && mouseY>=50 && mouseY<=100){
+    draggedImage = photos[0].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=825 && mouseX<=875 && mouseY>=50 && mouseY<=100){
+    draggedImage = photos[1].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=750 && mouseX<=800 && mouseY>=125 && mouseY<=175){
+    draggedImage = photos[2].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=825 && mouseX<=875 && mouseY>=125 && mouseY<=175){
+    draggedImage = photos[3].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=750 && mouseX<=800 && mouseY>=200 && mouseY<=250){
+    draggedImage = photos[4].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=825 && mouseX<=875 && mouseY>=200 && mouseY<=250){
+    draggedImage = photos[5].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=750 && mouseX<=800 && mouseY>=275 && mouseY<=325){
+    draggedImage = photos[6].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  
+  if(mouseX>=825 && mouseX<=875 && mouseY>=275 && mouseY<=325){
+    draggedImage = photos[7].get();
+    imageX = mouseX;
+    imageY = mouseY;
+    drawDragImage=true;
+    drawBoxImage=true;
+    imageSelected=true;
+  }
+  if(drawDragImage){
+    if(draggedImage.height > 150)
+      draggedImage.resize(0,150);
+    if(draggedImage.width > 200)
+      draggedImage.resize(50,0);
+  }
+  
+  
+}
+
+public void mode8mouseReleased(){
+  
+  //box1
+  
+  if(mouseX>=54 && mouseX<=254 && mouseY>=54 && mouseY<=204 && !(vb1||hb1)){
+    box1=false;
+    if(imageSelected){
+    boxImage[0]=draggedImage.get();
+    drawBox1Image=true;
+    }
+  }
+  //////////////vb1
+  if(mouseX>=54 && mouseX<=152 && mouseY>=54 && mouseY<=204 && vb1){
+    b1v1=false;
+    fb1v1x=154-b1v1x;
+    if(imageSelected){
+      vboxImage[0]=draggedImage.get();
+    db1v1=true;
+    }
+  }
+  if(mouseX>=156 && mouseX<=254 && mouseY>=54 && mouseY<=204 && vb1){
+    b1v2=false;
+    fb1v2x=256-b1v2x;
+    if(imageSelected){
+      vboxImage[1]=draggedImage.get();
+    db1v2=true;
+    }
+  }
+  //////////////hb1
+  if(mouseX>=54 && mouseX<=254 && mouseY>=54 && mouseY<=127 && hb1){
+    b1h1=false;
+    fb1h1y=129-b1h1y;
+    if(imageSelected){
+      hboxImage[0]=draggedImage.get();
+    db1h1=true;
+    }
+  }
+  if(mouseX>=54 && mouseX<=254 && mouseY>=131 && mouseY<=204 && hb1){
+    b1h2=false;
+    fb1h2y=206-b1h2y;
+    if(imageSelected){
+      hboxImage[1]=draggedImage.get();
+    db1h2=true;
+    }
+  }
+  
+  
+  
+  //box2
+  if(mouseX>=258 && mouseX<=458 && mouseY>=54 && mouseY<=204 && !(vb2||hb2)){
+    box2=false;
+    if(imageSelected){
+    boxImage[1]=draggedImage.get();
+    drawBox2Image=true;
+    }
+  }
+  //vb2
+  if(mouseX>=258 && mouseX<=356 && mouseY>=54 && mouseY<=204 && vb2){
+    b2v1=false;
+    fb2v1x=358-b2v1x;
+    if(imageSelected){
+      vboxImage[2]=draggedImage.get();
+    db2v1=true;
+    }
+  }
+  if(mouseX>=360 && mouseX<=458 && mouseY>=54 && mouseY<=204 && vb2){
+    b2v2=false;
+    fb2v2x=460-b2v2x;
+    if(imageSelected){
+      vboxImage[3]=draggedImage.get();
+    db2v2=true;
+    }
+  }
+  //hb2
+  if(mouseX>=258 && mouseX<=458 && mouseY>=54 && mouseY<=127 && hb2){
+    b2h1=false;
+    fb1h1y=129-b1h1y;
+    if(imageSelected){
+      hboxImage[2]=draggedImage.get();
+    db2h1=true;
+    }
+  }
+  if(mouseX>=258 && mouseX<=458 && mouseY>=131 && mouseY<=204 && hb2){
+    b2h2=false;
+    fb1h2y=206-b1h2y;
+    if(imageSelected){
+      hboxImage[3]=draggedImage.get();
+    db2h2=true;
+    }
+  }
+  
+  
+  
+  //box3
+  if(mouseX>=462 && mouseX<=662 && mouseY>=54 && mouseY<=204){
+    box3=false;
+    if(imageSelected){
+    boxImage[2]=draggedImage.get();
+    drawBox3Image=true;
+    }
+  }
+  //vb3
+  if(mouseX>=462 && mouseX<=560 && mouseY>=54 && mouseY<=204 && vb3){
+    b3v1=false;
+    fb3v1x=562-b3v1x;
+    if(imageSelected){
+      vboxImage[4]=draggedImage.get();
+    db3v1=true;
+    }
+  }
+  if(mouseX>=564 && mouseX<=662 && mouseY>=54 && mouseY<=204 && vb3){
+    b3v2=false;
+    fb3v2x=664-b3v2x;
+    if(imageSelected){
+      vboxImage[5]=draggedImage.get();
+    db3v2=true;
+    }
+  }
+  //hb3
+  if(mouseX>=462 && mouseX<=662 && mouseY>=54 && mouseY<=127 && hb3){
+    b3h1=false;
+    fb3h1y=129-b3h1y;
+    if(imageSelected){
+      hboxImage[4]=draggedImage.get();
+    db3h1=true;
+    }
+  }
+  if(mouseX>=462 && mouseX<=662 && mouseY>=131 && mouseY<=204 && hb3){
+    b3h2=false;
+    fb3h2y=206-b3h2y;
+    if(imageSelected){
+      hboxImage[5]=draggedImage.get();
+    db3h2=true;
+    }
+  }
+  
+  
+  //box4
+  if(mouseX>=54 && mouseX<=254 && mouseY>=208 && mouseY<=358){
+    box4=false;
+    if(imageSelected){
+    boxImage[3]=draggedImage.get();
+    drawBox4Image=true;
+    }
+  }
+  //vb4
+  if(mouseX>=54 && mouseX<=152 && mouseY>=208 && mouseY<=358 && vb4){
+    b4v1=false;
+    fb4v1x=154-b4v1x;
+    if(imageSelected){
+      vboxImage[6]=draggedImage.get();
+    db4v1=true;
+    }
+  }
+  if(mouseX>=156 && mouseX<=254 && mouseY>=208 && mouseY<=358 && vb4){
+    b4v2=false;
+    fb4v2x=256-b4v2x;
+    if(imageSelected){
+      vboxImage[7]=draggedImage.get();
+    db4v2=true;
+    }
+  }
+  //hb4
+  if(mouseX>=54 && mouseX<=254 && mouseY>=208 && mouseY<=281 && hb4){
+    b4h1=false;
+    fb4h1y=283-b4h1y;
+    if(imageSelected){
+      hboxImage[6]=draggedImage.get();
+    db4h1=true;
+    }
+  }
+  if(mouseX>=54 && mouseX<=254 && mouseY>=285 && mouseY<=358 && hb4){
+    b4h2=false;
+    fb4h2y=360-b4h2y;
+    if(imageSelected){
+      hboxImage[7]=draggedImage.get();
+    db4h2=true;
+    }
+  }
+  
+  
+  
+  //box5
+  if(mouseX>=258 && mouseX<=458 && mouseY>=208 && mouseY<=358){
+    box5=false;
+    if(imageSelected){
+    boxImage[4]=draggedImage.get();
+    drawBox5Image=true;
+    }
+  }
+  //vb5
+  if(mouseX>=258 && mouseX<=356 && mouseY>=208 && mouseY<=358 && vb5){
+    b5v1=false;
+    fb5v1x=358-b5v1x;
+    if(imageSelected){
+      vboxImage[8]=draggedImage.get();
+    db5v1=true;
+    }
+  }
+  if(mouseX>=360 && mouseX<=458 && mouseY>=208 && mouseY<=358 && vb5){
+    b5v2=false;
+    fb5v2x=458-b5v2x;
+    if(imageSelected){
+      vboxImage[9]=draggedImage.get();
+    db5v2=true;
+    }
+  }
+  //hb5
+  if(mouseX>=258 && mouseX<=458 && mouseY>=208 && mouseY<=281 && hb5){
+    b5h1=false;
+    fb5h1y=283-b5h1y;
+    if(imageSelected){
+      hboxImage[8]=draggedImage.get();
+    db5h1=true;
+    }
+  }
+  if(mouseX>=258 && mouseX<=458 && mouseY>=285 && mouseY<=358 && hb5){
+    b5h2=false;
+    fb5h2y=360-b5h2y;
+    if(imageSelected){
+      hboxImage[9]=draggedImage.get();
+    db5h2=true;
+    }
+  }
+  
+  
+  
+  //box6
+  if(mouseX>=462 && mouseX<=662 && mouseY>=208 && mouseY<=358){
+    box6=false;
+    if(imageSelected){
+    boxImage[5]=draggedImage.get();
+    drawBox6Image=true;
+    }
+  }
+  //vb6
+  if(mouseX>=462 && mouseX<=560 && mouseY>=208 && mouseY<=358 && vb6){
+    b6v1=false;
+    fb6v1x=562-b6v1x;
+    if(imageSelected){
+      vboxImage[10]=draggedImage.get();
+    db6v1=true;
+    }
+  }
+  if(mouseX>=564 && mouseX<=662 && mouseY>=208 && mouseY<=358 && vb6){
+    b6v2=false;
+    fb6v2x=664-b6v2x;
+    if(imageSelected){
+      vboxImage[11]=draggedImage.get();
+    db6v2=true;
+    }
+  }
+  //hb6
+  if(mouseX>=462 && mouseX<=662 && mouseY>=208 && mouseY<=281 && hb6){
+    b6h1=false;
+    fb6h1y=283-b6h1y;
+    if(imageSelected){
+      hboxImage[10]=draggedImage.get();
+    db6h1=true;
+    }
+  }
+  if(mouseX>=462 && mouseX<=662 && mouseY>=285 && mouseY<=358 && hb6){
+    b6h2=false;
+    fb6h2y=360-b6h2y;
+    if(imageSelected){
+      hboxImage[11]=draggedImage.get();
+    db6h2=true;
+    }
+  }
+  
+  
+  
+  //box7
+  if(mouseX>=54 && mouseX<=254 && mouseY>=362 && mouseY<=512){
+    box7=false;
+    if(imageSelected){
+    boxImage[6]=draggedImage.get();
+    drawBox7Image=true;
+    }
+  }
+  //vb7
+  if(mouseX>=54 && mouseX<=152 && mouseY>=362 && mouseY<=512 && vb7){
+    b7v1=false;
+    fb7v1x=154-b7v1x;
+    if(imageSelected){
+      vboxImage[12]=draggedImage.get();
+    db7v1=true;
+    }
+  }
+  if(mouseX>=156 && mouseX<=254 && mouseY>=362 && mouseY<=512 && vb7){
+    b7v2=false;
+    fb7v2x=256-b7v2x;
+    if(imageSelected){
+      vboxImage[13]=draggedImage.get();
+    db7v2=true;
+    }
+  }
+  //hb7
+  if(mouseX>=54 && mouseX<=254 && mouseY>=362 && mouseY<=435 && hb7){
+    b7h1=false;
+    fb7h1y=437-b7h1y;
+    if(imageSelected){
+      hboxImage[12]=draggedImage.get();
+    db7h1=true;
+    }
+  }
+  if(mouseX>=54 && mouseX<=254 && mouseY>=439 && mouseY<=512 && hb7){
+    b7h2=false;
+    fb7h2y=514-b7h2y;
+    if(imageSelected){
+      hboxImage[13]=draggedImage.get();
+    db7h2=true;
+    }
+  }
+  
+  
+  
+  //box8
+  if(mouseX>=258 && mouseX<=458 && mouseY>=362 && mouseY<=512){
+    box8=false;
+    if(imageSelected){
+    boxImage[7]=draggedImage.get();
+    drawBox8Image=true;
+    }
+  }
+  //vb8
+  if(mouseX>=258 && mouseX<=356 && mouseY>=362 && mouseY<=512 && vb8){
+    b8v1=false;
+    fb8v1x=358-b8v1x;
+    if(imageSelected){
+      vboxImage[14]=draggedImage.get();
+    db8v1=true;
+    }
+  }
+  if(mouseX>=360 && mouseX<=458 && mouseY>=362 && mouseY<=512 && vb8){
+    b8v2=false;
+    fb8v2x=460-b8v2x;
+    if(imageSelected){
+      vboxImage[15]=draggedImage.get();
+    db8v2=true;
+    }
+  }
+  //hb8
+  if(mouseX>=258 && mouseX<=458 && mouseY>=362 && mouseY<=435 && hb8){
+    b8h1=false;
+    fb8h1y=437-b8h1y;
+    if(imageSelected){
+      hboxImage[14]=draggedImage.get();
+    db8h1=true;
+    }
+  }
+  if(mouseX>=258 && mouseX<=458 && mouseY>=439 && mouseY<=512 && hb8){
+    b8h2=false;
+    fb8h2y=514-b8h2y;
+    if(imageSelected){
+      hboxImage[15]=draggedImage.get();
+    db8h2=true;
+    }
+  }
+  
+  
+  
+  //box9
+  if(mouseX>=462 && mouseX<=662 && mouseY>=362 && mouseY<=512){
+    box9=false;
+    if(imageSelected){
+    boxImage[8]=draggedImage.get();
+    drawBox9Image=true;
+    }
+  }
+  //vb9
+  if(mouseX>=462 && mouseX<=560 && mouseY>=362 && mouseY<=512 && vb9){
+    b9v1=false;
+    fb9v1x=562-b9v1x;
+    if(imageSelected){
+      vboxImage[16]=draggedImage.get();
+    db9v1=true;
+    }
+  }
+  if(mouseX>=564 && mouseX<=662 && mouseY>=362 && mouseY<=512 && vb9){
+    b9v2=false;
+    fb9v2x=664-b9v2x;
+    if(imageSelected){
+      vboxImage[17]=draggedImage.get();
+    db9v2=true;
+    }
+  }
+  //hb9
+  if(mouseX>=462 && mouseX<=662 && mouseY>=362 && mouseY<=435 && hb9){
+    b9h1=false;
+    fb9h1y=437-b9h1y;
+    if(imageSelected){
+      hboxImage[16]=draggedImage.get();
+    db9h1=true;
+    }
+  }
+  if(mouseX>=462 && mouseX<=662 && mouseY>=439 && mouseY<=512 && hb9){
+    b9h2=false;
+    fb9h2y=514-b9h2y;
+    if(imageSelected){
+      hboxImage[17]=draggedImage.get();
+    db9h2=true;
+    }
+  }
+  
+  
+  
+  
+  drawDragImage = false;
+  drawBoxImage = false;
+  imageSelected = false;
+}
+
 // Mode 2: Take a picture
 
 //==========================================================================================================================
@@ -1104,9 +3203,18 @@ public void mode3phase2displayButtons()
 
     cp5.addButton("mode3phase2makeHalf")
       .setPosition(left + offset, 677)
-      .setCaptionLabel("Make Half")
+      .setCaptionLabel("Horizontal Half")
       .align(CENTER,CENTER,CENTER,CENTER)
-      .setSize(120, 40)
+      .setSize(220, 40)
+      ;
+
+    offset += 220 + 10;
+
+    cp5.addButton("mode3phase2makeHalfVertical")
+      .setPosition(left + offset, 677)
+      .setCaptionLabel("Vertical Half")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(170, 40)
       ;
 
     displayButtons = false;
@@ -1147,6 +3255,18 @@ public void mode3phase2makeHalf()
 {
   println("button: display half photo");
   phase = 3;
+  cp5.hide();
+  displayButtons = true;
+  halfX = (width - 800)/2;
+  halfY = 70;
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase2makeHalfVertical()
+{
+  println("button: display vertical half photo");
+  phase = 4;
   cp5.hide();
   displayButtons = true;
   halfX = (width - 800)/2;
@@ -1255,6 +3375,73 @@ public void mode3mousePressed()
 			}
 		}
 	}
+}
+
+
+//===========================================================================================================================
+public void mode3phase4display()
+{
+  background(backgroundColor);
+  text("Move the rectangle to pick region to save", 20, 40);
+  mode3phase4displayButtons();
+  displayPhoto(currentPhotoIndex);
+  stroke(255);
+  noFill();
+  strokeWeight(3);
+  rect(halfX, halfY, 400, 600);
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+public void mode3phase4displayButtons()
+{
+  if(displayButtons)
+  {
+    cp5 = new ControlP5(this);
+
+    cp5.setControlFont(buttonFont);
+
+    int left = (width-800)/2;
+    int offset = 0;
+
+    cp5.addButton("mode3phase3back")
+      .setPosition(left, 677)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      .setColor(backButtonColor)
+      ;
+
+    offset += 40 + 10;
+
+    cp5.addButton("mode3phase4saveHalf")
+      .setPosition(left + offset, 677)
+      .setCaptionLabel("Save Region")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(140, 40)
+      ;
+
+    displayButtons = false;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode3phase4saveHalf()
+{
+  println("button: save half panel");
+  mode = 1;
+  phase = 1;
+  cp5.hide();
+  displayButtons = true;
+
+  // Save copy of selected photo in panel array
+  PImage newHalfPanel = createImage(640/2, 480, RGB); 
+  newHalfPanel.copy(Photos.get(currentPhotoIndex), halfX-(width-800)/2, halfY-70, 640/2, 480, 0, 0, 640/2, 480);
+  Panels.add(newHalfPanel);
+  PanelSizes.add(3);
+  numPanels++;
+  numHalfPanels++;
 }
 // File: Mode4.pde
 // Mode 4 is the photo editing hub
@@ -2616,6 +4803,8 @@ public void drawOverview()
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 60);
     else if(PanelSizes.get(i) == 2)
       image(Panels.get(i), 80 + i*90, (height/2 + 40), 80, 30);
+    else if(PanelSizes.get(i) == 3)
+      image(Panels.get(i), 80 + i*90, (height/2 + 40), 40, 60);
     // show "Edit" on panel when mouse over
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -2681,6 +4870,13 @@ public void displayAddButtons()
       .setCaptionLabel("Export")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)
+      ;
+      
+    cp5.addButton("mode1customExport")
+      .setPosition(400, 7)
+      .setCaptionLabel("Cusom Export")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(200, 40)
       ;
 
     displayButtons = false;
@@ -2836,6 +5032,12 @@ public void mode1mousePressed()
   }
 }
 
+public void mode1customExport(){
+  mode = 8;
+  Jassetup();
+  cp5.hide();
+  displayButtons = true;
+}
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ComicYourself" };
     if (passedArgs != null) {
