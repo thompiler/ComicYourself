@@ -119,6 +119,13 @@ void displayAddButtons()
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(100, 40)
       ;
+      
+    cp5.addButton("mode1customExport")
+      .setPosition(400, 7)
+      .setCaptionLabel("Cusom Export")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(200, 40)
+      ;
 
     displayButtons = false;
   }
@@ -273,3 +280,9 @@ void mode1mousePressed()
   }
 }
 
+public void mode1customExport(){
+  mode = 8;
+  Jassetup();
+  cp5.hide();
+  displayButtons = true;
+}
