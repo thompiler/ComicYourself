@@ -5122,14 +5122,14 @@ public void mode1phase2buttons()
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(210, 40)
       ;
-
+/*
     cp5.addButton("mode1customExport")
       .setPosition(width - 220, 110)
       .setCaptionLabel("Custom Export")
       .align(CENTER,CENTER,CENTER,CENTER)
       .setSize(200, 40)
       ;
-
+*/
     displayButtons = false;
   }
 }
