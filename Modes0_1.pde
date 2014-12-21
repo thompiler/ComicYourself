@@ -37,9 +37,9 @@ void drawOverview()
 
   // display photos and panels created
   fill(#CE235F);
-  for(int i = 0; i < numPhotos; i++)
+  for(int i = displayPhotoIndex; i < numPhotos; i++)
   {
-    image(Photos.get(i), 80 + i*90, 140, 80, 60);
+    image(Photos.get(i), 80 + (i - displayPhotoIndex)*90, 140, 80, 60);
 
     if(mouseX >= 80 + i*90
       && mouseX <= 80 + i*90 + 80
@@ -101,6 +101,20 @@ void displayAddButtons()
       .setSize(40, 40)
       ;
 
+    cp5.addButton("mode1phase1left")
+      .setPosition(200 + 60, 100 - 32)
+      .setCaptionLabel("<")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;
+
+    cp5.addButton("mode1phase1right")
+      .setPosition(200 + 60 + 50, 100 - 32)
+      .setCaptionLabel(">")
+      .align(CENTER,CENTER,CENTER,CENTER)
+      .setSize(40, 40)
+      ;      
+
     cp5.addButton("addPanel")
       .setPosition(200, height/2 - 32)
       .setCaptionLabel("+")
@@ -141,6 +155,30 @@ public void startButton()
   cp5.hide();
 }
 
+
+
+//__________________________________________________________________________________________________________________________
+public void mode1phase1left()
+{
+  if(numPhotos>7)
+  {
+    displayPhotoIndex--;
+    if(displayPhotoIndex<0)
+      displayPhotoIndex = 0;
+  }
+}
+
+
+//__________________________________________________________________________________________________________________________
+public void mode1phase1right()
+{
+  if(numPhotos>7)
+  {
+    displayPhotoIndex++;
+    if(displayPhotoIndex<0)
+      displayPhotoIndex = 0;
+  }
+}
 
 
 //__________________________________________________________________________________________________________________________

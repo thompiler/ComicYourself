@@ -80,6 +80,7 @@ boolean inHSBmode = false;
 int backgroundColor = #464646;
 CColor backButtonColor = new CColor(#9B1919, #D86262, #FFFFFF, #FFFFFF, #FFFFFF);
 int displayIndex = 0;
+int displayPhotoIndex = 0;
 
 //__________________________________________________________________________________________________________________________
 void setup()
