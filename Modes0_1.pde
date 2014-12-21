@@ -437,7 +437,7 @@ public void mode1exportBlock()
 
     // 2. loop through panels and write them to output pimage
     int numBlocks = 0;
-
+    int numHalves = 0;
     for(int i = 0; i < numPanels; i++)
     {
       boolean written = false;
@@ -467,7 +467,7 @@ public void mode1exportBlock()
           int cX2 = border + (640 + border) * ((numBlocks-1)%3);
           // int cY2 = border + 480/2 + 8;
           int cY2 = border + ((numBlocks-1)/3)*(480+border) + 480/2 + 8;
-        if(i > 0 && i%2 == 0)
+        if(i > 0 && numHalves%2 == 1)
         {
           //int cX2 = border + (640 + border) * ((numBlocks)%3);
           // int cY2 = border + 480/2 + 8;
@@ -479,33 +479,37 @@ public void mode1exportBlock()
             numBlocks--;
             written = true;
             println("h2 cX2: "+cX2+"   cY2: "+cY2+"  cY: "+cY);
+            numHalves++;
           //}
         }
         else //if(!written)
         {
           comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
           println("h1 cX: "+cX+"   cY: "+cY);
+          numHalves++;
         }
       }
       else if(PanelSizes.get(i) == 3) 
       {
-        if(i > 0 && i%2 == 0)
+        if(i > 0 && numHalves%2 == 1)
         {
           int cX3 = border + (640 + border) * ((numBlocks-1)%3) + 640/2 + 8;
           int cY3 = border + ((numBlocks-1)/3)*(480+border);
           //int cY3 = border;
-          if(PanelSizes.get(i-1) == 3 && i%2 == 0)
-          {
+          //if(PanelSizes.get(i-1) == 3 && i%2 == 0)
+          //{
             comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX3, cY3, 640/2-8, 480);
             numBlocks--;
             writtenVertical = true;
-            println("v1 cX3: "+cX3+"   cY: "+cY);
-          }
+            println("v2 cX3: "+cX3+"   cY: "+cY);
+            numHalves++;
+          //}
         }
         else //if(!writtenVertical)
         {
           comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX, cY, 640/2-8, 480);
-          println("v2 cX: "+cX+"   cY: "+cY);
+          println("v1 cX: "+cX+"   cY: "+cY);
+          numHalves++;
         }
       }
       numBlocks++;
