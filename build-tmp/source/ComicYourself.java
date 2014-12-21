@@ -5321,10 +5321,10 @@ public void mode1exportBlock()
       }
       else if(PanelSizes.get(i) == 2) 
       {
-          int cX2 = border + (640 + border) * ((numBlocks)%3);
+          int cX2 = border + (640 + border) * ((numBlocks-1)%3);
           // int cY2 = border + 480/2 + 8;
           int cY2 = border + ((numBlocks-1)/3)*(480+border) + 480/2 + 8;
-        if(i > 0 && i%2 == 1)
+        if(i > 0 && i%2 == 0)
         {
           //int cX2 = border + (640 + border) * ((numBlocks)%3);
           // int cY2 = border + 480/2 + 8;
@@ -5332,37 +5332,37 @@ public void mode1exportBlock()
 
           //if(PanelSizes.get(i-1) == 2)
           //{
-            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
+            comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
             numBlocks--;
             written = true;
-            //println("h1 cX2: "+cX2+"   cY2: "+cY2+"  cY: "+cY);
+            println("h2 cX2: "+cX2+"   cY2: "+cY2+"  cY: "+cY);
           //}
         }
         else //if(!written)
         {
-          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX2, cY2, 640, 480/2-8);
-          println("h2 cX: "+cX+"   cY: "+cY);
+          comicStrip.copy(Panels.get(i), 0, 0, 640, 480/2-8, cX, cY, 640, 480/2-8);
+          println("h1 cX: "+cX+"   cY: "+cY);
         }
       }
       else if(PanelSizes.get(i) == 3) 
       {
-        if(i > 0 && i%2 == 1)
+        if(i > 0 && i%2 == 0)
         {
           int cX3 = border + (640 + border) * ((numBlocks-1)%3) + 640/2 + 8;
           int cY3 = border + ((numBlocks-1)/3)*(480+border);
           //int cY3 = border;
           if(PanelSizes.get(i-1) == 3 && i%2 == 0)
           {
-            comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX3, cY, 640/2-8, 480);
+            comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX3, cY3, 640/2-8, 480);
             numBlocks--;
             writtenVertical = true;
-            println("v cX: "+cX3+"   cY: "+cY);
+            println("v1 cX3: "+cX3+"   cY: "+cY);
           }
         }
         else //if(!writtenVertical)
         {
           comicStrip.copy(Panels.get(i), 0, 0, 640/2-8, 480, cX, cY, 640/2-8, 480);
-          println("v cX: "+cX+"   cY: "+cY);
+          println("v2 cX: "+cX+"   cY: "+cY);
         }
       }
       numBlocks++;
