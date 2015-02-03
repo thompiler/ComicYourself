@@ -515,19 +515,10 @@ public void mode1exportBlock()
       numBlocks++;
     }
 
-
     displayExportedComic = true;
     comicStrip.updatePixels();
     exportedComic = comicStrip;
     println("Comic Strip Block Exported to File");
     comicStrip.save("comicStripBlock.png");
   }
-}
-
-
-public void mode1customExport(){
-  mode = 8;
-  Jassetup();
-  cp5.hide();
-  displayButtons = true;
 }

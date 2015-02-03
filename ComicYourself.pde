@@ -283,12 +283,13 @@ void draw()
 		else if(phase == 3)
 			mode7phase3display();
 	}
+    /*
     else if (mode==8)
     {
       mode8draw();
       mode8dispayButon();
-    
     }
+    */
 }
 
 
@@ -326,16 +327,8 @@ void mousePressed()
 				break;
 		case 7: mode7mousePressed();
 				break;
-		case 8: mode8mousePressed();
-                                break;
-                default: break;
+        default: break;
 	}
-}
-
-void mouseClicked(){
-  if(mode==8){
-    mode8mouseClicked();
-  }
 }
 
 
@@ -390,9 +383,6 @@ void mouseDragged()
 			rectY2 = mouseY;
 		}	
 	}
-        else if(mode == 8){
-          mode8mouseDragged();
-        }
 }
 
 
@@ -404,9 +394,6 @@ void mouseReleased()
 		flag = 0;
 		println("mouse released");
 	}
-        if(mode == 8){
-            mode8mouseReleased();
-        }
 }
 
 
